@@ -68,9 +68,8 @@ import java.util.function.Consumer;
 @Mod(SlashRef.MODID)
 public class MMORPG {
 
-
     // DISABLE WHEN PUBLIC BUILD
-    public static boolean RUN_DEV_TOOLS = false;
+    public static boolean RUN_DEV_TOOLS = Boolean.getBoolean("mas.dev.tool");
 
     public static String formatNumber(float num) {
         if (num < 10) {
