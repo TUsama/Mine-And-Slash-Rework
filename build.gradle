@@ -103,6 +103,9 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    maven {
+        url "https://cursemaven.com"
+    }
 }
 dependencies {
 
@@ -119,7 +122,8 @@ dependencies {
 
     implementation fg.deobf("blank:Library_of_Exile-1.20.1:1.4.4")
     implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-
+    runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:5319203")
+    runtimeOnly fg.deobf("curse.maven:selene-499980:5478857")
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:${project.jei_version}") //API for compile
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:${project.jei_version}") //API for compile
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${project.jei_version}") //Full for runtime
