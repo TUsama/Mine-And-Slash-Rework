@@ -128,7 +128,7 @@ public class PerkButton extends ImageButton {
                     Packets.sendToServer(new PerkChangePacket(school, point, PerkChangePacket.ACTION.REMOVE));
                 }
                 this.onClick(mouseX, mouseY);
-
+                PerkConnectionCache.addToUpdate(this);
                 return true;
             }
 
