@@ -1,5 +1,6 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.robertx22.age_of_exile.capability.player.PlayerData;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
@@ -7,6 +8,9 @@ import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
 import com.robertx22.age_of_exile.database.data.stats.types.UnknownStat;
 import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.buttondrawer.ExileTreeTexture;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.buttondrawer.PerkButtonDrawer;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.buttondrawer.PerkButtonTextureContainer;
 import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.mmorpg.SlashRef;
 import com.robertx22.age_of_exile.saveclasses.PointData;
@@ -23,17 +27,18 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class PerkButton extends ImageButton {
 
     public static int SPACING = 26;
     public static int BIGGEST = 33;
-
-    static ResourceLocation ID = new ResourceLocation(SlashRef.MODID, "textures/gui/skill_tree/perk_buttons.png");
     public static ResourceLocation LOCKED_TEX = new ResourceLocation(SlashRef.MODID, "textures/gui/locked.png");
-
+    static ResourceLocation ID = new ResourceLocation(SlashRef.MODID, "textures/gui/skill_tree/perk_buttons.png");
     public Perk perk;
     public PointData point;
     public TalentTree school;
@@ -44,10 +49,11 @@ public class PerkButton extends ImageButton {
 
     public int origX;
     public int origY;
-    Minecraft mc = Minecraft.getInstance();
-    SkillTreeScreen screen;
-
     public String perkid = "";
+    SkillTreeScreen screen;
+    private int wholeTexture = -1;
+    private CompletableFuture<Void> drawTextureTask = null;
+
 
     public PerkButton(SkillTreeScreen screen, PlayerData playerData, TalentTree school, PointData point, Perk perk, int x, int y) {
         super(x, y, perk.getType().size, perk.getType().size, 0, 0, 1, ID, (action) -> {
@@ -70,7 +76,6 @@ public class PerkButton extends ImageButton {
         float scale = 2 - screen.zoom;
         return GuiUtils.isInRect((int) (this.getX() - ((width / 4) * scale)), (int) (this.getY() - ((height / 4) * scale)), (int) (width * scale), (int) (height * scale), x, y);
     }
-
 
     private void setTooltipMOD(GuiGraphics gui, int mouseX, int mouseY) {
 
@@ -154,13 +159,21 @@ public class PerkButton extends ImageButton {
         if (!screen.shouldRender(getX(), getY(), screen.ctx)) {
             return;
         }
-        
+
         setTooltipMOD(gui, mouseX, mouseY);
 
 
         gui.pose().pushPose();
 
         float scale = 2 - screen.zoom;
+        float target = scale * 1.3f;
+        if (isInside((int) (1F / screen.zoom * mouseX), (int) (1F / screen.zoom * mouseY))) {
+            float lerp = Mth.lerp(0.5f, scale, target);
+            scale = lerp;
+            if (lerp / scale * 0.15f > 0.999f) {
+                scale = target;
+            }
+        }
 
         float posMulti = 1F / scale;
 
@@ -185,7 +198,6 @@ public class PerkButton extends ImageButton {
                 .anyMatch(item -> item.getStat().locName().getString().toLowerCase().contains(search.toLowerCase()));
 
         boolean containsName = perk.locName().getString().toLowerCase().contains(search.toLowerCase());
-
 
 
         float opacity = search.isEmpty() || containsSearchStat || containsName ? 1F : 0.2f;
@@ -216,23 +228,46 @@ public class PerkButton extends ImageButton {
 
         gui.setColor(1.0F, 1.0F, 1.0F, opacity);
 
+        ResourceLocation colorTexture = perk.getType().getColorTexture(status);
+        ResourceLocation borderTexture = perk.getType().getBorderTexture(status);
+        ResourceLocation perkIcon = perk.getIcon();
+        ResourceLocation newLocation = new ResourceLocation(PerkButtonTextureContainer.nameSpace, colorTexture.getPath() + "_" + borderTexture.getPath() + "_" + perkIcon.getPath());
+        int lHash = newLocation.hashCode();
 
-        // if i can merge these 2 icons into 1, i can remove 20% of the lag todo
-        gui.blit(perk.getType().getColorTexture(status), xPos(offcolor, posMulti), yPos(offcolor, posMulti), 20, 20, 0, 0, 20, 20, 20, 20);
-        gui.blit(perk.getType().getBorderTexture(status), (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+        if (this.wholeTexture != -1) {
+            gui.blit(PerkButtonTextureContainer.allTexture.get(lHash), (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+        } else {
+            if (this.drawTextureTask == null) {
+                this.drawTextureTask = CompletableFuture.runAsync(() -> {
+                    try (NativeImage nativeImage = PerkButtonDrawer.tryDrawWholeIcon(colorTexture, borderTexture, perkIcon, this.width, this.height)) {
+                        new ExileTreeTexture(newLocation, nativeImage);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).thenRun(() -> {
+                    this.wholeTexture = lHash;
+                });
+            }
 
-        if (search.isEmpty()) {
-            opacity += 0.2F;
+            // if i can merge these 2 icons into 1, i can remove 20% of the lag todo
+            gui.blit(colorTexture, xPos(offcolor, posMulti), yPos(offcolor, posMulti), 20, 20, 0, 0, 20, 20, 20, 20);
+            gui.blit(borderTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+
+            if (search.isEmpty()) {
+                opacity += 0.2F;
+            }
+
+
+            gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
+
+            gui.blit(perkIcon, (int) xPos(offset, posMulti), (int) yPos(offset, posMulti), 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize);
+
+
+            //   gui.pose().scale(1F / scale, 1F / scale, 1F / scale);
+            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+
         }
 
-
-        gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
-
-        gui.blit(perk.getIcon(), (int) xPos(offset, posMulti), (int) yPos(offset, posMulti), 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize);
-
-
-        //   gui.pose().scale(1F / scale, 1F / scale, 1F / scale);
-        gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         gui.pose().popPose();
 
