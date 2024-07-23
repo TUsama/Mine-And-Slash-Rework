@@ -15,7 +15,7 @@ public class DataGeneration {
 
         try {
 
-            DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> CreateLangFile::create);
+            //DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> CreateLangFile::create);
 
 
             new DataGenHook().run(CachedOutput.NO_CACHE);
