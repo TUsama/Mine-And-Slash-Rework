@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PerkConnectionPainter {
@@ -32,8 +33,6 @@ public class PerkConnectionPainter {
     private static final Int2ReferenceOpenHashMap<HashMap<PointData, PerkButton>> pointPerkButtonMap = new Int2ReferenceOpenHashMap<>(4);
     private static final Int2ReferenceOpenHashMap<ConcurrentLinkedQueue<BufferedImage>> waitingToBeRegistered = new Int2ReferenceOpenHashMap<>(4);
     private static final Int2ReferenceOpenHashMap<ConcurrentLinkedQueue<ResourceLocation>> waitingToBeReplaced = new Int2ReferenceOpenHashMap<>(4);
-    private final static HashSet<PerkConnectionRenderer> defaultSet = new HashSet<>(4000);
-    private static final ConcurrentLinkedQueue<PerkConnectionRenderer> defaultQueue = new ConcurrentLinkedQueue<>();
     //todo is this really a good collection to store changed renderers? Slow in searching.
     //anyway we prob won't have that much data at the same time.
     public static Int2ReferenceOpenHashMap<ConcurrentLinkedQueue<PerkConnectionRenderer>> updates = new Int2ReferenceOpenHashMap<>(4);
@@ -61,7 +60,10 @@ public class PerkConnectionPainter {
                 System.out.println("paint one connection!");
                 PerkConnectionRenderer renderer = v.poll();
                 int i = k;
-                updating.getOrDefault(i, defaultSet).add(renderer);
+                if (!updating.containsKey(i)) {
+                    updating.put(i, new HashSet<>(4000));
+                }
+                updating.get(i).add(renderer);
                 PerkButton button1 = pointPerkButtonMap.get(i).get(renderer.pair.perk1);
                 PerkButton button2 = pointPerkButtonMap.get(i).get(renderer.pair.perk2);
                 Perk.Connection connection1 = renderer.connection;
@@ -83,16 +85,34 @@ public class PerkConnectionPainter {
                 float y2 = button2.getY() + button2.getHeight() / 2F;
 
                 double rotation = Mth.atan2(y2 - y1, x2 - x1);
-                affineTransform.rotate(rotation, (double) image.getWidth() / 2, (double) image.getHeight() / 2);
+                affineTransform.rotate(rotation);
 
                 float distance = Mth.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 
                 if (connection == null) throw new RuntimeException("try to paint connections without preparation!");
                 BufferedImage finalConnectionTexture = null;
-                switch (connection1) {
-                    case LINKED -> finalConnectionTexture = connection.getSubimage(0, 0, (int) distance, 6);
-                    case BLOCKED -> finalConnectionTexture = connection.getSubimage(6 + 5, 0, (int) distance, 6);
-                    case POSSIBLE -> finalConnectionTexture = connection.getSubimage(6, 0, (int) distance, 6);
+                System.out.println("width is " + distance);
+                if (distance > connection.getWidth()){
+                    finalConnectionTexture = new BufferedImage((int) distance, connection.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    BufferedImage connectionTexture = null;
+                    switch (connection1) {
+                        case LINKED -> connectionTexture = connection.getSubimage(0, 0, 100, 6);
+                        case BLOCKED -> connectionTexture = connection.getSubimage(0, 6 + 5, 100, 6);
+                        case POSSIBLE -> connectionTexture = connection.getSubimage(0, 6, 100, 6);
+                    }
+                    Graphics2D graphics1 = finalConnectionTexture.createGraphics();
+                    graphics1.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
+                            java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+                    graphics1.drawImage(connectionTexture, 0, 0, (int) distance, connection.getHeight(), null);
+                    graphics1.dispose();
+
+                } else {
+                    switch (connection1) {
+                        case LINKED -> finalConnectionTexture = connection.getSubimage(0, 0, (int) distance, 6);
+                        case BLOCKED -> finalConnectionTexture = connection.getSubimage(0, 6 + 5, (int) distance, 6);
+                        case POSSIBLE -> finalConnectionTexture = connection.getSubimage(0, 6, (int) distance, 6);
+                    }
                 }
                 graphics.drawImage(finalConnectionTexture, affineTransform, null);
 
@@ -106,11 +126,17 @@ public class PerkConnectionPainter {
     }
 
     public static void handleUpdateQueue() {
-        updates.forEach((k, v) -> {
-            if (v.isEmpty()) return;
-            int i = k;
-            BufferedImage image = tryPaint(i);
-            waitingToBeRegistered.get(i).add(image);
+        CompletableFuture.runAsync(() -> {
+            updates.forEach((k, v) -> {
+                if (v.isEmpty()) return;
+                int i = k;
+                BufferedImage image = tryPaint(i);
+                if (!waitingToBeRegistered.containsKey(i)) {
+                    waitingToBeRegistered.put(i, new ConcurrentLinkedQueue<>());
+                }
+                waitingToBeRegistered.get(i).add(image);
+            });
+
         });
 
     }
@@ -118,6 +144,7 @@ public class PerkConnectionPainter {
     public static void handleRegisterQueue() {
         waitingToBeRegistered.forEach((k, v) -> {
             if (v.isEmpty()) return;
+            System.out.println("register one!");
             int i = k;
             BufferedImage poll = v.poll();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -127,7 +154,7 @@ public class PerkConnectionPainter {
                 e.printStackTrace();
             }
             try (NativeImage image = NativeImage.read(baos.toByteArray())) {
-                ResourceLocation location = new ResourceLocation(PainterController.nameSpace + k);
+                ResourceLocation location = new ResourceLocation(PainterController.nameSpace, "" + k);
                 ExileTreeTexture exileTreeTexture = new ExileTreeTexture(location, image);
 
                 TextureManager textureManager = Minecraft.getInstance().getTextureManager();
@@ -145,7 +172,10 @@ public class PerkConnectionPainter {
     }
 
     public static void addToUpdate(int typeHash, PerkConnectionRenderer renderer) {
-        updates.getOrDefault(typeHash, defaultQueue).add(renderer);
+        if (!updates.containsKey(typeHash)){
+            updates.put(typeHash, new ConcurrentLinkedQueue<>());
+        }
+        updates.get(typeHash).add(renderer);
     }
 
     //copy the pointPerkButtonMap in skillScreen to another place for avoiding NPE
@@ -170,14 +200,27 @@ public class PerkConnectionPainter {
         if (PerkConnectionCache.renderersCache.isEmpty()) throw new RuntimeException("init ConnectionPainter before ConnectionCache!");
         PerkConnectionCache.renderersCache.forEach((k,v) -> {
             v.forEach((k2, v2) -> {
+
                 addToUpdate(k, v2);
             });
         });
-
+        handleUpdateQueue();
     }
 
     public static ResourceLocation getCurrentScreenTextureLocation(SkillTreeScreen screen) {
         int typeHash = screen.schoolType.toString().hashCode();
-        return new ResourceLocation(PainterController.nameSpace + typeHash);
+        return new ResourceLocation(PainterController.nameSpace, "" + typeHash);
+    }
+
+    public static boolean checkInUpdate(SkillTreeScreen screen, PerkConnectionRenderer renderer){
+        int typeHash = screen.schoolType.toString().hashCode();
+        ConcurrentLinkedQueue<PerkConnectionRenderer> perkConnectionRenderers = PerkConnectionPainter.updates.get(typeHash);
+        HashSet<PerkConnectionRenderer> perkConnectionRenderers1 = PerkConnectionPainter.updating.get(typeHash);
+        return perkConnectionRenderers.contains(renderer) || perkConnectionRenderers1.contains(renderer);
+    }
+
+    public static boolean checkIfRegistered(SkillTreeScreen screen){
+        int typeHash = screen.schoolType.toString().hashCode();
+        return wholeImage.containsKey(typeHash);
     }
 }

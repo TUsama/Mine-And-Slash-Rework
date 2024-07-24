@@ -1,5 +1,6 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree;
 
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -32,6 +33,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -74,8 +76,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
     private boolean canSmoothHandleScroll;
     private boolean canSmoothHandleZoom;
 
-    public static boolean isScreenOpen = false;
-
+    private ResourceLocation allConnectionLocation;
     public SkillTreeScreen(SchoolType type) {
         super(Minecraft.getInstance()
                 .getWindow()
@@ -83,7 +84,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                 .getWindow()
                 .getGuiScaledHeight());
         this.schoolType = type;
-        isScreenOpen = true;
+        this.allConnectionLocation = PerkConnectionPainter.getCurrentScreenTextureLocation(this);
     }
 
     public static int sizeX() {
@@ -201,8 +202,6 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
     private void renderConnections(GuiGraphics gui) {
         int typeHash = this.schoolType.toString().hashCode();
-        ConcurrentLinkedQueue<PerkConnectionRenderer> perkConnectionRenderers = PerkConnectionPainter.updates.get(typeHash);
-        HashSet<PerkConnectionRenderer> perkConnectionRenderers1 = PerkConnectionPainter.updating.get(typeHash);
         for (PerkConnectionRenderer con : PerkConnectionCache.renderersCache.get(typeHash).values()) {
             if (false){
                 this.renderConnection(gui, con);
@@ -355,10 +354,10 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
     @Override
     public void onClose() {
 
-        CompletableFuture.runAsync(() -> {
-            PerkConnectionPainter.handleUpdateQueue();
-            System.out.println("try handle connections render!");
-        });
+
+        PerkConnectionPainter.handleUpdateQueue();
+        System.out.println("try handle connections render!");
+
 
         super.onClose();
 
@@ -518,6 +517,12 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                     }
             }
             //Watch watch1 = new Watch();
+            int connectionX = (int) (this.width / 2F + addx + scrollX);
+            int connectionY = (int) (this.height / 2F + addy + scrollY);
+            if (PerkConnectionPainter.checkIfRegistered(this)) {
+                Window window = Minecraft.getInstance().getWindow();
+                gui.blit(this.allConnectionLocation, connectionX, connectionY, 0, 0, mc.screen.width, mc.screen.height, window.getWidth(), window.getHeight());
+            }
 
             PerkConnectionCache.updateRenders(this);
             //System.out.println(watch1.getPrint());
