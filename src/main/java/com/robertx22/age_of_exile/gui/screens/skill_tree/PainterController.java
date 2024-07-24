@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PainterController {
 
-    public final static String nameSpace = "etexture:";
+    public final static String nameSpace = "etexture";
     public static RateLimiter paintLimiter = RateLimiter.create(500.0,3, TimeUnit.SECONDS);
 
     public static RateLimiter registerLimiter = RateLimiter.create(80, 2, TimeUnit.SECONDS);
