@@ -20,7 +20,21 @@ public class PerkPointPair {
 
     @Override
     public int hashCode() {
-        return perk1.hashCode() + perk2.hashCode();
+        int hashA = perk1.hashCode();
+        int hashB = perk2.hashCode();
+
+        long result = 17;
+        result = 31 * result + (hashA + hashB);
+        result = 31 * result + (hashA ^ hashB);
+
+        return (int) result;
     }
 
+    @Override
+    public String toString() {
+        return "PerkPointPair{" +
+                "perk1=" + perk1 +
+                ", perk2=" + perk2 +
+                '}';
+    }
 }

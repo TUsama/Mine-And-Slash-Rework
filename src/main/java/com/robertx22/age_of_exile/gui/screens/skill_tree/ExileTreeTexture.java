@@ -1,24 +1,23 @@
-package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.buttondrawer;
+package com.robertx22.age_of_exile.gui.screens.skill_tree;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class ExileTreeTexture extends SimpleTexture {
     private final NativeImage image;
 
+
+
     public ExileTreeTexture(ResourceLocation pLocation, NativeImage image) {
         super(pLocation);
         this.image = image;
-        Minecraft.getInstance().getTextureManager().register(this.location, this);
     }
 
     @Override
@@ -33,10 +32,11 @@ public class ExileTreeTexture extends SimpleTexture {
         }
 
     }
-
     private void doLoad(NativeImage pImage, boolean pBlur, boolean pClamp) {
         TextureUtil.prepareImage(this.getId(), 0, pImage.getWidth(), pImage.getHeight());
         pImage.upload(0, 0, 0, 0, 0, pImage.getWidth(), pImage.getHeight(), pBlur, pClamp, false, true);
 
     }
+
+
 }

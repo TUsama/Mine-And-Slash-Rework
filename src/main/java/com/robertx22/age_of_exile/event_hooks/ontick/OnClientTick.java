@@ -1,5 +1,8 @@
 package com.robertx22.age_of_exile.event_hooks.ontick;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.PerkButtonPainter;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionPainter;
 import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import com.robertx22.age_of_exile.uncommon.utilityclasses.ChatUtils;
 import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
@@ -16,6 +19,7 @@ public class OnClientTick {
     static int TICKS_TO_SHOW = 50;
 
     private static int NO_MANA_SOUND_COOLDOWN = 0;
+    private static int handleDrawInterval = 0;
 
     public static boolean canSoundNoMana() {
         return NO_MANA_SOUND_COOLDOWN <= 0;
@@ -29,6 +33,18 @@ public class OnClientTick {
 
         try {
             Player player = Minecraft.getInstance().player;
+
+
+            if (RenderSystem.isOnRenderThread()) {
+                PerkButtonPainter.handleRegisterQueue();
+                PerkConnectionPainter.handleRegisterQueue();
+            } else {
+                RenderSystem.recordRenderCall(() -> {
+                    PerkButtonPainter.handleRegisterQueue();
+                    PerkConnectionPainter.handleRegisterQueue();
+                });
+
+            }
 
             if (player == null) {
                 return;

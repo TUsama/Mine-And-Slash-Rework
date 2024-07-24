@@ -1,16 +1,16 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.robertx22.age_of_exile.capability.player.PlayerData;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
 import com.robertx22.age_of_exile.database.data.stats.types.UnknownStat;
 import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.buttondrawer.ExileTreeTexture;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.buttondrawer.PerkButtonDrawer;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.buttondrawer.PerkButtonTextureContainer;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.DrawInformation;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.PerkButtonPainter;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionCache;
 import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.mmorpg.SlashRef;
 import com.robertx22.age_of_exile.saveclasses.PointData;
@@ -29,7 +29,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,7 +50,7 @@ public class PerkButton extends ImageButton {
     public int origY;
     public String perkid = "";
     SkillTreeScreen screen;
-    private int wholeTexture = -1;
+    private ResourceLocation wholeTexture = null;
     private CompletableFuture<Void> drawTextureTask = null;
 
 
@@ -109,7 +108,7 @@ public class PerkButton extends ImageButton {
     // copied from abstractbutton
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-
+        //this.wholeTexture = null;
 
         screen.mouseRecentlyClickedTicks = 25;
         screen.pointClicked = this.point;
@@ -133,7 +132,9 @@ public class PerkButton extends ImageButton {
                     Packets.sendToServer(new PerkChangePacket(school, point, PerkChangePacket.ACTION.REMOVE));
                 }
                 this.onClick(mouseX, mouseY);
-                PerkConnectionCache.addToUpdate(this);
+
+              PerkConnectionCache.addToUpdate(this);
+
                 return true;
             }
 
@@ -152,11 +153,13 @@ public class PerkButton extends ImageButton {
         return (int) ((getY() * multi) + offset);
     }
 
+    private PerkStatus status = null;
+
     @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float pPartialTick) {
 
 
-        if (!screen.shouldRender(getX(), getY(), screen.ctx)) {
+        if (!screen.shouldRender(origX, origY, screen.ctx)) {
             return;
         }
 
@@ -180,13 +183,15 @@ public class PerkButton extends ImageButton {
 
         float add = MathHelper.clamp(scale - 1, 0, 2);
         float off = width / -2F * add;
+
         gui.pose().translate(off, off, 0);
         gui.pose().scale(scale, scale, scale);
 
+        Perk.PerkType type1 = perk.getType();
 
         PerkStatus status = playerData.talents.getStatus(Minecraft.getInstance().player, school, point);
 
-        float offset = perk.getType().getOffset();
+        float offset = type1.getOffset();
 
         // background
 
@@ -217,39 +222,42 @@ public class PerkButton extends ImageButton {
 
         // if newbie, show only the starter perks he can pick
         if (playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1) {
-            opacity = this.perk.getType() == Perk.PerkType.START ? 1 : 0.2F;
+            opacity = type1 == Perk.PerkType.START ? 1 : 0.2F;
         }
 
         var type = perk.type;
 
         //gui.blit(ID, xPos(0, posMulti), yPos(0, posMulti), perk.getType().getXOffset(), status.getYOffset(), this.width, this.height);
 
-        int offcolor = (int) ((perk.getType().size - 20) / 2F);
+        int offcolor = (int) ((type1.size - 20) / 2F);
 
         gui.setColor(1.0F, 1.0F, 1.0F, opacity);
 
-        ResourceLocation colorTexture = perk.getType().getColorTexture(status);
-        ResourceLocation borderTexture = perk.getType().getBorderTexture(status);
-        ResourceLocation perkIcon = perk.getIcon();
-        ResourceLocation newLocation = new ResourceLocation(PerkButtonTextureContainer.nameSpace, colorTexture.getPath() + "_" + borderTexture.getPath() + "_" + perkIcon.getPath());
-        int lHash = newLocation.hashCode();
 
-        if (this.wholeTexture != -1) {
-            gui.blit(PerkButtonTextureContainer.allTexture.get(lHash), (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
-        } else {
-            if (this.drawTextureTask == null) {
-                this.drawTextureTask = CompletableFuture.runAsync(() -> {
-                    try (NativeImage nativeImage = PerkButtonDrawer.tryDrawWholeIcon(colorTexture, borderTexture, perkIcon, this.width, this.height)) {
-                        new ExileTreeTexture(newLocation, nativeImage);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).thenRun(() -> {
-                    this.wholeTexture = lHash;
-                });
+        DrawInformation drawInformation = new DrawInformation(perk);
+        if (status != this.status){
+            ResourceLocation colorTexture = type1.getColorTexture(status);
+            ResourceLocation borderTexture = type1.getBorderTexture(status);
+            ResourceLocation perkIcon = perk.getIcon();
+            this.wholeTexture = new ResourceLocation(PainterController.nameSpace, colorTexture.getPath() + "_" + borderTexture.getPath() + "_" + perkIcon.getPath());
+            this.status = status;
+        }
+
+        try {
+            gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+            if (search.isEmpty()) {
+                opacity += 0.1F;
             }
+            gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
+            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        } catch (RuntimeException ignored){
 
-            // if i can merge these 2 icons into 1, i can remove 20% of the lag todo
+            PerkButtonPainter.addToWait(drawInformation);
+
+            ResourceLocation colorTexture = type1.getColorTexture(status);
+            ResourceLocation borderTexture = type1.getBorderTexture(status);
+            ResourceLocation perkIcon = perk.getIcon();
+
             gui.blit(colorTexture, xPos(offcolor, posMulti), yPos(offcolor, posMulti), 20, 20, 0, 0, 20, 20, 20, 20);
             gui.blit(borderTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
 
@@ -257,11 +265,9 @@ public class PerkButton extends ImageButton {
                 opacity += 0.2F;
             }
 
-
-            gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
-
             gui.blit(perkIcon, (int) xPos(offset, posMulti), (int) yPos(offset, posMulti), 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize);
 
+            gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
 
             //   gui.pose().scale(1F / scale, 1F / scale, 1F / scale);
             gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
