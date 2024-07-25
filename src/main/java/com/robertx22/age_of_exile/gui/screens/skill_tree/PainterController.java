@@ -4,14 +4,36 @@ import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class PainterController {
 
     public final static String nameSpace = "etexture";
-    public static RateLimiter paintLimiter = RateLimiter.create(500.0,3, TimeUnit.SECONDS);
+    private final static HashMap<Class, Boolean> updatePermission = new HashMap<>();
+    public static RateLimiter paintLimiter = RateLimiter.create(400.0, 2, TimeUnit.SECONDS);
+    public static RateLimiter registerLimiter = RateLimiter.create(6000, 3, TimeUnit.SECONDS);
 
-    public static RateLimiter registerLimiter = RateLimiter.create(80, 2, TimeUnit.SECONDS);
+    public static void setAllowUpdate() {
+        updatePermission.forEach((k, v) -> {
+            updatePermission.put(k, true);
+        });
+    }
+
+    public static <T> void passOnePaintAction(T target){
+        updatePermission.put(target.getClass(), false);
+    }
+
+    public static <T> Boolean isAllowedUpdate(T target){
+        Boolean b = updatePermission.putIfAbsent(target.getClass(), false);
+
+        return b != null && b;
+    }
+
+    public static <T> void setThisAllowedUpdate(T target){
+        updatePermission.putIfAbsent(target.getClass(), true);
+
+    }
 
     public record BufferedImagePack(BufferedImage image, ResourceLocation resourceLocation) {
         @Override
@@ -24,4 +46,5 @@ public class PainterController {
             return resourceLocation;
         }
     }
+
 }

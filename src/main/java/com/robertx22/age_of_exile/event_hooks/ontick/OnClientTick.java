@@ -1,6 +1,7 @@
 package com.robertx22.age_of_exile.event_hooks.ontick;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.AllPerkButtonPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.PerkButtonPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionPainter;
 import com.robertx22.age_of_exile.uncommon.datasaving.Load;
@@ -9,8 +10,11 @@ import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class OnClientTick {
 
@@ -21,6 +25,8 @@ public class OnClientTick {
     private static int NO_MANA_SOUND_COOLDOWN = 0;
     private static int handleDrawInterval = 0;
 
+    public static ConcurrentHashMap<Integer, AllPerkButtonPainter> container = new ConcurrentHashMap<>();
+
     public static boolean canSoundNoMana() {
         return NO_MANA_SOUND_COOLDOWN <= 0;
     }
@@ -29,13 +35,15 @@ public class OnClientTick {
         NO_MANA_SOUND_COOLDOWN = 30;
     }
 
+    public static boolean isRegistering = false;
+
     public static void onEndTick(Minecraft mc) {
 
         try {
             Player player = Minecraft.getInstance().player;
 
 
-            if (RenderSystem.isOnRenderThread()) {
+            if (RenderSystem.isOnRenderThread() && !isRegistering) {
                 PerkButtonPainter.handleRegisterQueue();
                 PerkConnectionPainter.handleRegisterQueue();
             } else {

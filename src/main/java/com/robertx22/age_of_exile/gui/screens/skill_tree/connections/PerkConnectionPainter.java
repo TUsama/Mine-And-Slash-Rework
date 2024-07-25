@@ -57,7 +57,6 @@ public class PerkConnectionPainter {
             while (!v.isEmpty()) {
                 //this need to be blocked.
                 PainterController.paintLimiter.acquire();
-                System.out.println("paint one connection!");
                 PerkConnectionRenderer renderer = v.poll();
                 int i = k;
                 if (!updating.containsKey(i)) {
@@ -91,7 +90,6 @@ public class PerkConnectionPainter {
 
                 if (connection == null) throw new RuntimeException("try to paint connections without preparation!");
                 BufferedImage finalConnectionTexture = null;
-                System.out.println("width is " + distance);
                 if (distance > connection.getWidth()){
                     finalConnectionTexture = new BufferedImage((int) distance, connection.getHeight(), BufferedImage.TYPE_INT_ARGB);
                     BufferedImage connectionTexture = null;
@@ -172,10 +170,11 @@ public class PerkConnectionPainter {
     }
 
     public static void addToUpdate(int typeHash, PerkConnectionRenderer renderer) {
-        if (!updates.containsKey(typeHash)){
+        return;
+        /*if (!updates.containsKey(typeHash)){
             updates.put(typeHash, new ConcurrentLinkedQueue<>());
         }
-        updates.get(typeHash).add(renderer);
+        updates.get(typeHash).add(renderer);*/
     }
 
     //copy the pointPerkButtonMap in skillScreen to another place for avoiding NPE

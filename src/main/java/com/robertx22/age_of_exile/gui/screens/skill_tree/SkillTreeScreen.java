@@ -16,6 +16,7 @@ import com.robertx22.age_of_exile.gui.bases.BaseScreen;
 import com.robertx22.age_of_exile.gui.bases.IAlertScreen;
 import com.robertx22.age_of_exile.gui.bases.INamedScreen;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.AllPerkButtonPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionCache;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionRenderer;
@@ -33,7 +34,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -41,10 +41,7 @@ import net.minecraft.util.Mth;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen, IAlertScreen {
     static ResourceLocation BIG_PANEL = new ResourceLocation(SlashRef.MODID, "textures/gui/skill_tree/bar.png");
@@ -203,7 +200,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
     private void renderConnections(GuiGraphics gui) {
         int typeHash = this.schoolType.toString().hashCode();
         for (PerkConnectionRenderer con : PerkConnectionCache.renderersCache.get(typeHash).values()) {
-            if (false){
+            if (true){
                 this.renderConnection(gui, con);
             }
 
@@ -258,6 +255,9 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
             refreshButtons();
             PerkConnectionCache.init(this);
             PerkConnectionPainter.init(this);
+
+            AllPerkButtonPainter.getPainter(this.schoolType).init(this.pointPerkButtonMap.values());
+
             goToCenter();
         } catch (Exception e) {
             e.printStackTrace();
@@ -526,6 +526,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
             PerkConnectionCache.updateRenders(this);
             //System.out.println(watch1.getPrint());
+            AllPerkButtonPainter.getPainter(schoolType).handlePaintQueue();
 
             this.renderConnections(gui);
 

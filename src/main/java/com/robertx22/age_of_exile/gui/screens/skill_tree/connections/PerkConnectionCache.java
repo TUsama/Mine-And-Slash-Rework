@@ -1,9 +1,9 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.connections;
 
+import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkPointPair;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionRenderer;
 import com.robertx22.age_of_exile.saveclasses.PointData;
 import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
@@ -14,9 +14,11 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 public class PerkConnectionCache {
 
@@ -26,17 +28,17 @@ public class PerkConnectionCache {
 
     public static ConcurrentLinkedQueue<PerkButton> update = new ConcurrentLinkedQueue<>();
 
-    public static boolean canUpdate = false;
 
 
     public static void addToUpdate(PerkButton button) {
         update.add(button);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked"})
     public static void updateRenders(SkillTreeScreen skillTreeScreen) {
         if (update.isEmpty()) return;
-        if (!canUpdate) return;
+        if (!PainterController.isAllowedUpdate(new PerkConnectionCache())) return;
+        PainterController.passOnePaintAction(new PerkConnectionCache());
         var data = Load.player(ClientOnly.getPlayer());
         while (!update.isEmpty()) {
             PerkButton poll = update.poll();
@@ -64,7 +66,6 @@ public class PerkConnectionCache {
             }
         }
 
-        canUpdate = false;
     }
 
     @SuppressWarnings("unchecked")
@@ -133,6 +134,12 @@ public class PerkConnectionCache {
             });
 
         }
+        System.out.println(children.size());
+        Map<? extends Class<? extends GuiEventListener>, ? extends List<? extends GuiEventListener>> map1 = children.parallelStream().collect(Collectors.groupingBy(x -> x.getClass()));
+        System.out.println(map1);
+        map1.forEach((k, v) -> {
+            System.out.println(k + ": " + v.size());
+        });
         return map;
 
     }

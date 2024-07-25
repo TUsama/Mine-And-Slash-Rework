@@ -8,7 +8,8 @@ import com.robertx22.age_of_exile.database.data.stats.types.UnknownStat;
 import com.robertx22.age_of_exile.database.data.talent_tree.parser.TalentGrid;
 import com.robertx22.age_of_exile.database.registry.ExileDB;
 import com.robertx22.age_of_exile.database.registry.ExileRegistryTypes;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.DrawInformation;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.AllPerkButtonPainter;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.ButtonIdentifier;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.PerkButtonPainter;
 import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.saveclasses.PointData;
@@ -18,7 +19,6 @@ import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import com.robertx22.library_of_exile.registry.ExileRegistryType;
 import com.robertx22.library_of_exile.registry.IAutoGson;
 import com.robertx22.library_of_exile.registry.JsonExileRegistry;
-import com.robertx22.library_of_exile.utils.Watch;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashSet;
@@ -133,11 +133,10 @@ public class TalentTree implements JsonExileRegistry<TalentTree>, IAutoGson<Tale
 
                 }
 
-                DrawInformation drawInformation = new DrawInformation(perk);
-                PerkButtonPainter.addToWait(drawInformation);
+                ButtonIdentifier buttonIdentifier = new ButtonIdentifier(this, e.getKey(), perk);
+                PerkButtonPainter.addToWait(buttonIdentifier);
             }
             PerkButtonPainter.handlePaintQueue();
-
         });
     }
 

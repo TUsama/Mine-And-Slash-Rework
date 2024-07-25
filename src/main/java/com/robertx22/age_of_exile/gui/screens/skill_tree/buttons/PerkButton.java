@@ -6,9 +6,8 @@ import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
 import com.robertx22.age_of_exile.database.data.stats.types.UnknownStat;
 import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.DrawInformation;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.ButtonIdentifier;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.PerkButtonPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionCache;
 import com.robertx22.age_of_exile.mmorpg.MMORPG;
@@ -68,6 +67,10 @@ public class PerkButton extends ImageButton {
         this.originalHeight = this.height;
         this.screen = screen;
 
+    }
+
+    public ResourceLocation getWholeTexture() {
+        return wholeTexture;
     }
 
     public boolean isInside(int x, int y) {
@@ -234,12 +237,12 @@ public class PerkButton extends ImageButton {
         gui.setColor(1.0F, 1.0F, 1.0F, opacity);
 
 
-        DrawInformation drawInformation = new DrawInformation(perk);
-        if (status != this.status){
+        ButtonIdentifier buttonIdentifier = new ButtonIdentifier(this.school, point, perk);
+        if (this.wholeTexture == null || status != this.status){
             ResourceLocation colorTexture = type1.getColorTexture(status);
             ResourceLocation borderTexture = type1.getBorderTexture(status);
             ResourceLocation perkIcon = perk.getIcon();
-            this.wholeTexture = new ResourceLocation(PainterController.nameSpace, colorTexture.getPath() + "_" + borderTexture.getPath() + "_" + perkIcon.getPath());
+            this.wholeTexture = PerkButtonPainter.getNewLocation(colorTexture, borderTexture, perkIcon);
             this.status = status;
         }
 
@@ -252,7 +255,7 @@ public class PerkButton extends ImageButton {
             gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         } catch (RuntimeException ignored){
 
-            PerkButtonPainter.addToWait(drawInformation);
+            PerkButtonPainter.addToWait(buttonIdentifier);
 
             ResourceLocation colorTexture = type1.getColorTexture(status);
             ResourceLocation borderTexture = type1.getBorderTexture(status);
