@@ -10,11 +10,9 @@ import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class OnClientTick {
 
@@ -43,7 +41,7 @@ public class OnClientTick {
             Player player = Minecraft.getInstance().player;
 
             container.values().forEach(x -> {
-                x.checkIfNeedRepaintDueToWindowResize();
+                x.checkIfNeedRepaint();
                 x.handlePaintQueue();
             });
 

@@ -9,7 +9,9 @@ import com.robertx22.age_of_exile.event_hooks.ontick.OnClientTick;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.ExileTreeTexture;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
+import com.robertx22.age_of_exile.saveclasses.perks.SchoolData;
 import com.robertx22.age_of_exile.uncommon.datasaving.Load;
+import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
@@ -24,12 +26,15 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 public class AllPerkButtonPainter {
 
     private final ConcurrentLinkedQueue<SeparableBufferedImage> waitingToBeRegistered = new ConcurrentLinkedQueue<>();
 
     private final int typeHash;
+
+    private TalentTree.SchoolType type;
     private final HashMap<ButtonIdentifier, ResourceLocation> cache = new HashMap<>(3000);
     //todo is this really a good collection to store changed renderers? Slow in searching.
     //anyway we prob won't have that much data at the same time.
@@ -50,8 +55,12 @@ public class AllPerkButtonPainter {
     private boolean isPainting = false;
     private boolean isRepainting = false;
 
+    private int allocatedPointSetHash;
+
     public AllPerkButtonPainter(TalentTree.SchoolType type) {
+        this.type = type;
         this.typeHash = type.toString().hashCode();
+        this.allocatedPointSetHash = Load.player(ClientOnly.getPlayer()).talents.getPerks().get(type).getAllocatedPoints().hashCode();
     }
 
     public static AllPerkButtonPainter getPainter(TalentTree.SchoolType schoolType) {
@@ -227,7 +236,12 @@ public class AllPerkButtonPainter {
         return !locations.isEmpty();
     }
 
-    public void checkIfNeedRepaintDueToWindowResize() {
+    public boolean isThisButtonIsUpdating(PerkButton button){
+        return this.waitingToBeUpdated.contains(button.buttonIdentifier) || this.updating.contains(button.buttonIdentifier);
+    }
+
+    public void checkIfNeedRepaint() {
+        // due to window size change
         if (!this.isRepainting && this.drawInWindowWidth != 0 && Minecraft.getInstance().getWindow().getGuiScaledWidth() != this.drawInWindowWidth) {
             repaint();
         }

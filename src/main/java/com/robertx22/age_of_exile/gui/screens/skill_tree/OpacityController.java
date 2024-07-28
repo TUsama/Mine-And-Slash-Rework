@@ -1,5 +1,6 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.robertx22.age_of_exile.capability.player.PlayerData;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
@@ -11,6 +12,8 @@ import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import net.minecraft.client.Minecraft;
 
+import java.util.concurrent.TimeUnit;
+
 public class OpacityController {
 
     private final ButtonIdentifier button;
@@ -18,22 +21,12 @@ public class OpacityController {
     private float opacity = 1f;
 
     private final PlayerData playerData = Load.player(ClientOnly.getPlayer());
-
+    @SuppressWarnings("all")
+    private static RateLimiter searchLimiter = RateLimiter.create(50000);
     public OpacityController(ButtonIdentifier button) {
         this.button = button;
     }
 
-    public static OpacityController normalCheck(PerkButton button) {
-        return new OpacityController(button.buttonIdentifier).searchResultCheck()
-                .keywordSearchResultCheck()
-                .newbieCheck();
-    }
-
-    public static OpacityController normalCheck(ButtonIdentifier button) {
-        return new OpacityController(button).searchResultCheck()
-                .keywordSearchResultCheck()
-                .newbieCheck();
-    }
 
     public OpacityController searchResultCheck() {
 
@@ -44,6 +37,22 @@ public class OpacityController {
 
 
         opacity = search.isEmpty() || containsSearchStat || containsName ? 1F : 0.2f;
+
+        return this;
+    }
+
+
+    public OpacityController cachedSearchResultCheck(PerkButton button) {
+
+        if (!button.lastSearchString.equals(search)){
+            boolean containsSearchStat = button.matchStrings.stream().anyMatch(x -> x.contains(search.toLowerCase()));
+            boolean containsName = button.perk.locName().getString().toLowerCase().contains(search.toLowerCase());
+            button.lastSearchString = search;
+            button.searchCache = containsSearchStat || containsName;
+        }
+
+
+        opacity = search.isEmpty() || button.searchCache ? 1F : 0.2f;
 
         return this;
     }
@@ -80,6 +89,14 @@ public class OpacityController {
             opacity += 0.2F;
         }
         return this;
+    }
+
+    public static OpacityController newOpacityController(ButtonIdentifier button){
+        return new OpacityController(button);
+    }
+
+    public void setOpacity(float opacity) {
+        this.opacity = opacity;
     }
 
     public float get() {

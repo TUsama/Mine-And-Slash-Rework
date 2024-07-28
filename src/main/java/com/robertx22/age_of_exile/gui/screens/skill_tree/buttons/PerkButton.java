@@ -1,5 +1,6 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.robertx22.age_of_exile.capability.player.PlayerData;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
@@ -58,14 +59,14 @@ public class PerkButton extends ImageButton {
     public String perkid = "";
     public ButtonIdentifier buttonIdentifier;
     SkillTreeScreen screen;
-    private ResourceLocation wholeTexture = null;
+    private ResourceLocation wholeTexture;
     private PerkStatus status;
+    public final List<String> matchStrings;
 
-    private final List<String> matchStrings;
+    public boolean searchCache = false;
 
-    private boolean searchCache = false;
+    public String lastSearchString = "";
 
-    private String lastSearchString = "";
 
     public PerkButton(SkillTreeScreen screen, PlayerData playerData, TalentTree school, PointData point, Perk perk, int x, int y) {
         super(x, y, perk.getType().size, perk.getType().size, 0, 0, 1, ID, (action) -> {
@@ -163,7 +164,8 @@ public class PerkButton extends ImageButton {
                 this.onClick(mouseX, mouseY);
 
                 PerkConnectionCache.addToUpdate(this);
-                System.out.println("this point is: " + getX() + " " + getY());
+                screen.painter.addToUpdate(this.buttonIdentifier);
+                /*System.out.println("this point is: " + getX() + " " + getY());
                 ArrayList<PointData> pointData = new ArrayList<>(screen.school.calcData.connections.get(point));
                 System.out.println("this point relate to these point: " + pointData);
                 System.out.println("related renderers' hash: " + pointData.stream().map(x -> new PerkPointPair(point, x).hashCode()).toList());
@@ -182,7 +184,7 @@ public class PerkButton extends ImageButton {
                 }
 
                 System.out.println("this point has these renderers in cache: " + perkConnectionRenderers);
-                System.out.println("related renderers' hash are: " + perkConnectionRenderers.stream().map(x -> x.hashCode()).toList());
+                System.out.println("related renderers' hash are: " + perkConnectionRenderers.stream().map(x -> x.hashCode()).toList());*/
                 return true;
             }
 
@@ -213,32 +215,17 @@ public class PerkButton extends ImageButton {
             var search = SkillTreeScreen.SEARCH.getValue();
             int MmouseX = (int) (1F / screen.zoom * mouseX);
             int MmouseY = (int) (1F / screen.zoom * mouseY);
-            //System.out.println("1");
             if (search.isEmpty() && !isInside(MmouseX, MmouseY)) return;
-            boolean shouldUseNormalRender;
-            //System.out.println("2");
-            //check if this is a valid search result.
 
-            if (!this.lastSearchString.equals(search)){
-                boolean containsSearchStat = matchStrings.stream().anyMatch(x -> x.contains(search.toLowerCase()));
-                boolean containsName = perk.locName().getString().toLowerCase().contains(search.toLowerCase());
-                this.searchCache = containsSearchStat || containsName;
-            }
-            shouldUseNormalRender = this.searchCache;
+            var opacityController = OpacityController.newOpacityController(this.buttonIdentifier);
+            opacityController
+                    .cachedSearchResultCheck(this)
+                    .keywordSearchResultCheck()
+                    .newbieCheck();
 
-            if (search.equals("all")) {
-                if (status == PerkStatus.CONNECTED) {
-                    shouldUseNormalRender = true;
-                }
-            }
-
-            if (playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1) {
-                Perk.PerkType type = perk.getType();
-                shouldUseNormalRender = shouldUseNormalRender || type == Perk.PerkType.START;
-            }
 
             // the principle of this whole image render is keep the whole image at a low opacity, and check if any button needs to use normal render system.
-            if (shouldUseNormalRender || isInside(MmouseX, MmouseY)){
+            if (opacityController.get() == 1f || isInside(MmouseX, MmouseY) || screen.painter.isThisButtonIsUpdating(this)){
                 gui.pose().pushPose();
                 normalRender(gui, mouseX, mouseY);
                 gui.pose().popPose();
@@ -274,11 +261,12 @@ public class PerkButton extends ImageButton {
         // background
 
         RenderSystem.enableDepthTest();
-
-        OpacityController opacityController = OpacityController.normalCheck(this);
+        OpacityController opacityController = OpacityController.newOpacityController(this.buttonIdentifier);
         // if newbie, show only the starter perks he can pick
-        opacityController.newbieCheck();
-
+        opacityController
+                .cachedSearchResultCheck(this)
+                .keywordSearchResultCheck()
+                .newbieCheck();
 
         //gui.blit(ID, xPos(0, posMulti), yPos(0, posMulti), perk.getType().getXOffset(), status.getYOffset(), this.width, this.height);
 
@@ -297,12 +285,10 @@ public class PerkButton extends ImageButton {
         }
 
         if (PerkButtonPainter.handledBufferedImage.containsKey(this.wholeTexture)) {
-
-            gui.setColor(1.0F, 1.0F, 1.0F, opacityController.highlightPerk().get());
-
+            //have to render it with 1.0 opacity, otherwise the icon can't fully cover the whole image when some button use normal render way.
+            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
             gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
 
-            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         } else {
 
             PerkButtonPainter.addToWait(buttonIdentifier);

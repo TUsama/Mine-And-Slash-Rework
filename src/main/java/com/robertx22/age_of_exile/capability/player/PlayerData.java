@@ -180,7 +180,8 @@ public class PlayerData implements ICap {
         //!oldData.isEmpty() to avoid the first sync when player join world, otherwise the first perk player allocated will bug
         if (!oldData.isEmpty() && !newData.equals(oldData)){
             PainterController.setAllowUpdate();
-
+        } else {
+            PainterController.setForbidUpdate();
         }
         this.statPoints = loadOrBlank(StatPointsData.class, new StatPointsData(), nbt, STAT_POINTS, new StatPointsData());
         this.deathStats = loadOrBlank(DeathStatsData.class, new DeathStatsData(), nbt, DEATH_STATS, new DeathStatsData());

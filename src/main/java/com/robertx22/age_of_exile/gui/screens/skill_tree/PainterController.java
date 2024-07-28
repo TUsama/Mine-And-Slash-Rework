@@ -20,6 +20,12 @@ public class PainterController {
         });
     }
 
+    public static void setForbidUpdate() {
+        updatePermission.forEach((k, v) -> {
+            updatePermission.put(k, false);
+        });
+    }
+
     public static <T> void passOnePaintAction(T target){
         updatePermission.put(target.getClass(), false);
     }
