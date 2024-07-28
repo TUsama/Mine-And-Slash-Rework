@@ -182,20 +182,157 @@ public class PerkButton extends ImageButton {
     @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float pPartialTick) {
 
-        if (screen.clicked) return;
-
-
-        if (!screen.shouldRender(origX, origY, screen.ctx)) {
-            return;
-        }
+        if (!screen.shouldRender(origX, origY, screen.ctx)) return;
 
         setTooltipMOD(gui, mouseX, mouseY);
 
 
-        gui.pose().pushPose();
+        if (screen.painter.isAllowedToPaint()){
+            var search = SkillTreeScreen.SEARCH.getValue();
+            if (!(!search.isEmpty() || isInside(mouseX, mouseY))) return;
+            float opacity = 1f;
 
+            if (!search.isEmpty()) {
+                boolean containsSearchStat = perk.stats.stream()
+                        .anyMatch(item -> item.getStat().locName().getString().toLowerCase().contains(search.toLowerCase()));
+
+                boolean containsName = perk.locName().getString().toLowerCase().contains(search.toLowerCase());
+
+                opacity = containsSearchStat || containsName ? 1F : 0.2f;
+
+                if (search.equals("all")) {
+                    if (status != PerkStatus.CONNECTED) {
+                        opacity = 0.2F;
+                    } else {
+                        opacity = 1;
+                    }
+                }
+
+                Perk.PerkType type = perk.getType();
+
+                if (playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1) {
+                    opacity = type == Perk.PerkType.START ? 1 : 0.2F;
+                }
+            }
+            if (opacity == 1f && !isInside(mouseX, mouseY)) return;
+
+            gui.pose().pushPose();
+            float scale = getSmoothScale(mouseX, mouseY);
+            gui.pose().scale(scale, scale, scale);
+            float posMulti = 1F / scale;
+            gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+
+            gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
+            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+            gui.pose().popPose();
+        } else {
+            float scale = getSmoothScale(mouseX, mouseY);
+
+            float posMulti = 1F / scale;
+
+
+            float add = MathHelper.clamp(scale - 1, 0, 2);
+            float off = width / -2F * add;
+
+            gui.pose().translate(off, off, 0);
+            gui.pose().scale(scale, scale, scale);
+
+            Perk.PerkType type = perk.getType();
+
+            PerkStatus status = playerData.talents.getStatus(Minecraft.getInstance().player, school, point);
+
+            float offset = type.getOffset();
+
+            // background
+
+            RenderSystem.enableDepthTest();
+
+            var search = SkillTreeScreen.SEARCH.getValue();
+
+            boolean containsSearchStat = perk.stats.stream()
+                    .anyMatch(item -> item.getStat().locName().getString().toLowerCase().contains(search.toLowerCase()));
+
+            boolean containsName = perk.locName().getString().toLowerCase().contains(search.toLowerCase());
+
+
+            float opacity = search.isEmpty() || containsSearchStat || containsName ? 1F : 0.2f;
+
+
+            if (!search.isEmpty()) {
+                if (search.equals("all")) {
+                    if (status != PerkStatus.CONNECTED) {
+                        opacity = 0.2F;
+                    } else {
+                        opacity = 1;
+                    }
+                }
+            } else {
+                opacity = status.getOpacity();
+            }
+
+            // if newbie, show only the starter perks he can pick
+            if (playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1) {
+                opacity = type == Perk.PerkType.START ? 1 : 0.2F;
+            }
+
+
+            //gui.blit(ID, xPos(0, posMulti), yPos(0, posMulti), perk.getType().getXOffset(), status.getYOffset(), this.width, this.height);
+
+            int offcolor = (int) ((type.size - 20) / 2F);
+
+            gui.setColor(1.0F, 1.0F, 1.0F, opacity);
+
+
+            ButtonIdentifier buttonIdentifier = new ButtonIdentifier(this.school, point, perk);
+            if (this.wholeTexture == null || status != this.status) {
+                ResourceLocation colorTexture = type.getColorTexture(status);
+                ResourceLocation borderTexture = type.getBorderTexture(status);
+                ResourceLocation perkIcon = perk.getIcon();
+                this.wholeTexture = PerkButtonPainter.getNewLocation(colorTexture, borderTexture, perkIcon);
+                this.status = status;
+            }
+
+            if(PerkButtonPainter.handledBufferedImage.containsKey(this.wholeTexture)) {
+                gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+                if (search.isEmpty()) {
+                    opacity += 0.1F;
+                }
+                gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
+                gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            } else {
+
+                PerkButtonPainter.addToWait(buttonIdentifier);
+
+                ResourceLocation colorTexture = type.getColorTexture(status);
+                ResourceLocation borderTexture = type.getBorderTexture(status);
+                ResourceLocation perkIcon = perk.getIcon();
+
+                gui.blit(colorTexture, xPos(offcolor, posMulti), yPos(offcolor, posMulti), 20, 20, 0, 0, 20, 20, 20, 20);
+                gui.blit(borderTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+
+                if (search.isEmpty()) {
+                    opacity += 0.2F;
+                }
+
+                gui.blit(perkIcon, (int) xPos(offset, posMulti), (int) yPos(offset, posMulti), 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize);
+
+                gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
+
+                //   gui.pose().scale(1F / scale, 1F / scale, 1F / scale);
+                gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+            }
+
+
+            gui.pose().popPose();
+
+        }
+
+    }
+
+    private float getSmoothScale(int mouseX, int mouseY) {
         float scale = 2 - screen.zoom;
-        System.out.println(scale);
         float target = scale * 1.3f;
         if (isInside((int) (1F / screen.zoom * mouseX), (int) (1F / screen.zoom * mouseY))) {
             float lerp = Mth.lerp(0.5f, scale, target);
@@ -204,106 +341,7 @@ public class PerkButton extends ImageButton {
                 scale = target;
             }
         }
-
-        float posMulti = 1F / scale;
-
-
-        float add = MathHelper.clamp(scale - 1, 0, 2);
-        float off = width / -2F * add;
-
-        gui.pose().translate(off, off, 0);
-        gui.pose().scale(scale, scale, scale);
-
-        Perk.PerkType type1 = perk.getType();
-
-        PerkStatus status = playerData.talents.getStatus(Minecraft.getInstance().player, school, point);
-
-        float offset = type1.getOffset();
-
-        // background
-
-        RenderSystem.enableDepthTest();
-
-        var search = SkillTreeScreen.SEARCH.getValue();
-
-        boolean containsSearchStat = perk.stats.stream()
-                .anyMatch(item -> item.getStat().locName().getString().toLowerCase().contains(search.toLowerCase()));
-
-        boolean containsName = perk.locName().getString().toLowerCase().contains(search.toLowerCase());
-
-
-        float opacity = search.isEmpty() || containsSearchStat || containsName ? 1F : 0.2f;
-
-
-        if (!search.isEmpty()) {
-            if (search.equals("all")) {
-                if (status != PerkStatus.CONNECTED) {
-                    opacity = 0.2F;
-                } else {
-                    opacity = 1;
-                }
-            }
-        } else {
-            opacity = status.getOpacity();
-        }
-
-        // if newbie, show only the starter perks he can pick
-        if (playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1) {
-            opacity = type1 == Perk.PerkType.START ? 1 : 0.2F;
-        }
-
-        var type = perk.type;
-
-        //gui.blit(ID, xPos(0, posMulti), yPos(0, posMulti), perk.getType().getXOffset(), status.getYOffset(), this.width, this.height);
-
-        int offcolor = (int) ((type1.size - 20) / 2F);
-
-        gui.setColor(1.0F, 1.0F, 1.0F, opacity);
-
-
-        ButtonIdentifier buttonIdentifier = new ButtonIdentifier(this.school, point, perk);
-        if (this.wholeTexture == null || status != this.status) {
-            ResourceLocation colorTexture = type1.getColorTexture(status);
-            ResourceLocation borderTexture = type1.getBorderTexture(status);
-            ResourceLocation perkIcon = perk.getIcon();
-            this.wholeTexture = PerkButtonPainter.getNewLocation(colorTexture, borderTexture, perkIcon);
-            this.status = status;
-        }
-
-        if(PerkButtonPainter.handledBufferedImage.containsKey(this.wholeTexture)) {
-            gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
-            if (search.isEmpty()) {
-                opacity += 0.1F;
-            }
-            gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
-            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        } else {
-
-            PerkButtonPainter.addToWait(buttonIdentifier);
-
-            ResourceLocation colorTexture = type1.getColorTexture(status);
-            ResourceLocation borderTexture = type1.getBorderTexture(status);
-            ResourceLocation perkIcon = perk.getIcon();
-
-            gui.blit(colorTexture, xPos(offcolor, posMulti), yPos(offcolor, posMulti), 20, 20, 0, 0, 20, 20, 20, 20);
-            gui.blit(borderTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
-
-            if (search.isEmpty()) {
-                opacity += 0.2F;
-            }
-
-            gui.blit(perkIcon, (int) xPos(offset, posMulti), (int) yPos(offset, posMulti), 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize);
-
-            gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
-
-            //   gui.pose().scale(1F / scale, 1F / scale, 1F / scale);
-            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-        }
-
-
-        gui.pose().popPose();
-
+        return scale;
     }
 
 

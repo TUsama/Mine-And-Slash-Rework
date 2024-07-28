@@ -31,7 +31,7 @@ public class PainterController {
     }
 
     public static <T> void setThisAllowedUpdate(T target){
-        updatePermission.putIfAbsent(target.getClass(), true);
+        updatePermission.put(target.getClass(), true);
 
     }
 

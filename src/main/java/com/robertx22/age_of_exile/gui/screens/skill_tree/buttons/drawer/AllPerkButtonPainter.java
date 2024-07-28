@@ -7,7 +7,6 @@ import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
 import com.robertx22.age_of_exile.event_hooks.ontick.OnClientTick;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.ExileTreeTexture;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -47,7 +46,7 @@ public class AllPerkButtonPainter {
     private int drawInWindowWidth = 0;
 
     private boolean isPainting = false;
-
+    private boolean isRepainting = false;
 
     public AllPerkButtonPainter(TalentTree.SchoolType type) {
         this.typeHash = type.toString().hashCode();
@@ -80,6 +79,8 @@ public class AllPerkButtonPainter {
         int minX = 10000;
         int maxY = 0;
         int minY = 10000;
+        //todo I don't understand why this is 1.4, tbh it should be 1.7, which is from PerkButton render scale(2 - screen.zoom).
+        float singleButtonZoom = 1.4f;
         while (!waitingToBeUpdated.isEmpty()) {
             PainterController.paintLimiter.acquire();
             ButtonIdentifier identifier = waitingToBeUpdated.poll();
@@ -96,19 +97,20 @@ public class AllPerkButtonPainter {
                 Thread.sleep(2000);
                 continue;
             }
-            BufferedImage resizeSingleButton = new BufferedImage(type.size, type.size, BufferedImage.TYPE_INT_ARGB);
+
+            int singleButtonSize = (int) (type.size * singleButtonZoom);
+            BufferedImage resizeSingleButton = new BufferedImage(singleButtonSize, singleButtonSize, BufferedImage.TYPE_INT_ARGB);
             Graphics2D resizeSingleButtonGraphics = resizeSingleButton.createGraphics();
 
-            resizeSingleButtonGraphics.drawImage(singleButton, 0, 0, type.size, type.size, null);
+            resizeSingleButtonGraphics.drawImage(singleButton, 0, 0, singleButtonSize, singleButtonSize, null);
             resizeSingleButtonGraphics.dispose();
             singleButton = resizeSingleButton;
 
             float x = (identifier.point().x) * PerkButton.SPACING;
             float y = (identifier.point().y) * PerkButton.SPACING;
 
-            // todo
-            x -= type.size / 2F;
-            y -= type.size / 2F;
+            x -= singleButtonSize / 2F;
+            y -= singleButtonSize / 2F;
 
             int tx = (int) (halfx + x);
             int ty = (int) (halfy + y);
@@ -119,14 +121,15 @@ public class AllPerkButtonPainter {
             AffineTransform affineTransform = new AffineTransform();
 
             affineTransform.translate(tx, ty);
-            affineTransform.scale(2 - SkillTreeScreen.originalZoom, 2 - SkillTreeScreen.originalZoom);
 
             graphics.drawImage(singleButton, affineTransform, null);
             System.out.println("actually paint one!");
             updating.add(identifier);
         }
         graphics.dispose();
-        image = image.getSubimage(minX, minY, maxX - minX + 32, maxY - minY + 32);
+        //todo the 32 * singleButtonZoom thing is only suitable for normal stat perk icon, but why is 33? should be 24(normal stat perk icon size) actually but it just works.
+        // not hurt to cut it more bigger tho.
+        image = image.getSubimage(minX, minY, (int) (maxX - minX + 33 * singleButtonZoom), (int) (maxY - minY + 32 * singleButtonZoom));
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
@@ -142,6 +145,7 @@ public class AllPerkButtonPainter {
 
     public void handlePaintQueue() {
         if (waitingToBeUpdated.isEmpty()) return;
+        System.out.println("is not empty");
         if (!PainterController.isAllowedUpdate(this)) return;
         PainterController.passOnePaintAction(this);
         CompletableFuture.runAsync(() -> {
@@ -189,7 +193,7 @@ public class AllPerkButtonPainter {
 
         }
         this.updating.clear();
-
+        this.isRepainting = false;
     }
 
     public void addToUpdate(ButtonIdentifier identifier) {
@@ -216,13 +220,13 @@ public class AllPerkButtonPainter {
         return !locations.isEmpty();
     }
 
-    public void checkIfNeedRepaintDueToWindowResize(){
-        if (!this.isPainting && this.drawInWindowWidth != 0 && Minecraft.getInstance().getWindow().getGuiScaledWidth() != this.drawInWindowWidth){
+    public void checkIfNeedRepaintDueToWindowResize() {
+        if (!this.isRepainting && this.drawInWindowWidth != 0 && Minecraft.getInstance().getWindow().getGuiScaledWidth() != this.drawInWindowWidth) {
             repaint();
         }
     }
 
-    public void repaint(){
+    public void repaint() {
         System.out.println("repaint!");
         this.locations.clear();
         this.waitingToBeUpdated.clear();
@@ -230,9 +234,10 @@ public class AllPerkButtonPainter {
         this.lastWholeImage = null;
         this.waitingToBeUpdated.addAll(this.cache.keySet());
         PainterController.setThisAllowedUpdate(this);
+        this.isRepainting = true;
     }
 
-    public record ResourceLocationAndSize(ResourceLocation location, int width, int height){
+    public record ResourceLocationAndSize(ResourceLocation location, int width, int height) {
 
     }
 

@@ -78,6 +78,8 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
     public boolean clicked = false;
 
+    public AllPerkButtonPainter painter = AllPerkButtonPainter.getPainter(schoolType);
+
     private ResourceLocation allConnectionLocation;
     public SkillTreeScreen(SchoolType type) {
         super(Minecraft.getInstance()
@@ -525,7 +527,12 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                     }
             }
 
-            AllPerkButtonPainter painter = AllPerkButtonPainter.getPainter(schoolType);
+
+
+            PerkConnectionCache.updateRenders(this);
+            //System.out.println(watch1.getPrint());
+
+            this.renderConnections(gui);
 
             if (painter.isAllowedToPaint()) {
                 //System.out.println("start render all button!");
@@ -541,13 +548,6 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                 }
 
             }
-
-            PerkConnectionCache.updateRenders(this);
-            //System.out.println(watch1.getPrint());
-
-            this.renderConnections(gui);
-
-
             ticks++;
 
 
