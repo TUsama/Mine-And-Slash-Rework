@@ -5,7 +5,9 @@ import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
 import com.robertx22.age_of_exile.event_hooks.ontick.OnClientTick;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.ExileTreeTexture;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.OpacityController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
+import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -36,7 +38,7 @@ public class PerkButtonPainter {
     public final static ConcurrentLinkedQueue<PainterController.BufferedImagePack> waitingToBeRegisteredQueue = new ConcurrentLinkedQueue<>();
     public static final IntOpenHashSet addHistory = new IntOpenHashSet(500);
 
-    private static BufferedImage tryPaintWholeIcon(ResourceLocation color, ResourceLocation border, ResourceLocation perk, Perk.PerkType type) throws IOException {
+    private static BufferedImage tryPaintWholeIcon(ResourceLocation color, ResourceLocation border, ResourceLocation perk, ButtonIdentifier identifier, PerkStatus status) throws IOException {
         ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
 
         try (InputStream colorStream = resourceManager.open(color)) {
@@ -45,16 +47,33 @@ public class PerkButtonPainter {
                     BufferedImage co = ImageIO.read(colorStream);
                     BufferedImage bo = ImageIO.read(borderStream);
                     BufferedImage pe = ImageIO.read(perkStream);
-                    int baseSize = type.size;
+                    int baseSize = identifier.perk().type.size;
                     int offColor = (baseSize - 20) / 2;
-                    int offPerk = (int) type.getOffset();
+                    int offPerk = (int) identifier.perk().type.getOffset();
 
-                    if (type.size - bo.getWidth() != 0D) {
-                        int newWidth = type.size;
-                        int newHeight = type.size;
+
+                    AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, status.getOpacity());
+                    BufferedImage alphaImage = new BufferedImage(co.getWidth(), co.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+                    Graphics2D alphaImageGraphics = alphaImage.createGraphics();
+                    alphaImageGraphics.setComposite(alphaComposite);
+
+                    alphaImageGraphics.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
+                            java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+                    alphaImageGraphics.drawImage(co, 0, 0, co.getWidth(), co.getHeight(), null);
+
+                    alphaImageGraphics.dispose();
+
+                    co = alphaImage;
+
+                    if (identifier.perk().type.size - bo.getWidth() != 0D) {
+                        int newWidth = identifier.perk().type.size;
+                        int newHeight = identifier.perk().type.size;
                         BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
 
                         Graphics2D g2d = scaledImage.createGraphics();
+                        g2d.setComposite(alphaComposite);
 
                         g2d.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
                                 java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -67,11 +86,10 @@ public class PerkButtonPainter {
 
                     }
 
-                    if (type.iconSize - pe.getWidth() != 0D) {
-                        int newWidth = type.iconSize;
-                        int newHeight = type.iconSize;
+                    if (identifier.perk().type.iconSize - pe.getWidth() != 0D) {
+                        int newWidth = identifier.perk().type.iconSize;
+                        int newHeight = identifier.perk().type.iconSize;
                         BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-
                         Graphics2D g2d = scaledImage.createGraphics();
 
                         g2d.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
@@ -119,9 +137,9 @@ public class PerkButtonPainter {
             //System.out.println("paint one single button!");
             ButtonIdentifier identifier = waitingToBePaintedQueue.poll();
             HashMap<PerkStatus, List<ResourceLocation>> allNewLocation = identifier.getAllNewLocation();
-            allNewLocation.values().forEach((v) -> {
+            allNewLocation.forEach((k, v) -> {
                 try {
-                    BufferedImage image = PerkButtonPainter.tryPaintWholeIcon(v.get(0), v.get(1), v.get(2), identifier.perk().type);
+                    BufferedImage image = PerkButtonPainter.tryPaintWholeIcon(v.get(0), v.get(1), v.get(2), identifier, k);
                     ResourceLocation newLocation = (getNewLocation(v.get(0), v.get(1),v.get(2)));
                     PainterController.BufferedImagePack bufferedImagePack = new PainterController.BufferedImagePack(image, newLocation);
                     waitingToBeRegisteredQueue.add(bufferedImagePack);

@@ -3,11 +3,13 @@ package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
+import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
 import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
 import com.robertx22.age_of_exile.event_hooks.ontick.OnClientTick;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.ExileTreeTexture;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
+import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
@@ -64,7 +66,8 @@ public class AllPerkButtonPainter {
 
     private SeparableBufferedImage tryPaint() throws InterruptedException, IOException {
         BufferedImage image;
-        Window window = Minecraft.getInstance().getWindow();
+        Minecraft mc = Minecraft.getInstance();
+        Window window = mc.getWindow();
         if (lastWholeImage == null) {
             image = new BufferedImage(window.getGuiScaledWidth() * PerkButton.SPACING, window.getGuiScaledHeight() * PerkButton.SPACING, BufferedImage.TYPE_INT_ARGB);
         } else {
@@ -72,7 +75,7 @@ public class AllPerkButtonPainter {
         }
         this.drawInWindowWidth = window.getGuiScaledWidth();
         Graphics2D graphics = image.createGraphics();
-        Minecraft mc = Minecraft.getInstance();
+
         float halfx = mc.getWindow().getGuiScaledWidth() / 2F;
         float halfy = mc.getWindow().getGuiScaledHeight() / 2F;
         int maxX = 0;
@@ -98,13 +101,17 @@ public class AllPerkButtonPainter {
                 continue;
             }
 
-            int singleButtonSize = (int) (type.size * singleButtonZoom);
-            BufferedImage resizeSingleButton = new BufferedImage(singleButtonSize, singleButtonSize, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D resizeSingleButtonGraphics = resizeSingleButton.createGraphics();
+            int singleButtonSize = (int) (type.size * singleButtonZoom + 1);
+            BufferedImage redesignSingleButton = new BufferedImage(singleButtonSize, singleButtonSize, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D redesignSingleButtonGraphics = redesignSingleButton.createGraphics();
 
-            resizeSingleButtonGraphics.drawImage(singleButton, 0, 0, singleButtonSize, singleButtonSize, null);
-            resizeSingleButtonGraphics.dispose();
-            singleButton = resizeSingleButton;
+            // set alpha
+            PerkStatus status = Load.player(mc.player).talents.getStatus(mc.player, identifier.tree(), identifier.point());
+
+            redesignSingleButtonGraphics.drawImage(singleButton, 0, 0, singleButtonSize, singleButtonSize, null);
+
+            redesignSingleButtonGraphics.dispose();
+            singleButton = redesignSingleButton;
 
             float x = (identifier.point().x) * PerkButton.SPACING;
             float y = (identifier.point().y) * PerkButton.SPACING;

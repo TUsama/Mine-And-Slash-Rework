@@ -78,7 +78,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
     public boolean clicked = false;
 
-    public AllPerkButtonPainter painter = AllPerkButtonPainter.getPainter(schoolType);
+    public AllPerkButtonPainter painter;
 
     private ResourceLocation allConnectionLocation;
     public SkillTreeScreen(SchoolType type) {
@@ -89,6 +89,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                 .getGuiScaledHeight());
         this.schoolType = type;
         this.allConnectionLocation = PerkConnectionPainter.getCurrentScreenTextureLocation(this);
+        this.painter  = AllPerkButtonPainter.getPainter(schoolType);
     }
 
     public static int sizeX() {
@@ -542,10 +543,15 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                 int startY = painter.minY - (school.calcData.center.y * PerkButton.SPACING);
                 List<AllPerkButtonPainter.ResourceLocationAndSize> locations = painter.locations;
                 int i = 0;
+                float opacity = 1f;
+                if (!SEARCH.getValue().isEmpty()) opacity = 0.5f;
+                gui.setColor(1.0f, 1.0f, 1.0f, opacity);
                 for (AllPerkButtonPainter.ResourceLocationAndSize location : locations) {
+
                     gui.blit(location.location(), startX + i * location.width() + connectionX, startY + connectionY, 0, 0, location.width(), location.height(), location.width(), location.height());
                     i++;
                 }
+                gui.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
             }
             ticks++;
