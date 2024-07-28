@@ -38,4 +38,5 @@ public record ButtonIdentifier(TalentTree tree, PointData point, Perk perk) {
 
         return perkStatusResourceLocationHashMap;
     }
+
 }

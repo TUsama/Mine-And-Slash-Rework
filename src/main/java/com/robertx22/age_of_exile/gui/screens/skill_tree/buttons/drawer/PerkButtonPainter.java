@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
 
 public class PerkButtonPainter {
 
@@ -100,11 +101,11 @@ public class PerkButtonPainter {
     }
 
 
-    public static boolean addToWait(ButtonIdentifier information) {
+    public static boolean addToWait(ButtonIdentifier identifier) {
         //no equal button allow go into the queue
-        int hash = information.hashCode();
+        int hash = identifier.hashCode();
         if (!addHistory.contains(hash)) {
-            waitingToBePaintedQueue.add(information);
+            waitingToBePaintedQueue.add(identifier);
             addHistory.add(hash);
             return true;
         }
@@ -135,16 +136,17 @@ public class PerkButtonPainter {
     }
 
     public static void handleRegisterQueue() {
-
+        //make sure register all image after all image is painted.
+        if (!waitingToBePaintedQueue.isEmpty()) return;
         while (!waitingToBeRegisteredQueue.isEmpty()){
             OnClientTick.isRegistering = true;
             //can't use acquire() here, I run this on main thread.
             if (!PainterController.registerLimiter.tryAcquire(Duration.ofNanos(300))){
                 break;
             }
-            System.out.println(PainterController.registerLimiter);
+            //System.out.println(PainterController.registerLimiter.getRate());
             System.out.println(waitingToBeRegisteredQueue.size());
-            System.out.println("register one");
+            //System.out.println("register one");
             PainterController.BufferedImagePack pack = waitingToBeRegisteredQueue.poll();
             ResourceLocation resourceLocation = pack.resourceLocation();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

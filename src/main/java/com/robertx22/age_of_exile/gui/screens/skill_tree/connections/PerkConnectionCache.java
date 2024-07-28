@@ -118,9 +118,6 @@ public class PerkConnectionCache {
                         PerkButton sb = skillTreeScreen.pointPerkButtonMap.get(p);
                         PerkPointPair pair = new PerkPointPair(pb.point, sb.point);
                         if (!integers.contains(pair.hashCode())) {
-                            if (sb == null) {
-                                continue;
-                            }
 
                             var con = data.talents.getConnection(skillTreeScreen.school, sb.point, pb.point);
                             var result = new PerkConnectionRenderer(pair, con);
@@ -134,12 +131,6 @@ public class PerkConnectionCache {
             });
 
         }
-        System.out.println(children.size());
-        Map<? extends Class<? extends GuiEventListener>, ? extends List<? extends GuiEventListener>> map1 = children.parallelStream().collect(Collectors.groupingBy(x -> x.getClass()));
-        System.out.println(map1);
-        map1.forEach((k, v) -> {
-            System.out.println(k + ": " + v.size());
-        });
         return map;
 
     }

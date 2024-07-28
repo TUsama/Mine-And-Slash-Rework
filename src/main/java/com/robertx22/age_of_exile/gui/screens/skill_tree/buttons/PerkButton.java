@@ -10,15 +10,19 @@ import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.ButtonIdentifier;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.PerkButtonPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionCache;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionRenderer;
 import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.mmorpg.SlashRef;
 import com.robertx22.age_of_exile.saveclasses.PointData;
 import com.robertx22.age_of_exile.saveclasses.gearitem.gear_bases.TooltipInfo;
 import com.robertx22.age_of_exile.uncommon.MathHelper;
+import com.robertx22.age_of_exile.uncommon.datasaving.Load;
+import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import com.robertx22.age_of_exile.vanilla_mc.packets.perks.PerkChangePacket;
 import com.robertx22.library_of_exile.main.Packets;
 import com.robertx22.library_of_exile.utils.GuiUtils;
 import com.robertx22.library_of_exile.utils.TextUTIL;
+import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -28,7 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class PerkButton extends ImageButton {
@@ -51,7 +55,7 @@ public class PerkButton extends ImageButton {
     SkillTreeScreen screen;
     private ResourceLocation wholeTexture = null;
     private CompletableFuture<Void> drawTextureTask = null;
-
+    private PerkStatus status = null;
 
     public PerkButton(SkillTreeScreen screen, PlayerData playerData, TalentTree school, PointData point, Perk perk, int x, int y) {
         super(x, y, perk.getType().size, perk.getType().size, 0, 0, 1, ID, (action) -> {
@@ -136,8 +140,27 @@ public class PerkButton extends ImageButton {
                 }
                 this.onClick(mouseX, mouseY);
 
-              PerkConnectionCache.addToUpdate(this);
+                PerkConnectionCache.addToUpdate(this);
+                System.out.println("this point is: " + getX() + " " + getY());
+                ArrayList<PointData> pointData = new ArrayList<>(screen.school.calcData.connections.get(point));
+                System.out.println("this point relate to these point: " + pointData);
+                System.out.println("related renderers' hash: " + pointData.stream().map(x -> new PerkPointPair(point, x).hashCode()).toList());
+                ArrayList<PerkConnectionRenderer> perkConnectionRenderers = new ArrayList<>();
+                Int2ReferenceOpenHashMap<PerkConnectionRenderer> perkConnectionRendererInt2ReferenceOpenHashMap = PerkConnectionCache.renderersCache.get(screen.schoolType.toString().hashCode());
+                Set<PointData> connections = screen.school.calcData.connections.getOrDefault(this.point, Collections.EMPTY_SET);
 
+                for (PointData p : connections) {
+
+                    PerkButton sb = screen.pointPerkButtonMap.get(p);
+                    PerkPointPair pair = new PerkPointPair(this.point, sb.point);
+
+                    var con = Load.player(ClientOnly.getPlayer()).talents.getConnection(screen.school, sb.point, this.point);
+                    var result = new PerkConnectionRenderer(pair, con);
+                    perkConnectionRenderers.add(perkConnectionRendererInt2ReferenceOpenHashMap.get(result.hashCode()));
+                }
+
+                System.out.println("this point has these renderers in cache: " + perkConnectionRenderers);
+                System.out.println("related renderers' hash are: " + perkConnectionRenderers.stream().map(x -> x.hashCode()).toList());
                 return true;
             }
 
@@ -156,10 +179,10 @@ public class PerkButton extends ImageButton {
         return (int) ((getY() * multi) + offset);
     }
 
-    private PerkStatus status = null;
-
     @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float pPartialTick) {
+
+        if (screen.clicked) return;
 
 
         if (!screen.shouldRender(origX, origY, screen.ctx)) {
@@ -172,6 +195,7 @@ public class PerkButton extends ImageButton {
         gui.pose().pushPose();
 
         float scale = 2 - screen.zoom;
+        System.out.println(scale);
         float target = scale * 1.3f;
         if (isInside((int) (1F / screen.zoom * mouseX), (int) (1F / screen.zoom * mouseY))) {
             float lerp = Mth.lerp(0.5f, scale, target);
@@ -238,7 +262,7 @@ public class PerkButton extends ImageButton {
 
 
         ButtonIdentifier buttonIdentifier = new ButtonIdentifier(this.school, point, perk);
-        if (this.wholeTexture == null || status != this.status){
+        if (this.wholeTexture == null || status != this.status) {
             ResourceLocation colorTexture = type1.getColorTexture(status);
             ResourceLocation borderTexture = type1.getBorderTexture(status);
             ResourceLocation perkIcon = perk.getIcon();
@@ -246,14 +270,14 @@ public class PerkButton extends ImageButton {
             this.status = status;
         }
 
-        try {
+        if(PerkButtonPainter.handledBufferedImage.containsKey(this.wholeTexture)) {
             gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
             if (search.isEmpty()) {
                 opacity += 0.1F;
             }
             gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
             gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        } catch (RuntimeException ignored){
+        } else {
 
             PerkButtonPainter.addToWait(buttonIdentifier);
 

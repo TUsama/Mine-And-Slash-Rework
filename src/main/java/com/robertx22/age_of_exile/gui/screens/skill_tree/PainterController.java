@@ -11,8 +11,8 @@ public class PainterController {
 
     public final static String nameSpace = "etexture";
     private final static HashMap<Class, Boolean> updatePermission = new HashMap<>();
-    public static RateLimiter paintLimiter = RateLimiter.create(400.0, 2, TimeUnit.SECONDS);
-    public static RateLimiter registerLimiter = RateLimiter.create(6000, 3, TimeUnit.SECONDS);
+    public static RateLimiter paintLimiter = RateLimiter.create(400.0D, 2, TimeUnit.SECONDS);
+    public static RateLimiter registerLimiter = RateLimiter.create(2000D, 5, TimeUnit.SECONDS);
 
     public static void setAllowUpdate() {
         updatePermission.forEach((k, v) -> {

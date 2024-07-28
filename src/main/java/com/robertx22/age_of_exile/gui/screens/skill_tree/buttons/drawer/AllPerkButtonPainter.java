@@ -1,9 +1,13 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
+import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
 import com.robertx22.age_of_exile.event_hooks.ontick.OnClientTick;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.ExileTreeTexture;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -13,24 +17,37 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AllPerkButtonPainter {
 
-    private final ConcurrentLinkedQueue<BufferedImage> waitingToBeRegistered = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<SeparableBufferedImage> waitingToBeRegistered = new ConcurrentLinkedQueue<>();
 
     private final int typeHash;
     private final HashMap<ButtonIdentifier, ResourceLocation> cache = new HashMap<>(3000);
-    private ResourceLocation lastWholeImage = TextureManager.INTENTIONAL_MISSING_TEXTURE;
     //todo is this really a good collection to store changed renderers? Slow in searching.
     //anyway we prob won't have that much data at the same time.
-    private ConcurrentLinkedQueue<ButtonIdentifier> needPaint = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<ButtonIdentifier> waitingToBeUpdated = new ConcurrentLinkedQueue<>();
+    private final HashSet<ButtonIdentifier> updating = new HashSet<>();
+    public int imageWidth = 0;
+    public int imageHeight = 0;
+
+    public int maxX = 0;
+    public int minX = 10000;
+    public int maxY = 0;
+    public int minY = 10000;
+    public List<ResourceLocationAndSize> locations = new ArrayList<>();
+    private BufferedImage lastWholeImage = null;
+
+    private int drawInWindowWidth = 0;
+
+    private boolean isPainting = false;
+
 
     public AllPerkButtonPainter(TalentTree.SchoolType type) {
         this.typeHash = type.toString().hashCode();
@@ -46,91 +63,177 @@ public class AllPerkButtonPainter {
         return OnClientTick.container.get(i);
     }
 
-    private BufferedImage tryPaint() throws InterruptedException {
+    private SeparableBufferedImage tryPaint() throws InterruptedException, IOException {
         BufferedImage image;
-        if (lastWholeImage == TextureManager.INTENTIONAL_MISSING_TEXTURE) {
-            Window window = Minecraft.getInstance().getWindow();
+        Window window = Minecraft.getInstance().getWindow();
+        if (lastWholeImage == null) {
             image = new BufferedImage(window.getGuiScaledWidth() * PerkButton.SPACING, window.getGuiScaledHeight() * PerkButton.SPACING, BufferedImage.TYPE_INT_ARGB);
         } else {
-            try (InputStream inputStream = Minecraft.getInstance().getResourceManager().open(lastWholeImage)) {
-                image = ImageIO.read(inputStream);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            image = this.lastWholeImage;
         }
+        this.drawInWindowWidth = window.getGuiScaledWidth();
         Graphics2D graphics = image.createGraphics();
-        while (!needPaint.isEmpty()) {
-            System.out.println("currently the queue has " + needPaint.size() + " point data need to be handle.");
-            System.out.println("try get one!");
+        Minecraft mc = Minecraft.getInstance();
+        float halfx = mc.getWindow().getGuiScaledWidth() / 2F;
+        float halfy = mc.getWindow().getGuiScaledHeight() / 2F;
+        int maxX = 0;
+        int minX = 10000;
+        int maxY = 0;
+        int minY = 10000;
+        while (!waitingToBeUpdated.isEmpty()) {
             PainterController.paintLimiter.acquire();
-            ButtonIdentifier identifier = needPaint.poll();
+            ButtonIdentifier identifier = waitingToBeUpdated.poll();
+            Perk.PerkType type = identifier.perk().getType();
             ResourceLocation wholeTexture = identifier.getCurrentButtonLocation();
-            BufferedImage singleButton = PerkButtonPainter.handledBufferedImage.get(wholeTexture);
-            Minecraft mc = Minecraft.getInstance();
-            float halfx = mc.getWindow().getGuiScaledWidth() / 2F;
-            float halfy = mc.getWindow().getGuiScaledHeight() / 2F;
 
-            float x = (identifier.point().x - identifier.tree().calcData.center.x) * PerkButton.SPACING;
-            float y = (identifier.point().y - identifier.tree().calcData.center.y) * PerkButton.SPACING;
+
+            BufferedImage singleButton = PerkButtonPainter.handledBufferedImage.get(wholeTexture);
+            if (singleButton == null) {
+                waitingToBeUpdated.add(identifier);
+                System.out.println(identifier);
+                System.out.println("add result: " + PerkButtonPainter.addToWait(identifier));
+                System.out.println("sleep...");
+                Thread.sleep(2000);
+                continue;
+            }
+            BufferedImage resizeSingleButton = new BufferedImage(type.size, type.size, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D resizeSingleButtonGraphics = resizeSingleButton.createGraphics();
+
+            resizeSingleButtonGraphics.drawImage(singleButton, 0, 0, type.size, type.size, null);
+            resizeSingleButtonGraphics.dispose();
+            singleButton = resizeSingleButton;
+
+            float x = (identifier.point().x) * PerkButton.SPACING;
+            float y = (identifier.point().y) * PerkButton.SPACING;
 
             // todo
-            x -= identifier.perk().getType().size / 2F;
-            y -= identifier.perk().getType().size / 2F;
+            x -= type.size / 2F;
+            y -= type.size / 2F;
 
-            float tx = (int) (halfx + x);
-            float ty = (int) (halfy + y);
+            int tx = (int) (halfx + x);
+            int ty = (int) (halfy + y);
+            maxX = Math.max(tx, maxX);
+            minX = Math.min(tx, minX);
+            maxY = Math.max(ty, maxY);
+            minY = Math.min(ty, minY);
             AffineTransform affineTransform = new AffineTransform();
 
             affineTransform.translate(tx, ty);
+            affineTransform.scale(2 - SkillTreeScreen.originalZoom, 2 - SkillTreeScreen.originalZoom);
+
             graphics.drawImage(singleButton, affineTransform, null);
             System.out.println("actually paint one!");
+            updating.add(identifier);
         }
         graphics.dispose();
-        System.out.println("done paint!");
-        return image;
+        image = image.getSubimage(minX, minY, maxX - minX + 32, maxY - minY + 32);
+        this.minX = minX;
+        this.minY = minY;
+        this.maxX = maxX;
+        this.maxY = maxY;
+        this.imageWidth = image.getWidth();
+        this.imageHeight = image.getHeight();
+        this.lastWholeImage = image;
+        this.isPainting = false;
+        System.out.println("paint done!");
+        return new SeparableBufferedImage(image);
 
     }
 
     public void handlePaintQueue() {
-        if (needPaint.isEmpty()) return;
+        if (waitingToBeUpdated.isEmpty()) return;
         if (!PainterController.isAllowedUpdate(this)) return;
         PainterController.passOnePaintAction(this);
         CompletableFuture.runAsync(() -> {
-            BufferedImage image;
+            SeparableBufferedImage image;
             try {
+                if (this.isPainting) return;
+                this.isPainting = true;
                 image = tryPaint();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
-            //waitingToBeRegistered.add(image);
-            try {
-                ImageIO.write(image, "PNG", new File("D:\\drawtest.png"));
-                System.out.println("output!");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            System.out.println("add to register!");
+            waitingToBeRegistered.add(image);
         });
 
     }
 
     public void handleRegisterQueue() {
+        if (waitingToBeRegistered.isEmpty()) return;
+        System.out.println("register all button!");
+        SeparableBufferedImage image = null;
+        while (!this.waitingToBeRegistered.isEmpty()) {
+            image = waitingToBeRegistered.poll();
+        }
+        List<BufferedImage> separatedImage = image.getSeparatedImage();
+        this.locations.clear();
+        for (int i = 0; i < separatedImage.size(); i++) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            BufferedImage image2 = separatedImage.get(i);
+            try {
+                ImageIO.write(image2, "PNG", baos);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try (NativeImage image1 = NativeImage.read(baos.toByteArray())) {
+                ResourceLocation location = new ResourceLocation(getThisLocation().getNamespace(), getThisLocation().getPath() + "_" + i);
+                ExileTreeTexture exileTreeTexture = new ExileTreeTexture(location, image1);
+                TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+                textureManager.release(location);
+                textureManager.register(location, exileTreeTexture);
+                this.locations.add(new ResourceLocationAndSize(location, image2.getWidth(), image2.getHeight()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        this.updating.clear();
 
     }
 
     public void addToUpdate(ButtonIdentifier identifier) {
         //todo idk if this could be buggy
-        this.needPaint.add(identifier);
+        this.waitingToBeUpdated.add(identifier);
 
     }
 
-    public void init(Collection<ButtonIdentifier> identifiers){
+    public void init(Collection<ButtonIdentifier> identifiers) {
         if (!this.cache.isEmpty()) return;
         System.out.println("init all painter");
         identifiers.forEach(x -> {
             this.cache.put(x, x.getCurrentButtonLocation());
-            this.needPaint.add(x);
+            this.waitingToBeUpdated.add(x);
         });
         PainterController.setThisAllowedUpdate(this);
+    }
+
+    public ResourceLocation getThisLocation() {
+        return new ResourceLocation(PainterController.nameSpace, "" + typeHash);
+    }
+
+    public boolean isAllowedToPaint() {
+        return !locations.isEmpty();
+    }
+
+    public void checkIfNeedRepaintDueToWindowResize(){
+        if (!this.isPainting && this.drawInWindowWidth != 0 && Minecraft.getInstance().getWindow().getGuiScaledWidth() != this.drawInWindowWidth){
+            repaint();
+        }
+    }
+
+    public void repaint(){
+        System.out.println("repaint!");
+        this.locations.clear();
+        this.waitingToBeUpdated.clear();
+        this.waitingToBeRegistered.clear();
+        this.lastWholeImage = null;
+        this.waitingToBeUpdated.addAll(this.cache.keySet());
+        PainterController.setThisAllowedUpdate(this);
+    }
+
+    public record ResourceLocationAndSize(ResourceLocation location, int width, int height){
+
     }
 
 }

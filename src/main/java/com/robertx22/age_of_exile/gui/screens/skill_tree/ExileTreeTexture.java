@@ -4,11 +4,13 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.concurrent.Executor;
 
 public class ExileTreeTexture extends SimpleTexture {
     private final NativeImage image;
@@ -38,5 +40,7 @@ public class ExileTreeTexture extends SimpleTexture {
 
     }
 
-
+    @Override
+    public void reset(TextureManager pTextureManager, ResourceManager pResourceManager, ResourceLocation pPath, Executor pExecutor) {
+    }
 }

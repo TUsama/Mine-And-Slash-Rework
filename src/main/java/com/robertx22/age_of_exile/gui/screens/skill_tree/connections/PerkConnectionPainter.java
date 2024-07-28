@@ -63,9 +63,9 @@ public class PerkConnectionPainter {
                     updating.put(i, new HashSet<>(4000));
                 }
                 updating.get(i).add(renderer);
-                PerkButton button1 = pointPerkButtonMap.get(i).get(renderer.pair.perk1);
-                PerkButton button2 = pointPerkButtonMap.get(i).get(renderer.pair.perk2);
-                Perk.Connection connection1 = renderer.connection;
+                PerkButton button1 = pointPerkButtonMap.get(i).get(renderer.pair().perk1());
+                PerkButton button2 = pointPerkButtonMap.get(i).get(renderer.pair().perk2());
+                Perk.Connection connection1 = renderer.connection();
 
                 double xadd = button1.perk.getType().size / 2F;
                 double yadd = button1.perk.getType().size / 2F;

@@ -42,9 +42,14 @@ public class OnClientTick {
         try {
             Player player = Minecraft.getInstance().player;
 
+            container.values().forEach(x -> {
+                x.checkIfNeedRepaintDueToWindowResize();
+                x.handlePaintQueue();
+            });
 
-            if (RenderSystem.isOnRenderThread() && !isRegistering) {
+            if (RenderSystem.isOnRenderThread()) {
                 PerkButtonPainter.handleRegisterQueue();
+                container.values().forEach(AllPerkButtonPainter::handleRegisterQueue);
                 PerkConnectionPainter.handleRegisterQueue();
             } else {
                 RenderSystem.recordRenderCall(() -> {
