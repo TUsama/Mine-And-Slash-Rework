@@ -80,6 +80,8 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
     public AllPerkButtonPainter painter;
 
+    public SearchHandler searchHandler;
+
     private ResourceLocation allConnectionLocation;
     public SkillTreeScreen(SchoolType type) {
         super(Minecraft.getInstance()
@@ -90,6 +92,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
         this.schoolType = type;
         this.allConnectionLocation = PerkConnectionPainter.getCurrentScreenTextureLocation(this);
         this.painter  = AllPerkButtonPainter.getPainter(schoolType);
+
     }
 
     public static int sizeX() {
@@ -220,21 +223,13 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
     public boolean shouldRender(int x, int y, PerkScreenContext ctx) {
 
-        return true;
-        /*float centerX = (1F / zoom - 1) * this.width / 2;
-        float centerY = (1F / zoom - 1) * this.height / 2;
-        float realX = x + centerX + scrollX;
-        float realY = y + centerY + scrollY;
-
-        Range<Integer> viewRangeX = Range.closed(scrollX - this.width / 2, scrollX + this.width / 2);
-        Range<Integer> viewRangeY = Range.closed(scrollY - this.height / 2, scrollY + this.height / 2);
-        if (viewRangeX.contains((int) realX) && viewRangeY.contains((int)realY)){
-            System.out.println(scrollX - this.width / 2);
-            System.out.println("real is: " + x);
-            return true;
+        // todo this doesnt seem to work perfect but at least it stops rendering  some offscreen buttons
+        if (x >= ctx.offsetX + 10 && x < ctx.offsetX + (sizeX()) * ctx.getZoomMulti() - 10) {
+            if (y >= ctx.offsetY + 10 && y < ctx.offsetY + (sizeY()) * ctx.getZoomMulti() - 10) {
+                return true;
+            }
         }
-        return false;*/
-
+        return false;
     }
 
     @Override
@@ -264,6 +259,9 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
             this.school = ExileDB.TalentTrees().getFilterWrapped(x -> x.getSchool_type().equals(this.schoolType)).list.get(0);
             refreshButtons();
+
+            this.searchHandler = new SearchHandler(this);
+
             PerkConnectionCache.init(this);
             PerkConnectionPainter.init(this);
 
@@ -509,6 +507,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
         handleScroll();
         gui.pose().scale(zoom, zoom, zoom);
 
+
         try {
 
             float addx = (1F / zoom - 1) * this.width / 2F;
@@ -528,7 +527,10 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                     }
             }
 
-
+            //must handle this before all the render thing
+            //todo should I add a little delay?
+            // yeah why not? but I add it inside the handler.
+            this.searchHandler.tickThis();
 
             PerkConnectionCache.updateRenders(this);
             //System.out.println(watch1.getPrint());
@@ -560,6 +562,8 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
             super.render(gui, x, y, ticks);
 
             this.tick_count++;
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -13,18 +13,25 @@ import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import net.minecraft.client.Minecraft;
 
 import java.util.concurrent.TimeUnit;
-
+// this class is a trash because the opacity conditions is so complex.
 public class OpacityController {
 
     private final ButtonIdentifier button;
     private final String search = SkillTreeScreen.SEARCH.getValue();
-    private float opacity = 1f;
+    private float opacity;
 
     private final PlayerData playerData = Load.player(ClientOnly.getPlayer());
-    @SuppressWarnings("all")
-    private static RateLimiter searchLimiter = RateLimiter.create(50000);
+
+    private boolean shouldBeHighlight = false;
+
+    public final float HIGHLIGHT = 1.0f;
+    public final float HIDE = 1.0f;
+
+    private boolean forcedOpacity;
     public OpacityController(ButtonIdentifier button) {
         this.button = button;
+        PerkStatus status = playerData.talents.getStatus(Minecraft.getInstance().player, button.tree(), button.point());
+        opacity = status.getOpacity();
     }
 
 
@@ -36,60 +43,43 @@ public class OpacityController {
         boolean containsName = button.perk().locName().getString().toLowerCase().contains(search.toLowerCase());
 
 
-        opacity = search.isEmpty() || containsSearchStat || containsName ? 1F : 0.2f;
+        shouldBeHighlight = shouldBeHighlight || search.isEmpty() || containsSearchStat || containsName;
 
         return this;
     }
 
 
     public OpacityController cachedSearchResultCheck(PerkButton button) {
+        if (search.isEmpty()) return this;
+        SearchHandler searchHandler = button.getScreen().searchHandler;
 
-        if (!button.lastSearchString.equals(search)){
-            boolean containsSearchStat = button.matchStrings.stream().anyMatch(x -> x.contains(search.toLowerCase()));
-            boolean containsName = button.perk.locName().getString().toLowerCase().contains(search.toLowerCase());
-            button.lastSearchString = search;
-            button.searchCache = containsSearchStat || containsName;
-        }
-
-
-        opacity = search.isEmpty() || button.searchCache ? 1F : 0.2f;
+        shouldBeHighlight = shouldBeHighlight || searchHandler.checkThisButtonIsSearchResult(button);
 
         return this;
     }
 
     public OpacityController keywordSearchResultCheck() {
-        var search = SkillTreeScreen.SEARCH.getValue();
+        if (search.isEmpty()) return this;
         PerkStatus status = playerData.talents.getStatus(Minecraft.getInstance().player, button.tree(), button.point());
         if (!search.isEmpty()) {
             if (search.equals("all")) {
-                if (status != PerkStatus.CONNECTED) {
-                    opacity = 0.2F;
-                } else {
-                    opacity = 1;
-                }
+                shouldBeHighlight = status == PerkStatus.CONNECTED;
             }
         } else {
-            opacity = status.getOpacity();
+            // this is copy from the original code
+            // the logic here is involved when init this class;
+
+            //opacity = status.getOpacity();
         }
 
         return this;
     }
 
-    public OpacityController newbieCheck() {
-        if (playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1) {
-            Perk.PerkType type = button.perk().getType();
-            opacity = type == Perk.PerkType.START ? 1 : 0.2F;
-        }
+    private boolean forcedNewbieCheck() {
+        return playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS)  < 1;
 
-        return this;
     }
 
-    public OpacityController highlightPerk() {
-        if (search.isEmpty()) {
-            opacity += 0.2F;
-        }
-        return this;
-    }
 
     public static OpacityController newOpacityController(ButtonIdentifier button){
         return new OpacityController(button);
@@ -100,7 +90,15 @@ public class OpacityController {
     }
 
     public float get() {
-        return MathHelper.clamp(opacity, 0, 1);
+        boolean b = forcedNewbieCheck();
+        if (b){
+            Perk.PerkType type = button.perk().getType();
+            return type == Perk.PerkType.START ? HIGHLIGHT : HIDE;
+        }
+        // in this case, perk button should always render by using its opacity.
+        if (search.isEmpty()) return opacity;
+
+        return shouldBeHighlight ? HIGHLIGHT : HIDE;
     }
 
 

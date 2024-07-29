@@ -63,11 +63,6 @@ public class PerkButton extends ImageButton {
     private PerkStatus status;
     public final List<String> matchStrings;
 
-    public boolean searchCache = false;
-
-    public String lastSearchString = "";
-
-
     public PerkButton(SkillTreeScreen screen, PlayerData playerData, TalentTree school, PointData point, Perk perk, int x, int y) {
         super(x, y, perk.getType().size, perk.getType().size, 0, 0, 1, ID, (action) -> {
         });
@@ -96,8 +91,8 @@ public class PerkButton extends ImageButton {
 
     }
 
-    public ResourceLocation getWholeTexture() {
-        return wholeTexture;
+    public SkillTreeScreen getScreen() {
+        return screen;
     }
 
     public boolean isInside(int x, int y) {
@@ -215,21 +210,22 @@ public class PerkButton extends ImageButton {
             var search = SkillTreeScreen.SEARCH.getValue();
             int MmouseX = (int) (1F / screen.zoom * mouseX);
             int MmouseY = (int) (1F / screen.zoom * mouseY);
-            if (search.isEmpty() && !isInside(MmouseX, MmouseY)) return;
+
+            boolean inside = isInside(MmouseX, MmouseY);
+            //we don't check search result here, instead put it in the opacityController;
+            if (search.isEmpty() && !inside && !screen.painter.isThisButtonIsUpdating(this)) return;
 
             var opacityController = OpacityController.newOpacityController(this.buttonIdentifier);
             opacityController
-                    .cachedSearchResultCheck(this)
-                    .keywordSearchResultCheck()
-                    .newbieCheck();
-
+                    .keywordSearchResultCheck();
 
             // the principle of this whole image render is keep the whole image at a low opacity, and check if any button needs to use normal render system.
-            if (opacityController.get() == 1f || isInside(MmouseX, MmouseY) || screen.painter.isThisButtonIsUpdating(this)){
-                gui.pose().pushPose();
-                normalRender(gui, mouseX, mouseY);
-                gui.pose().popPose();
-            }
+            // I put the checkThisButtonIsSearchResult check in opacityController before, but it just too buggy and I can't find a way to fix it.
+            if (opacityController.get() != opacityController.HIGHLIGHT || !screen.searchHandler.checkThisButtonIsSearchResult(this)) return;
+
+            gui.pose().pushPose();
+            normalRender(gui, mouseX, mouseY);
+            gui.pose().popPose();
 
         } else {
             gui.pose().pushPose();
@@ -265,8 +261,7 @@ public class PerkButton extends ImageButton {
         // if newbie, show only the starter perks he can pick
         opacityController
                 .cachedSearchResultCheck(this)
-                .keywordSearchResultCheck()
-                .newbieCheck();
+                .keywordSearchResultCheck();
 
         //gui.blit(ID, xPos(0, posMulti), yPos(0, posMulti), perk.getType().getXOffset(), status.getYOffset(), this.width, this.height);
 
@@ -290,7 +285,7 @@ public class PerkButton extends ImageButton {
             gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
 
         } else {
-
+            var search = SkillTreeScreen.SEARCH.getValue();
             PerkButtonPainter.addToWait(buttonIdentifier);
 
             ResourceLocation colorTexture = type.getColorTexture(status);
@@ -301,7 +296,7 @@ public class PerkButton extends ImageButton {
             gui.blit(borderTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
 
 
-            gui.setColor(1.0F, 1.0F, 1.0F, opacityController.highlightPerk().get());
+            gui.setColor(1.0F, 1.0F, 1.0F, opacityController.get() + (search.isEmpty() ? 0.2f : 0.0F));
 
             gui.blit(perkIcon, (int) xPos(offset, posMulti), (int) yPos(offset, posMulti), 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize);
 

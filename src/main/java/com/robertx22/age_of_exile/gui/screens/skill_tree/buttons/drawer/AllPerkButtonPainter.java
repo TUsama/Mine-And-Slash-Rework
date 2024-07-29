@@ -161,7 +161,7 @@ public class AllPerkButtonPainter {
 
     public void handlePaintQueue() {
         if (waitingToBeUpdated.isEmpty()) return;
-        System.out.println("is not empty");
+        System.out.println("can paint, try to access...");
         if (!PainterController.isAllowedUpdate(this)) return;
         PainterController.passOnePaintAction(this);
         CompletableFuture.runAsync(() -> {
@@ -169,6 +169,21 @@ public class AllPerkButtonPainter {
             try {
                 if (this.isPainting) return;
                 this.isPainting = true;
+                image = tryPaint();
+            } catch (InterruptedException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("add to register!");
+            waitingToBeRegistered.add(image);
+        });
+
+    }
+    public void forceHandlePaintQueue() {
+        if (waitingToBeUpdated.isEmpty()) return;
+        this.isPainting = true;
+        CompletableFuture.runAsync(() -> {
+            SeparableBufferedImage image;
+            try {
                 image = tryPaint();
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
@@ -225,7 +240,8 @@ public class AllPerkButtonPainter {
             this.cache.put(x, x.getCurrentButtonLocation());
             this.waitingToBeUpdated.add(x);
         });
-        PainterController.setThisAllowedUpdate(this);
+        // sometimes it will case a weird bug if I don't invoke handlePaintQueue() here.
+        this.forceHandlePaintQueue();
     }
 
     public ResourceLocation getThisLocation() {
@@ -255,6 +271,7 @@ public class AllPerkButtonPainter {
         this.lastWholeImage = null;
         this.waitingToBeUpdated.addAll(this.cache.keySet());
         PainterController.setThisAllowedUpdate(this);
+        this.forceHandlePaintQueue();
         this.isRepainting = true;
     }
 
