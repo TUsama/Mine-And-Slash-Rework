@@ -1,31 +1,27 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons;
 
-import com.google.common.util.concurrent.RateLimiter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.robertx22.age_of_exile.capability.player.PlayerData;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
 import com.robertx22.age_of_exile.database.data.stats.types.UnknownStat;
 import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.OpacityController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.SkillTreeScreen;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.ButtonIdentifier;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.PerkButtonPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionCache;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionRenderer;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.opacity.OpacityController;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.opacity.states.NonSearching;
 import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.mmorpg.SlashRef;
 import com.robertx22.age_of_exile.saveclasses.PointData;
 import com.robertx22.age_of_exile.saveclasses.gearitem.gear_bases.TooltipInfo;
 import com.robertx22.age_of_exile.uncommon.MathHelper;
-import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import com.robertx22.age_of_exile.vanilla_mc.packets.perks.PerkChangePacket;
 import com.robertx22.library_of_exile.main.Packets;
 import com.robertx22.library_of_exile.utils.GuiUtils;
 import com.robertx22.library_of_exile.utils.TextUTIL;
-import com.robertx22.library_of_exile.utils.Watch;
-import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -33,12 +29,12 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+
 
 public class PerkButton extends ImageButton {
 
@@ -46,22 +42,24 @@ public class PerkButton extends ImageButton {
     public static int BIGGEST = 33;
     public static ResourceLocation LOCKED_TEX = new ResourceLocation(SlashRef.MODID, "textures/gui/locked.png");
     static ResourceLocation ID = new ResourceLocation(SlashRef.MODID, "textures/gui/skill_tree/perk_buttons.png");
+    public final List<String> matchStrings;
     public Perk perk;
     public PointData point;
     public TalentTree school;
     public PlayerData playerData;
-
     public int originalWidth;
     public int originalHeight;
-
     public int origX;
     public int origY;
     public String perkid = "";
-    public ButtonIdentifier buttonIdentifier;
-    SkillTreeScreen screen;
+    public final ButtonIdentifier buttonIdentifier;
+    //not a real status, it will only sync to real status by using some method.
+    public PerkStatus lazyStatus;
+    public final List<SelfCheckTask> selfCheckTasks = new ArrayList<>();
+    private final SkillTreeScreen screen;
     private ResourceLocation wholeTexture;
-    private PerkStatus status;
-    public final List<String> matchStrings;
+
+    private final OpacityController opacityController;
 
     public PerkButton(SkillTreeScreen screen, PlayerData playerData, TalentTree school, PointData point, Perk perk, int x, int y) {
         super(x, y, perk.getType().size, perk.getType().size, 0, 0, 1, ID, (action) -> {
@@ -77,28 +75,49 @@ public class PerkButton extends ImageButton {
         this.originalHeight = this.height;
         this.screen = screen;
 
-        this.status = playerData.talents.getStatus(Minecraft.getInstance().player, school, point);
+        this.lazyStatus = playerData.talents.getStatus(Minecraft.getInstance().player, school, point);
 
-        Perk.PerkType type = this.perk.getType();
-        ResourceLocation colorTexture = type.getColorTexture(status);
-        ResourceLocation borderTexture = type.getBorderTexture(status);
-        ResourceLocation perkIcon = perk.getIcon();
-        this.wholeTexture = PerkButtonPainter.getNewLocation(colorTexture, borderTexture, perkIcon);
+        updateTexture();
+
         this.buttonIdentifier = new ButtonIdentifier(school, point, perk);
 
         this.matchStrings = perk.stats.stream()
                 .map(item -> item.getStat().locName().getString().toLowerCase()).toList();
 
+        this.opacityController = new OpacityController(this);
     }
 
     public SkillTreeScreen getScreen() {
         return screen;
     }
 
+
     public boolean isInside(int x, int y) {
 
         float scale = 2 - screen.zoom;
         return GuiUtils.isInRect((int) (this.getX() - ((width / 4) * scale)), (int) (this.getY() - ((height / 4) * scale)), (int) (width * scale), (int) (height * scale), x, y);
+    }
+
+    private void handleSelfCheck() {
+        if (selfCheckTasks.isEmpty()) return;
+        Iterator<SelfCheckTask> iterator = selfCheckTasks.iterator();
+        while (iterator.hasNext()) {
+            SelfCheckTask next = iterator.next();
+            if (next.getCondition().test(this)) {
+                next.getTask().accept(this);
+                iterator.remove();
+            } else {
+                Integer ticker = next.getLastTime();
+                if (ticker == null) return;
+                if (ticker > 0){
+                    next.setLastTime(ticker - 1);
+                } else {
+                    System.out.println("discard!");
+                    iterator.remove();
+                }
+
+            }
+        }
     }
 
     private void setTooltipMOD(GuiGraphics gui, int mouseX, int mouseY) {
@@ -158,8 +177,12 @@ public class PerkButton extends ImageButton {
                 }
                 this.onClick(mouseX, mouseY);
 
-                PerkConnectionCache.addToUpdate(this);
-                screen.painter.addToUpdate(this.buttonIdentifier);
+                CompletableFuture.runAsync(() -> {
+                    PerkConnectionCache.addToUpdate(this);
+                    screen.painter.addToUpdate(this.buttonIdentifier);
+                    playerData.talents.updateRelatedButtonStatus(this);
+                });
+                
                 /*System.out.println("this point is: " + getX() + " " + getY());
                 ArrayList<PointData> pointData = new ArrayList<>(screen.school.calcData.connections.get(point));
                 System.out.println("this point relate to these point: " + pointData);
@@ -201,27 +224,24 @@ public class PerkButton extends ImageButton {
     @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float pPartialTick) {
 
-        if (!screen.shouldRender(origX, origY, screen.ctx)) return;
+        if (!screen.shouldRender(getX(), getY(), screen.ctx)) return;
+
 
         setTooltipMOD(gui, mouseX, mouseY);
 
-
+        opacityController.detectCurrentState(playerData);
         if (screen.painter.isAllowedToPaint()) {
-            var search = SkillTreeScreen.SEARCH.getValue();
             int MmouseX = (int) (1F / screen.zoom * mouseX);
             int MmouseY = (int) (1F / screen.zoom * mouseY);
-
+            handleSelfCheck();
             boolean inside = isInside(MmouseX, MmouseY);
-            //we don't check search result here, instead put it in the opacityController;
-            if (search.isEmpty() && !inside && !screen.painter.isThisButtonIsUpdating(this)) return;
+            // this is a mess...
 
-            var opacityController = OpacityController.newOpacityController(this.buttonIdentifier);
-            opacityController
-                    .keywordSearchResultCheck();
+            // the principle of this whole image render is keep the whole image at low opacity, and check if any button needs to use the normal render system.
+            // opacityController can detect the current situation, and highlight the necessary buttons.
+            if (opacityController.getSingleButtonWhenWholeImage() != OpacityController.HIGHLIGHT && !inside && !screen.painter.isThisButtonIsUpdating(this) && this.lazyStatus != PerkStatus.POSSIBLE)
+                return;
 
-            // the principle of this whole image render is keep the whole image at a low opacity, and check if any button needs to use normal render system.
-            // I put the checkThisButtonIsSearchResult check in opacityController before, but it just too buggy and I can't find a way to fix it.
-            if (opacityController.get() != opacityController.HIGHLIGHT || !screen.searchHandler.checkThisButtonIsSearchResult(this)) return;
 
             gui.pose().pushPose();
             normalRender(gui, mouseX, mouseY);
@@ -237,7 +257,8 @@ public class PerkButton extends ImageButton {
     }
 
     private void normalRender(GuiGraphics gui, int mouseX, int mouseY) {
-        float scale = this.getSmoothScale(mouseX, mouseY);
+        handleSelfCheck();
+        float scale = this.getScale(mouseX, mouseY);
 
         float posMulti = 1F / scale;
 
@@ -250,33 +271,24 @@ public class PerkButton extends ImageButton {
 
         Perk.PerkType type = perk.getType();
 
-        PerkStatus status = playerData.talents.getStatus(Minecraft.getInstance().player, school, point);
 
         float offset = type.getOffset();
 
         // background
 
         RenderSystem.enableDepthTest();
-        OpacityController opacityController = OpacityController.newOpacityController(this.buttonIdentifier);
         // if newbie, show only the starter perks he can pick
-        opacityController
-                .cachedSearchResultCheck(this)
-                .keywordSearchResultCheck();
+
 
         //gui.blit(ID, xPos(0, posMulti), yPos(0, posMulti), perk.getType().getXOffset(), status.getYOffset(), this.width, this.height);
 
         int offcolor = (int) ((type.size - 20) / 2F);
 
-        gui.setColor(1.0F, 1.0F, 1.0F, opacityController.get());
+        gui.setColor(1.0F, 1.0F, 1.0F, opacityController.getSingleButton());
 
 
-        ButtonIdentifier buttonIdentifier = new ButtonIdentifier(this.school, point, perk);
-        if (this.wholeTexture == null || status != this.status) {
-            ResourceLocation colorTexture = type.getColorTexture(status);
-            ResourceLocation borderTexture = type.getBorderTexture(status);
-            ResourceLocation perkIcon = perk.getIcon();
-            this.wholeTexture = PerkButtonPainter.getNewLocation(colorTexture, borderTexture, perkIcon);
-            this.status = status;
+        if (this.wholeTexture == null) {
+            updateTexture();
         }
 
         if (PerkButtonPainter.handledBufferedImage.containsKey(this.wholeTexture)) {
@@ -288,15 +300,15 @@ public class PerkButton extends ImageButton {
             var search = SkillTreeScreen.SEARCH.getValue();
             PerkButtonPainter.addToWait(buttonIdentifier);
 
-            ResourceLocation colorTexture = type.getColorTexture(status);
-            ResourceLocation borderTexture = type.getBorderTexture(status);
+            ResourceLocation colorTexture = type.getColorTexture(lazyStatus);
+            ResourceLocation borderTexture = type.getBorderTexture(lazyStatus);
             ResourceLocation perkIcon = perk.getIcon();
 
             gui.blit(colorTexture, xPos(offcolor, posMulti), yPos(offcolor, posMulti), 20, 20, 0, 0, 20, 20, 20, 20);
             gui.blit(borderTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
 
 
-            gui.setColor(1.0F, 1.0F, 1.0F, opacityController.get() + (search.isEmpty() ? 0.2f : 0.0F));
+            gui.setColor(1.0F, 1.0F, 1.0F, opacityController.getSingleButton() + (opacityController.getState() instanceof NonSearching ? 0.2f : 0.0F));
 
             gui.blit(perkIcon, (int) xPos(offset, posMulti), (int) yPos(offset, posMulti), 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize);
 
@@ -307,13 +319,22 @@ public class PerkButton extends ImageButton {
         }
     }
 
-    private float getSmoothScale(int mouseX, int mouseY) {
+    public void updateTexture() {
+        Perk.PerkType type = this.perk.type;
+        ResourceLocation colorTexture = type.getColorTexture(this.lazyStatus);
+        ResourceLocation borderTexture = type.getBorderTexture(this.lazyStatus);
+        ResourceLocation perkIcon = perk.getIcon();
+        this.wholeTexture = PerkButtonPainter.getNewLocation(colorTexture, borderTexture, perkIcon);
+    }
+
+    private float getScale(int mouseX, int mouseY) {
         float scale = 2 - screen.zoom;
         if (isInside((int) (1F / screen.zoom * mouseX), (int) (1F / screen.zoom * mouseY))) {
             scale = MathHelper.clamp(scale * 1.3f, 1.7f, 2.0f);
+            ;
         }
 
-        return scale;
+        return MathHelper.clamp(scale, 1.5f, 2.0f);
     }
 
 

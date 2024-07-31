@@ -1,13 +1,10 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
 import com.robertx22.age_of_exile.event_hooks.ontick.OnClientTick;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.ExileTreeTexture;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.OpacityController;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
-import com.robertx22.age_of_exile.uncommon.datasaving.Load;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +14,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -25,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
 
 public class PerkButtonPainter {
 

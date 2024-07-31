@@ -1,5 +1,6 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer;
 
+import com.google.common.base.Objects;
 import com.robertx22.age_of_exile.capability.player.PlayerData;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public record ButtonIdentifier(TalentTree tree, PointData point, Perk perk) {
+public record ButtonIdentifier(TalentTree tree, PointData point, Perk perk) implements Cloneable{
 
     public ResourceLocation getCurrentButtonLocation(){
         PlayerData playerData = Load.player(Minecraft.getInstance().player);
@@ -39,4 +40,21 @@ public record ButtonIdentifier(TalentTree tree, PointData point, Perk perk) {
         return perkStatusResourceLocationHashMap;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ButtonIdentifier that = (ButtonIdentifier) o;
+        return Objects.equal(tree, that.tree) && Objects.equal(point, that.point) && Objects.equal(perk, that.perk);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(tree, point, perk);
+    }
+
+    @Override
+    protected Object clone() {
+        return new ButtonIdentifier(tree(), point(), perk());
+    }
 }

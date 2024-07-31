@@ -124,6 +124,7 @@ public class TalentTree implements JsonExileRegistry<TalentTree>, IAutoGson<Tale
         grid.loadIntoTree();
 
         CompletableFuture.runAsync(() -> {
+            HashSet<ButtonIdentifier> buttonIdentifiers = new HashSet<>();
             for (Map.Entry<PointData, String> e : this.calcData.perks.entrySet()) {
 
                 Perk perk = ExileDB.Perks().get(e.getValue());
@@ -135,8 +136,10 @@ public class TalentTree implements JsonExileRegistry<TalentTree>, IAutoGson<Tale
 
                 ButtonIdentifier buttonIdentifier = new ButtonIdentifier(this, e.getKey(), perk);
                 PerkButtonPainter.addToWait(buttonIdentifier);
+                buttonIdentifiers.add(buttonIdentifier);
             }
             PerkButtonPainter.handlePaintQueue();
+            AllPerkButtonPainter.getPainter(this.getSchool_type()).init(buttonIdentifiers);
         });
     }
 

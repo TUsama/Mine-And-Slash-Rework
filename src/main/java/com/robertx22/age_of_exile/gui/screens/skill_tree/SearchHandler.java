@@ -20,21 +20,19 @@ public class SearchHandler {
 
     private String tickCachedString = "";
 
-    private boolean isUpdating = false;
+    public boolean isUpdating = false;
 
     public SearchHandler(SkillTreeScreen screen) {
         allButtons.addAll(screen.pointPerkButtonMap.values());
     }
 
     public void tickThis() {
-        if (this.isUpdating) return;
         String value = SkillTreeScreen.SEARCH.getValue();
         if (value.isEmpty()) return;
         if (tickCachedString.isEmpty() || tickCachedString.equals(value)) {
             if (counter > 0) {
                 counter--;
             } else {
-                this.isUpdating = true;
                 counter = maxCounter;
                 updateSearchResult();
                 this.isUpdating = false;
@@ -46,10 +44,12 @@ public class SearchHandler {
     }
 
     public void updateSearchResult() {
+        if (this.isUpdating) return;
+        this.isUpdating = true;
         String value = SkillTreeScreen.SEARCH.getValue();
         if (value.isEmpty()) return;
 
-        thisTimeSearch = value;
+        thisTimeSearch = new String(value);
         if (searchHistory.containsKey(thisTimeSearch)) {
             System.out.println("can find in history");
             this.qualifiedButtons = searchHistory.get(thisTimeSearch);
@@ -90,8 +90,12 @@ public class SearchHandler {
                 }
             }
         }
+        //cuz this method is so long, value may sometimes change in this handle process.
+        //but really? I think this is the cause of that bug but I can't confirm.
+        if (!value.equals(thisTimeSearch)) return;
         lastTimeSearch = thisTimeSearch;
         searchHistory.put(thisTimeSearch, new HashSet<>(qualifiedButtons));
+
     }
 
     public boolean checkThisButtonIsSearchResult(PerkButton button) {

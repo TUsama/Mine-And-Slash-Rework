@@ -42,7 +42,6 @@ public class OnClientTick {
 
             container.values().forEach(x -> {
                 x.checkIfNeedRepaint();
-                x.handlePaintQueue();
             });
 
             if (RenderSystem.isOnRenderThread()) {

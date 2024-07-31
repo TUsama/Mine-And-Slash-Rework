@@ -14,6 +14,8 @@ public class PainterController {
     public static RateLimiter paintLimiter = RateLimiter.create(400.0D, 2, TimeUnit.SECONDS);
     public static RateLimiter registerLimiter = RateLimiter.create(2000D, 10, TimeUnit.SECONDS);
 
+    public static RateLimiter bigTextureRegisterLimiter = RateLimiter.create(5);
+
     public static void setAllowUpdate() {
         updatePermission.forEach((k, v) -> {
             updatePermission.put(k, true);

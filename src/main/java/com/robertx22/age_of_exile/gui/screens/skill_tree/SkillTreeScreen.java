@@ -1,6 +1,5 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree;
 
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -22,6 +21,7 @@ import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnect
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionRenderer;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkScreenContext;
+import com.robertx22.age_of_exile.gui.screens.skill_tree.opacity.OpacityController;
 import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.mmorpg.SlashRef;
 import com.robertx22.age_of_exile.saveclasses.PointData;
@@ -82,7 +82,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
     public SearchHandler searchHandler;
 
-    private ResourceLocation allConnectionLocation;
+    private final OpacityController opacityController = new OpacityController(null);
     public SkillTreeScreen(SchoolType type) {
         super(Minecraft.getInstance()
                 .getWindow()
@@ -90,9 +90,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                 .getWindow()
                 .getGuiScaledHeight());
         this.schoolType = type;
-        this.allConnectionLocation = PerkConnectionPainter.getCurrentScreenTextureLocation(this);
         this.painter  = AllPerkButtonPainter.getPainter(schoolType);
-
     }
 
     public static int sizeX() {
@@ -259,13 +257,12 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
             this.school = ExileDB.TalentTrees().getFilterWrapped(x -> x.getSchool_type().equals(this.schoolType)).list.get(0);
             refreshButtons();
-
             this.searchHandler = new SearchHandler(this);
 
             PerkConnectionCache.init(this);
             PerkConnectionPainter.init(this);
 
-            AllPerkButtonPainter.getPainter(this.schoolType).init(this.pointPerkButtonMap.values().stream().map(x -> new ButtonIdentifier(school, x.point, x.perk)).toList());
+            /*AllPerkButtonPainter.getPainter(this.schoolType).init(this.pointPerkButtonMap.values().stream().map(x -> new ButtonIdentifier(school, x.point, x.perk)).toList());*/
 
             goToCenter();
         } catch (Exception e) {
@@ -365,8 +362,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
 
         PerkConnectionPainter.handleUpdateQueue();
-        System.out.println("try handle connections render!");
-
+        painter.handlePaintQueue();
 
         super.onClose();
 
@@ -530,7 +526,8 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
             //must handle this before all the render thing
             //todo should I add a little delay?
             // yeah why not? but I add it inside the handler.
-            this.searchHandler.tickThis();
+            if (!this.searchHandler.isUpdating) this.searchHandler.tickThis();
+
 
             PerkConnectionCache.updateRenders(this);
             //System.out.println(watch1.getPrint());
@@ -545,9 +542,8 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                 int startY = painter.minY - (school.calcData.center.y * PerkButton.SPACING);
                 List<AllPerkButtonPainter.ResourceLocationAndSize> locations = painter.locations;
                 int i = 0;
-                float opacity = 1f;
-                if (!SEARCH.getValue().isEmpty()) opacity = 0.5f;
-                gui.setColor(1.0f, 1.0f, 1.0f, opacity);
+                opacityController.detectCurrentState(playerData);
+                gui.setColor(1.0f, 1.0f, 1.0f, opacityController.getWholeImage());
                 for (AllPerkButtonPainter.ResourceLocationAndSize location : locations) {
 
                     gui.blit(location.location(), startX + i * location.width() + connectionX, startY + connectionY, 0, 0, location.width(), location.height(), location.width(), location.height());

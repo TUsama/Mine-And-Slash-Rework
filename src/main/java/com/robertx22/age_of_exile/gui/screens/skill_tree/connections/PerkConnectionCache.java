@@ -135,13 +135,18 @@ public class PerkConnectionCache {
 
     }
 
+    public static void reset(){
+        renderersCache.clear();
+        typeHistory.clear();
+    }
+
     public static void init(SkillTreeScreen skillTreeScreen) {
         int typeHash = skillTreeScreen.schoolType.toString().hashCode();
         if (renderersCache.isEmpty() || !typeHistory.contains(typeHash)) {
             Watch watch = new Watch();
             renderersCache.put(typeHash, initAllConnection(skillTreeScreen));
             typeHistory.add(typeHash);
-            System.out.println("add all: " + watch.getPrint());
+            System.out.println("add all connection " + watch.getPrint());
         }
     }
 
