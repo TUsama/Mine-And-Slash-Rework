@@ -38,12 +38,13 @@ public class OnClientTick {
 
             container.values().forEach(x -> {
                 x.checkIfNeedRepaint();
+                x.scheduleRepaint();
             });
 
 
             RenderSystem.recordRenderCall(() -> {
                 PerkButtonPainter.handleRegisterQueue();
-                container.values().forEach(AllPerkButtonPainter::handleRegisterQueue);
+                container.values().forEach(AllPerkButtonPainter::tryRegister);
                 PerkConnectionPainter.handleRegisterQueue();
             });
 

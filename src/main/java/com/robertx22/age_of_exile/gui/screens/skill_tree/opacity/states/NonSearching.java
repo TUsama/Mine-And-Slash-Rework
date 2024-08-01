@@ -1,6 +1,7 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.opacity.states;
 
 import com.robertx22.age_of_exile.database.data.perks.Perk;
+import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.opacity.OpacityController;
 
@@ -12,12 +13,12 @@ public class NonSearching extends OpacityControllerState {
 
     @Override
     public float onWholeImage() {
-        return super.isRefresh ? 0.5f : 0.95f;
+        return opacityController.playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1 ? 0.5f : 0.95f;
     }
 
     @Override
     public float onSingleButton() {
-        if (super.isRefresh) {
+        if (opacityController.playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1) {
             Perk.PerkType type = button.perk.getType();
             return type == Perk.PerkType.START ? OpacityController.HIGHLIGHT : OpacityController.HIDE;
         }

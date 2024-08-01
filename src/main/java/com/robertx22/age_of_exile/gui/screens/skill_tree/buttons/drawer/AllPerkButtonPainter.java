@@ -1,6 +1,5 @@
 package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer;
 
-import com.google.common.util.concurrent.RateLimiter;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.robertx22.age_of_exile.database.data.perks.Perk;
@@ -19,13 +18,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 
 // todo maybe need rewrite this with state machine design mode
 public class AllPerkButtonPainter {
@@ -35,22 +34,23 @@ public class AllPerkButtonPainter {
     //todo is this really a good collection to store changed renderers? Slow in searching.
     //anyway we prob won't have that much data at the same time.
 
-    private final HashSet<ButtonIdentifier> updating = new HashSet<>();
+    private final HashSet<ButtonIdentifier> updateInThinRun = new HashSet<>();
     private final HashSet<ButtonIdentifier> updateOnThisScreen = new HashSet<>();
+    private final InitState initState;
+    private final PaintState paintState;
+    private final RegisterState registerState;
+    private final StandbyState standByState;
+    private final ExecutorService paintThread = Executors.newSingleThreadExecutor();
+    private final int maxRepaintTimer = 3 * 60 * 20;
     public PainterState state;
     public int maxX = 0;
     public int minX = 10000;
     public int maxY = 0;
     public int minY = 10000;
-    private final InitState initState;
-    private final PaintState paintState;
-    private final RegisterState registerState;
-
-    private final StandbyState standByState;
-    private final ExecutorService paintThread = Executors.newSingleThreadExecutor();
     private int drawInWindowWidth = 0;
     private boolean isPainting = false;
     private boolean isRepainting = false;
+    private int repaintTimer = maxRepaintTimer;
 
     public AllPerkButtonPainter(TalentTree.SchoolType type) {
         this.typeHash = type.toString().hashCode();
@@ -68,24 +68,40 @@ public class AllPerkButtonPainter {
             allPerkButtonPainter = new AllPerkButtonPainter(schoolType);
             OnClientTick.container.put(i, allPerkButtonPainter);
         }
-        return OnClientTick.container.get(i);
+        AllPerkButtonPainter allPerkButtonPainter1 = OnClientTick.container.get(i);
+        return allPerkButtonPainter1;
     }
 
+    public void onSkillScreenOpen(Collection<ButtonIdentifier> identifiers) {
+        if (this.initState.cache.isEmpty()) this.initState.cache.addAll(identifiers);
+        if (this.state instanceof InitState) startANewRun();
+    }
 
+    public void startANewRun() {
+        repaint();
+    }
 
+    public void tryRegister() {
+        this.state.onRegister();
+    }
+
+    public void scheduleRepaint() {
+        if (this.updateOnThisScreen.isEmpty()) return;
+        if (repaintTimer > 0) {
+            repaintTimer--;
+        } else {
+            startANewRun();
+            repaintTimer = maxRepaintTimer;
+        }
+    }
+
+    public List<ResourceLocationAndSize> getCurrentPaintings() {
+        return this.standByState.getHandledContainer();
+    }
 
     public void addToUpdate(ButtonIdentifier identifier) {
         this.updateOnThisScreen.add(identifier);
-
     }
-
-    public void updateOnScreenClose() {
-        if (updateOnThisScreen.isEmpty()) return;
-        this.cache.addAll(updateOnThisScreen);
-        this.waitingToBeUpdated.addAll(this.cache);
-        updateOnThisScreen.clear();
-    }
-
 
 
     public ResourceLocation getThisLocation() {
@@ -93,25 +109,29 @@ public class AllPerkButtonPainter {
     }
 
     public boolean isAllowedToPaint() {
-        return !locations.isEmpty();
+        return this.state instanceof StandbyState;
     }
 
     public boolean isThisButtonIsUpdating(PerkButton button) {
-        ButtonIdentifier buttonIdentifier = button.buttonIdentifier;
-        return updateOnThisScreen.contains(buttonIdentifier) || this.waitingToBeUpdated.contains(buttonIdentifier) || this.updating.contains(buttonIdentifier);
+        return this.updateOnThisScreen.contains(button.buttonIdentifier) || this.updateInThinRun.contains(button.buttonIdentifier) || this.paintState.waitingToBePainted.contains(button.buttonIdentifier);
     }
 
     public void checkIfNeedRepaint() {
         // due to window size change
-        if (!this.isPainting && !this.isRepainting && this.drawInWindowWidth != 0 && Minecraft.getInstance().getWindow().getGuiScaledWidth() != this.drawInWindowWidth) {
-            this.isRepainting = true;
+        if (this.drawInWindowWidth != 0 && Minecraft.getInstance().getWindow().getGuiScaledWidth() != this.drawInWindowWidth) {
+            this.drawInWindowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
             repaint();
         }
     }
 
+    private void repaint() {
+        this.state.onRepaint();
+        this.repaintTimer = maxRepaintTimer;
+    }
+
     @SuppressWarnings("all")
-    private  <T> T changeState(T state) {
-        this.state = (PainterState)state;
+    private <T> T changeState(T state) {
+        this.state = (PainterState) state;
         return state;
     }
 
@@ -127,18 +147,17 @@ public class AllPerkButtonPainter {
             this.painter = painter;
         }
 
-        public abstract void onInit(Collection<ButtonIdentifier> identifiers);
+        public abstract void onInit();
 
         public abstract void onPaint();
 
         public abstract void onRegister();
 
         public abstract void onRepaint();
-        public abstract void onOpenSkillScreen();
-        public abstract void onCloseSkillScreen();
 
         public abstract Collection<T> getHandledContainer();
-        public PainterState transferData(Collection<T> data){
+
+        public PainterState transferData(Collection<T> data) {
             this.getHandledContainer().addAll(data);
             return this;
         }
@@ -154,11 +173,9 @@ public class AllPerkButtonPainter {
         }
 
         @Override
-        public void onInit(Collection<ButtonIdentifier> identifiers) {
+        public void onInit() {
+            if (cache.isEmpty()) return;
             System.out.println("init all painter");
-            cache.addAll(identifiers);
-            System.out.println("at this time, input amount is: " + identifiers.size());
-            System.out.println("cached amount is: " + cache.size());
             painter.changeState(painter.paintState).transferData(cache).onPaint();
         }
 
@@ -174,17 +191,7 @@ public class AllPerkButtonPainter {
 
         @Override
         public void onRepaint() {
-
-        }
-
-        @Override
-        public void onOpenSkillScreen() {
-
-        }
-
-        @Override
-        public void onCloseSkillScreen() {
-
+            painter.changeState(painter.paintState).onRepaint();
         }
 
         @Override
@@ -194,35 +201,35 @@ public class AllPerkButtonPainter {
     }
 
     class PaintState extends PainterState<ButtonIdentifier> {
-        private RateLimiter limiter = RateLimiter.create(5);
-
+        public final ConcurrentLinkedQueue<ButtonIdentifier> waitingToBePainted = new ConcurrentLinkedQueue<>();
         private CompletableFuture<Void> voidCompletableFuture;
-        public final ConcurrentLinkedQueue<ButtonIdentifier> waitingToBeUpdated = new ConcurrentLinkedQueue<>();
 
         public PaintState(AllPerkButtonPainter painter) {
             super(painter);
         }
 
         @Override
-        public void onInit(Collection<ButtonIdentifier> identifiers) {
+        public void onInit() {
 
         }
 
         @Override
         public void onPaint() {
-            if (!voidCompletableFuture.isDone()) return;
-            AtomicReference<SeparableBufferedImage> image = null;
-            voidCompletableFuture = CompletableFuture.runAsync(() -> {
-                try {
-                    image.set(tryPaint());
-                } catch (InterruptedException | IOException e) {
-                    throw new RuntimeException(e);
-                }
-                System.out.println("add to register!");
+            if (voidCompletableFuture == null || voidCompletableFuture.isDone()) {
 
-            }, paintThread).thenRun(() -> {
-                painter.changeState(painter.registerState).transferData(image.get().getSeparatedImage()).onRegister();
-            });
+
+                voidCompletableFuture = CompletableFuture.runAsync(() -> {
+                    SeparableBufferedImage image;
+                    try {
+                        image = tryPaint();
+                    } catch (InterruptedException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("add to register!");
+                    painter.changeState(painter.registerState).transferData(image.getSeparatedImage());
+                }, paintThread);
+
+            }
         }
 
         @Override
@@ -232,24 +239,15 @@ public class AllPerkButtonPainter {
 
         @Override
         public void onRepaint() {
-            paintThread.shutdown();
-            waitingToBeUpdated.clear();
+            if (voidCompletableFuture != null) voidCompletableFuture.cancel(true);
+            waitingToBePainted.clear();
             painter.changeState(painter.registerState).onRepaint();
         }
 
-        @Override
-        public void onOpenSkillScreen() {
-
-        }
-
-        @Override
-        public void onCloseSkillScreen() {
-
-        }
 
         @Override
         public Queue<ButtonIdentifier> getHandledContainer() {
-            return this.waitingToBeUpdated;
+            return this.waitingToBePainted;
         }
 
         private SeparableBufferedImage tryPaint() throws InterruptedException, IOException {
@@ -266,19 +264,18 @@ public class AllPerkButtonPainter {
             int minX = 10000;
             int maxY = 0;
             int minY = 10000;
-            int painted = 0;
             // prefer a little multi.
             float singleButtonZoom = 1.4f;
-            while (!waitingToBeUpdated.isEmpty()) {
+            while (!waitingToBePainted.isEmpty()) {
                 PainterController.paintLimiter.acquire();
-                ButtonIdentifier identifier = waitingToBeUpdated.poll();
+                ButtonIdentifier identifier = waitingToBePainted.poll();
                 Perk.PerkType type = identifier.perk().getType();
                 ResourceLocation wholeTexture = identifier.getCurrentButtonLocation();
 
 
                 BufferedImage singleButton = PerkButtonPainter.handledBufferedImage.get(wholeTexture);
                 if (singleButton == null) {
-                    waitingToBeUpdated.add(identifier);
+                    waitingToBePainted.add(identifier);
                     Thread.sleep(2000);
                     continue;
                 }
@@ -309,8 +306,7 @@ public class AllPerkButtonPainter {
                 affineTransform.translate(tx, ty);
 
                 graphics.drawImage(singleButton, affineTransform, null);
-                painted++;
-                updating.add(identifier);
+                updateInThinRun.add(identifier);
             }
             graphics.dispose();
             //unless there are some icons bigger than 50
@@ -319,7 +315,6 @@ public class AllPerkButtonPainter {
             painter.minY = minY;
             painter.maxX = maxX;
             painter.maxY = maxY;
-            painter.isPainting = false;
             return new SeparableBufferedImage(newImage);
 
         }
@@ -327,10 +322,8 @@ public class AllPerkButtonPainter {
 
     class RegisterState extends PainterState<BufferedImage> {
         private final ConcurrentLinkedQueue<BufferedImage> needRegister = new ConcurrentLinkedQueue<>();
-
-        private List<ResourceLocationAndSize> results = new ArrayList<>();
         private final int max = 5;
-
+        private List<ResourceLocationAndSize> results = new ArrayList<>();
         private int timer = max;
 
         private int counter = 0;
@@ -340,7 +333,7 @@ public class AllPerkButtonPainter {
         }
 
         @Override
-        public void onInit(Collection<ButtonIdentifier> identifiers) {
+        public void onInit() {
 
         }
 
@@ -353,10 +346,11 @@ public class AllPerkButtonPainter {
         public void onRegister() {
             if (timer > 0) {
                 timer--;
-                return;
+            } else {
+                handleOne();
+                tryCleanUp();
+                timer = max;
             }
-            handleOne();
-            tryCleanUp();
         }
 
         @Override
@@ -364,57 +358,69 @@ public class AllPerkButtonPainter {
             cleanUpAndChangeState();
         }
 
-        @Override
-        public void onOpenSkillScreen() {
-
-        }
-
-        @Override
-        public void onCloseSkillScreen() {
-
-        }
 
         @Override
         public Queue<BufferedImage> getHandledContainer() {
             return needRegister;
         }
 
+        @Override
+        public PainterState transferData(Collection<BufferedImage> data) {
+            needRegister.clear();
+            results.clear();
+            super.transferData(data);
+            return this;
+        }
 
         private void handleOne() {
             if (needRegister.isEmpty()) return;
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            BufferedImage image2 = needRegister.poll();
+            BufferedImage singleImage = needRegister.poll();
             try {
-                ImageIO.write(image2, "PNG", baos);
+                ImageIO.write(singleImage, "PNG", baos);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            try (NativeImage image1 = NativeImage.read(baos.toByteArray())) {
+            try (NativeImage nativeImage = NativeImage.read(baos.toByteArray())) {
                 baos.close();
                 ResourceLocation location = new ResourceLocation(getThisLocation().getNamespace(), getThisLocation().getPath() + "_" + counter);
-                ExileTreeTexture exileTreeTexture = new ExileTreeTexture(location, image1);
+                counter++;
+                ExileTreeTexture exileTreeTexture = new ExileTreeTexture(location, nativeImage);
                 TextureManager textureManager = Minecraft.getInstance().getTextureManager();
                 textureManager.release(location);
                 textureManager.register(location, exileTreeTexture);
-                results.add(new ResourceLocationAndSize(location, image2.getWidth(), image2.getHeight()));
+                results.add(new ResourceLocationAndSize(location, singleImage.getWidth(), singleImage.getHeight()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
         }
 
-        private void tryCleanUp(){
-            if (!needRegister.isEmpty()) return;
-            painter.updating.clear();
-            this.counter = 0;
-            this.timer = max;
-            painter.changeState(painter.standByState).transferData(results);
+        private void clearHandledCollection() {
+            updateInThinRun.clear();
+            results.clear();
         }
 
-        private void cleanUpAndChangeState(){
-            painter.updating.clear();
+        private void resetTimer() {
             this.counter = 0;
             this.timer = max;
+
+        }
+
+        private void tryCleanUp() {
+            if (!needRegister.isEmpty()) return;
+            System.out.println("clean up!");
+            painter.changeState(painter.standByState).transferData(results);
+            resetTimer();
+            clearHandledCollection();
+            updateOnThisScreen.removeAll(updateInThinRun);
+            updateInThinRun.clear();
+
+        }
+
+        private void cleanUpAndChangeState() {
+            resetTimer();
+            clearHandledCollection();
             painter.changeState(painter.standByState);
             painter.state.onRepaint();
         }
@@ -428,7 +434,7 @@ public class AllPerkButtonPainter {
         }
 
         @Override
-        public void onInit(Collection<ButtonIdentifier> identifiers) {
+        public void onInit() {
 
         }
 
@@ -446,67 +452,23 @@ public class AllPerkButtonPainter {
         public void onRepaint() {
             System.out.println("repaint!");
             locations.clear();
+            painter.updateInThinRun.clear();
+            painter.updateOnThisScreen.clear();
+            painter.changeState(painter.initState).onInit();
         }
 
-        @Override
-        public void onOpenSkillScreen() {
-
-        }
-
-        @Override
-        public void onCloseSkillScreen() {
-
-        }
 
         @Override
         public List<ResourceLocationAndSize> getHandledContainer() {
             return locations;
         }
 
+        @Override
+        public PainterState transferData(Collection<ResourceLocationAndSize> data) {
+            locations.clear();
+            return super.transferData(data);
+        }
     }
 
-    class ReceiveNewButtonState extends PainterState<PerkButton> {
-
-        private HashSet<PerkButton> updateInThisScreen = new HashSet<>();
-        public ReceiveNewButtonState(AllPerkButtonPainter painter) {
-            super(painter);
-        }
-
-        @Override
-        public void onInit(Collection<ButtonIdentifier> identifiers) {
-
-        }
-
-        @Override
-        public void onPaint() {
-
-        }
-
-        @Override
-        public void onRegister() {
-            updateInThisScreen.clear();
-            painter.changeState(painter.standByState).onRepaint();
-        }
-
-        @Override
-        public void onRepaint() {
-
-        }
-
-        @Override
-        public void onOpenSkillScreen() {
-
-        }
-
-        @Override
-        public void onCloseSkillScreen() {
-
-        }
-
-        @Override
-        public Set<PerkButton> getHandledContainer() {
-            return updateInThisScreen;
-        }
-    }
 
 }

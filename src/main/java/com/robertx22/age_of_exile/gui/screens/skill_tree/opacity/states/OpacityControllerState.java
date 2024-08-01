@@ -11,9 +11,6 @@ import javax.annotation.Nullable;
 
 public abstract class OpacityControllerState {
 
-    public PlayerData playerData = Load.player(ClientOnly.getPlayer());
-
-    public boolean isRefresh = playerData.talents.getAllocatedPoints(TalentTree.SchoolType.TALENTS) < 1;
     public OpacityController opacityController;
 
     public PerkButton button;

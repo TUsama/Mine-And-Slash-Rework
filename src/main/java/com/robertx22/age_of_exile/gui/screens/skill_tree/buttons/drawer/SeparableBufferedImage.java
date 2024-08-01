@@ -35,6 +35,7 @@ public class SeparableBufferedImage {
         if (this.separateTo == 0){
             Collections.singletonList(originalImage);
         }
+        System.out.println("separate");
         ImmutableList.Builder<BufferedImage> builder = ImmutableList.builder();
         int handleWidth;
         int leftPart = 0;

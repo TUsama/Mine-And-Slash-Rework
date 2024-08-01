@@ -16,7 +16,6 @@ import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.mmorpg.SlashRef;
 import com.robertx22.age_of_exile.saveclasses.PointData;
 import com.robertx22.age_of_exile.saveclasses.gearitem.gear_bases.TooltipInfo;
-import com.robertx22.age_of_exile.saveclasses.perks.TalentsData;
 import com.robertx22.age_of_exile.uncommon.MathHelper;
 import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import com.robertx22.age_of_exile.vanilla_mc.packets.perks.PerkChangePacket;
@@ -104,8 +103,6 @@ public class PerkButton extends ImageButton {
     // use getStatus in a per-tick situation will affect performance a lot, this is a lazy version replacement.
     // invoke this when clicking a button
     public void updateRelatedButtonStatus() {
-        // no need to check free point here, move this check to self check.
-        //if (!hasFreePoints(data, school.getSchool_type())) return;
 
         TalentTree school = this.school;
         TalentTree.SchoolType schoolType = school.getSchool_type();
@@ -115,7 +112,7 @@ public class PerkButton extends ImageButton {
             return x.getLazyStatus() != playerData.talents.getStatus(ClientOnly.getPlayer(), x.school, x.point);
         }, x -> {
             x.updateLazyStatus(playerData.talents.getStatus(ClientOnly.getPlayer(), x.school, x.point));
-        }, 3000);
+        }, 1000);
 
         //if this perk is a one-kind perk, send the self-check task to their checklist.
         if (perk.one_kind != null && !perk.one_kind.isEmpty()) {
@@ -226,7 +223,6 @@ public class PerkButton extends ImageButton {
                     Packets.sendToServer(new PerkChangePacket(school, point, PerkChangePacket.ACTION.REMOVE));
                 }
                 this.onClick(mouseX, mouseY);
-
                 updateRelatedButtonStatus();
                 PerkConnectionCache.addToUpdate(this);
                 screen.painter.addToUpdate(this.buttonIdentifier);
@@ -288,24 +284,34 @@ public class PerkButton extends ImageButton {
 
             // the principle of this whole image render is keep the whole image at low opacity, and check if any button needs to use the normal render system.
             // opacityController can detect the current situation, and highlight the necessary buttons.
-            if (opacityController.getSingleButtonWhenWholeImage() != OpacityController.HIGHLIGHT && !inside && !screen.painter.isThisButtonIsUpdating(this) && this.lazyStatus != PerkStatus.POSSIBLE)
+            if (opacityController.getSingleButtonWhenWholeImage() != OpacityController.HIGHLIGHT && !inside && !screen.painter.isThisButtonIsUpdating(this) && (this.lazyStatus != PerkStatus.POSSIBLE && opacityController.isSearching()))
                 return;
+            if (opacityController.isSearching()){
+                if (opacityController.getSingleButtonWhenWholeImage() == OpacityController.HIGHLIGHT){
+                    gui.pose().pushPose();
+                    normalRender(gui, mouseX, mouseY, true);
+                    gui.pose().popPose();
 
+                }
+            } else {
+                if (inside || screen.painter.isThisButtonIsUpdating(this) || this.lazyStatus == PerkStatus.POSSIBLE){
+                    gui.pose().pushPose();
+                    normalRender(gui, mouseX, mouseY, true);
+                    gui.pose().popPose();
+                }
+            }
 
-            gui.pose().pushPose();
-            normalRender(gui, mouseX, mouseY);
-            gui.pose().popPose();
 
         } else {
             gui.pose().pushPose();
-            normalRender(gui, mouseX, mouseY);
+            normalRender(gui, mouseX, mouseY, false);
             gui.pose().popPose();
         }
 
 
     }
 
-    private void normalRender(GuiGraphics gui, int mouseX, int mouseY) {
+    private void normalRender(GuiGraphics gui, int mouseX, int mouseY, boolean isPaintBackup) {
         handleSelfCheck();
         float scale = this.getScale(mouseX, mouseY);
 
@@ -340,13 +346,16 @@ public class PerkButton extends ImageButton {
             updateTexture();
         }
 
-        if (PerkButtonPainter.handledBufferedImage.containsKey(this.wholeTexture)) {
+        if (PerkButtonPainter.handledLocation.contains(this.wholeTexture)) {
             //have to render it with 1.0 opacity, otherwise the icon can't fully cover the whole image when some button use normal render way.
-            gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-            gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
-
+            if (isPaintBackup){
+                gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+                gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+            } else {
+                gui.blit(this.wholeTexture, (int) xPos(0, posMulti), (int) yPos(0, posMulti), 0, 0, this.width, this.height, this.width, this.height);
+                gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            }
         } else {
-            var search = SkillTreeScreen.SEARCH.getValue();
             PerkButtonPainter.addToWait(buttonIdentifier);
 
             ResourceLocation colorTexture = type.getColorTexture(lazyStatus);
@@ -373,7 +382,7 @@ public class PerkButton extends ImageButton {
         ResourceLocation colorTexture = type.getColorTexture(this.lazyStatus);
         ResourceLocation borderTexture = type.getBorderTexture(this.lazyStatus);
         ResourceLocation perkIcon = perk.getIcon();
-        this.wholeTexture = PerkButtonPainter.getNewLocation(colorTexture, borderTexture, perkIcon);
+        this.wholeTexture = PerkButtonPainter.getNewLocation(school, colorTexture, borderTexture, perkIcon);
     }
 
     private float getScale(int mouseX, int mouseY) {

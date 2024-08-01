@@ -103,7 +103,8 @@ public class PlayerData implements ICap {
     //ublic SavedStatCtxList ctxStats = new SavedStatCtxList();
 
     public TeamData team = new TeamData();
-    public TalentsData talents = new TalentsData();
+    //todo It should work?
+    public volatile TalentsData talents = new TalentsData();
     public StatPointsData statPoints = new StatPointsData();
     public DeathStatsData deathStats = new DeathStatsData();
     public PlayerMapData map = new PlayerMapData();

@@ -16,7 +16,6 @@ import com.robertx22.age_of_exile.gui.bases.IAlertScreen;
 import com.robertx22.age_of_exile.gui.bases.INamedScreen;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.PerkButton;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.AllPerkButtonPainter;
-import com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer.ButtonIdentifier;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionCache;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionPainter;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.connections.PerkConnectionRenderer;
@@ -212,10 +211,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
     private void renderConnections(GuiGraphics gui) {
         int typeHash = this.schoolType.toString().hashCode();
         for (PerkConnectionRenderer con : PerkConnectionCache.renderersCache.get(typeHash).values()) {
-            if (true){
-                this.renderConnection(gui, con);
-            }
-
+            this.renderConnection(gui, con);
         }
     }
 
@@ -262,7 +258,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
             PerkConnectionCache.init(this);
             PerkConnectionPainter.init(this);
 
-            painter.init(this.pointPerkButtonMap.values().stream().map(x -> new ButtonIdentifier(school, x.point, x.perk)).toList());
+            painter.onSkillScreenOpen(this.pointPerkButtonMap.values().stream().map(x -> x.buttonIdentifier).toList());
 
             goToCenter();
         } catch (Exception e) {
@@ -362,7 +358,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
 
         PerkConnectionPainter.handleUpdateQueue();
-        painter.updateOnScreenClose();
+
 
         super.onClose();
 
@@ -524,10 +520,8 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
             }
 
             //must handle this before all the render thing
-            //todo should I add a little delay?
-            // yeah why not? but I add it inside the handler.
             if (!this.searchHandler.isUpdating) this.searchHandler.tickThis();
-
+            opacityController.detectCurrentState(playerData);
 
             PerkConnectionCache.updateRenders(this);
             //System.out.println(watch1.getPrint());
@@ -540,9 +534,9 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
                 int connectionY = (int) (addy + scrollY);
                 int startX = painter.minX - (school.calcData.center.x * PerkButton.SPACING);
                 int startY = painter.minY - (school.calcData.center.y * PerkButton.SPACING);
-                List<AllPerkButtonPainter.ResourceLocationAndSize> locations = painter.locations;
+                List<AllPerkButtonPainter.ResourceLocationAndSize> locations = painter.getCurrentPaintings();
                 int i = 0;
-                opacityController.detectCurrentState(playerData);
+
                 gui.setColor(1.0f, 1.0f, 1.0f, opacityController.getWholeImage());
                 for (AllPerkButtonPainter.ResourceLocationAndSize location : locations) {
 

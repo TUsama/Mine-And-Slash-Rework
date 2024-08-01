@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public record ButtonIdentifier(TalentTree tree, PointData point, Perk perk) implements Cloneable{
+public record ButtonIdentifier(TalentTree tree, PointData point, Perk perk){
 
     public ResourceLocation getCurrentButtonLocation(){
         PlayerData playerData = Load.player(Minecraft.getInstance().player);
         PerkStatus status = playerData.talents.getStatus(Minecraft.getInstance().player, tree, point);
-        return PerkButtonPainter.getNewLocation(perk.type.getColorTexture(status), perk.type.getBorderTexture(status), perk.getIcon());
+        return PerkButtonPainter.getNewLocation(tree, perk.type.getColorTexture(status), perk.type.getBorderTexture(status), perk.getIcon());
     }
 
     public HashMap<PerkStatus, List<ResourceLocation>> getAllNewLocation(){
@@ -53,8 +53,4 @@ public record ButtonIdentifier(TalentTree tree, PointData point, Perk perk) impl
         return Objects.hashCode(tree, point, perk);
     }
 
-    @Override
-    protected Object clone() {
-        return new ButtonIdentifier(tree(), point(), perk());
-    }
 }

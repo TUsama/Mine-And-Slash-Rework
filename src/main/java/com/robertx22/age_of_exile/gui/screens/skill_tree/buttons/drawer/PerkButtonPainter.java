@@ -2,6 +2,7 @@ package com.robertx22.age_of_exile.gui.screens.skill_tree.buttons.drawer;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.robertx22.age_of_exile.database.data.perks.PerkStatus;
+import com.robertx22.age_of_exile.database.data.talent_tree.TalentTree;
 import com.robertx22.age_of_exile.event_hooks.ontick.OnClientTick;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.ExileTreeTexture;
 import com.robertx22.age_of_exile.gui.screens.skill_tree.PainterController;
@@ -135,7 +136,7 @@ public class PerkButtonPainter {
             allNewLocation.forEach((k, v) -> {
                 try {
                     BufferedImage image = PerkButtonPainter.tryPaintWholeIcon(v.get(0), v.get(1), v.get(2), identifier, k);
-                    ResourceLocation newLocation = (getNewLocation(v.get(0), v.get(1),v.get(2)));
+                    ResourceLocation newLocation = (getNewLocation(identifier.tree(), v.get(0), v.get(1),v.get(2)));
                     PainterController.BufferedImagePack bufferedImagePack = new PainterController.BufferedImagePack(image, newLocation);
                     waitingToBeRegisteredQueue.add(bufferedImagePack);
                     handledBufferedImage.put(newLocation, image);
@@ -171,7 +172,7 @@ public class PerkButtonPainter {
             try (NativeImage image = NativeImage.read(baos.toByteArray())) {
                 ExileTreeTexture exileTreeTexture = new ExileTreeTexture(resourceLocation, image);
                 Minecraft.getInstance().getTextureManager().register(resourceLocation, exileTreeTexture);
-
+                handledLocation.add(resourceLocation);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -181,8 +182,8 @@ public class PerkButtonPainter {
 
     }
 
-    public static ResourceLocation getNewLocation(ResourceLocation color, ResourceLocation border, ResourceLocation perk){
-        return new ResourceLocation(PainterController.nameSpace, color.getPath() + "_" + border.getPath() + "_" + perk.getPath());
+    public static ResourceLocation getNewLocation(TalentTree tree, ResourceLocation color, ResourceLocation border, ResourceLocation perk){
+        return new ResourceLocation(PainterController.nameSpace, tree.getSchool_type().toString().hashCode() + "_" + color.getPath() + "_" + border.getPath() + "_" + perk.getPath());
     }
 
 }
