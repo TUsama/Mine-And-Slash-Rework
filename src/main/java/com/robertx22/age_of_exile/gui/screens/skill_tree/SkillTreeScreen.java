@@ -262,7 +262,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
             PerkConnectionCache.init(this);
             PerkConnectionPainter.init(this);
 
-            /*AllPerkButtonPainter.getPainter(this.schoolType).init(this.pointPerkButtonMap.values().stream().map(x -> new ButtonIdentifier(school, x.point, x.perk)).toList());*/
+            painter.init(this.pointPerkButtonMap.values().stream().map(x -> new ButtonIdentifier(school, x.point, x.perk)).toList());
 
             goToCenter();
         } catch (Exception e) {
@@ -362,7 +362,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
 
         PerkConnectionPainter.handleUpdateQueue();
-        painter.handlePaintQueue();
+        painter.updateOnScreenClose();
 
         super.onClose();
 

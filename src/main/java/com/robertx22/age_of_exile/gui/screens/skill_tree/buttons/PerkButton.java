@@ -16,6 +16,7 @@ import com.robertx22.age_of_exile.mmorpg.MMORPG;
 import com.robertx22.age_of_exile.mmorpg.SlashRef;
 import com.robertx22.age_of_exile.saveclasses.PointData;
 import com.robertx22.age_of_exile.saveclasses.gearitem.gear_bases.TooltipInfo;
+import com.robertx22.age_of_exile.saveclasses.perks.TalentsData;
 import com.robertx22.age_of_exile.uncommon.MathHelper;
 import com.robertx22.age_of_exile.uncommon.utilityclasses.ClientOnly;
 import com.robertx22.age_of_exile.vanilla_mc.packets.perks.PerkChangePacket;
@@ -33,7 +34,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class PerkButton extends ImageButton {
@@ -43,6 +45,10 @@ public class PerkButton extends ImageButton {
     public static ResourceLocation LOCKED_TEX = new ResourceLocation(SlashRef.MODID, "textures/gui/locked.png");
     static ResourceLocation ID = new ResourceLocation(SlashRef.MODID, "textures/gui/skill_tree/perk_buttons.png");
     public final List<String> matchStrings;
+    public final ButtonIdentifier buttonIdentifier;
+    public final List<SelfCheckTask> selfCheckTasks = new ArrayList<>();
+    private final SkillTreeScreen screen;
+    private final OpacityController opacityController;
     public Perk perk;
     public PointData point;
     public TalentTree school;
@@ -52,14 +58,9 @@ public class PerkButton extends ImageButton {
     public int origX;
     public int origY;
     public String perkid = "";
-    public final ButtonIdentifier buttonIdentifier;
     //not a real status, it will only sync to real status by using some method.
-    public PerkStatus lazyStatus;
-    public final List<SelfCheckTask> selfCheckTasks = new ArrayList<>();
-    private final SkillTreeScreen screen;
+    private PerkStatus lazyStatus;
     private ResourceLocation wholeTexture;
-
-    private final OpacityController opacityController;
 
     public PerkButton(SkillTreeScreen screen, PlayerData playerData, TalentTree school, PointData point, Perk perk, int x, int y) {
         super(x, y, perk.getType().size, perk.getType().size, 0, 0, 1, ID, (action) -> {
@@ -91,6 +92,54 @@ public class PerkButton extends ImageButton {
         return screen;
     }
 
+    public void updateLazyStatus(PerkStatus lazyStatus) {
+        this.lazyStatus = lazyStatus;
+        updateTexture();
+    }
+
+    public PerkStatus getLazyStatus() {
+        return lazyStatus;
+    }
+
+    // use getStatus in a per-tick situation will affect performance a lot, this is a lazy version replacement.
+    // invoke this when clicking a button
+    public void updateRelatedButtonStatus() {
+        // no need to check free point here, move this check to self check.
+        //if (!hasFreePoints(data, school.getSchool_type())) return;
+
+        TalentTree school = this.school;
+        TalentTree.SchoolType schoolType = school.getSchool_type();
+        Perk perk = school.calcData.getPerk(this.point);
+        //wait for the playerData update.
+        SelfCheckTask waitingStatusUpdate = new SelfCheckTask(x -> {
+            return x.getLazyStatus() != playerData.talents.getStatus(ClientOnly.getPlayer(), x.school, x.point);
+        }, x -> {
+            x.updateLazyStatus(playerData.talents.getStatus(ClientOnly.getPlayer(), x.school, x.point));
+        }, 3000);
+
+        //if this perk is a one-kind perk, send the self-check task to their checklist.
+        if (perk.one_kind != null && !perk.one_kind.isEmpty()) {
+
+            Set<String> qualifiedPerk = playerData.talents.getAllAllocatedPerks(schoolType).values().stream().filter(x -> x.one_kind != null && x.one_kind.equals(perk.one_kind)).map(x -> x.id).collect(Collectors.toSet());
+            Iterator<PerkButton> iterator = new ArrayList<>(this.getScreen().pointPerkButtonMap.values()).iterator();
+            while (iterator.hasNext()) {
+                PerkButton next = iterator.next();
+                if (qualifiedPerk.contains(next.perk.id)) {
+                    waitingStatusUpdate.sendTo(next);
+                }
+            }
+
+        }
+
+        Set<PointData> con = school.calcData.connections.get(this.point);
+        // todo if player don't have free points, and it closes the skill screen, this task will lose forever, it means that if a player closes the screen, and reopen it with no free point, and they get a new free point when this reopened screen is on, the button's status won't change at all, player must reopen the screen again to get the right status.
+
+        con.stream().filter(x -> x != null && !playerData.talents.getSchool(schoolType).isAllocated(x)).forEach(x -> waitingStatusUpdate.sendTo(this.getScreen().pointPerkButtonMap.get(x)));
+        waitingStatusUpdate.sendTo(this);
+
+
+    }
+
 
     public boolean isInside(int x, int y) {
 
@@ -109,7 +158,7 @@ public class PerkButton extends ImageButton {
             } else {
                 Integer ticker = next.getLastTime();
                 if (ticker == null) return;
-                if (ticker > 0){
+                if (ticker > 0) {
                     next.setLastTime(ticker - 1);
                 } else {
                     System.out.println("discard!");
@@ -119,6 +168,7 @@ public class PerkButton extends ImageButton {
             }
         }
     }
+
 
     private void setTooltipMOD(GuiGraphics gui, int mouseX, int mouseY) {
 
@@ -177,11 +227,10 @@ public class PerkButton extends ImageButton {
                 }
                 this.onClick(mouseX, mouseY);
 
-                CompletableFuture.runAsync(() -> {
-                    PerkConnectionCache.addToUpdate(this);
-                    screen.painter.addToUpdate(this.buttonIdentifier);
-                    playerData.talents.updateRelatedButtonStatus(this);
-                });
+                updateRelatedButtonStatus();
+                PerkConnectionCache.addToUpdate(this);
+                screen.painter.addToUpdate(this.buttonIdentifier);
+
                 
                 /*System.out.println("this point is: " + getX() + " " + getY());
                 ArrayList<PointData> pointData = new ArrayList<>(screen.school.calcData.connections.get(point));

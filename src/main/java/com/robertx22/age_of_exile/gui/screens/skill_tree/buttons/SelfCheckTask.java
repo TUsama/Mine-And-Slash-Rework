@@ -33,7 +33,7 @@ public class SelfCheckTask {
     }
 
     public void sendTo(PerkButton button){
-        System.out.println("send!");
+        if (button.selfCheckTasks.stream().anyMatch(x -> x.equals(this))) return;
         button.selfCheckTasks.add(this);
     }
 }

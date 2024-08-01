@@ -17,13 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OnClientTick {
 
     public static HashMap<String, Integer> COOLDOWN_READY_MAP = new HashMap<>();
-
+    public static ConcurrentHashMap<Integer, AllPerkButtonPainter> container = new ConcurrentHashMap<>();
+    public static boolean isRegistering = false;
     static int TICKS_TO_SHOW = 50;
-
     private static int NO_MANA_SOUND_COOLDOWN = 0;
     private static int handleDrawInterval = 0;
-
-    public static ConcurrentHashMap<Integer, AllPerkButtonPainter> container = new ConcurrentHashMap<>();
 
     public static boolean canSoundNoMana() {
         return NO_MANA_SOUND_COOLDOWN <= 0;
@@ -32,8 +30,6 @@ public class OnClientTick {
     public static void setNoManaSoundCooldown() {
         NO_MANA_SOUND_COOLDOWN = 30;
     }
-
-    public static boolean isRegistering = false;
 
     public static void onEndTick(Minecraft mc) {
 
@@ -44,17 +40,13 @@ public class OnClientTick {
                 x.checkIfNeedRepaint();
             });
 
-            if (RenderSystem.isOnRenderThread()) {
+
+            RenderSystem.recordRenderCall(() -> {
                 PerkButtonPainter.handleRegisterQueue();
                 container.values().forEach(AllPerkButtonPainter::handleRegisterQueue);
                 PerkConnectionPainter.handleRegisterQueue();
-            } else {
-                RenderSystem.recordRenderCall(() -> {
-                    PerkButtonPainter.handleRegisterQueue();
-                    PerkConnectionPainter.handleRegisterQueue();
-                });
+            });
 
-            }
 
             if (player == null) {
                 return;

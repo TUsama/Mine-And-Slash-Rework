@@ -139,7 +139,8 @@ public class TalentTree implements JsonExileRegistry<TalentTree>, IAutoGson<Tale
                 buttonIdentifiers.add(buttonIdentifier);
             }
             PerkButtonPainter.handlePaintQueue();
-            AllPerkButtonPainter.getPainter(this.getSchool_type()).init(buttonIdentifiers);
+            //can't run this here, cuz at this moment not all the perk status is ready!
+            //AllPerkButtonPainter.getPainter(this.getSchool_type()).init(buttonIdentifiers);
         });
     }
 

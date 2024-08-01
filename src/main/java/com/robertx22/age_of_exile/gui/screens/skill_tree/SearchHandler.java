@@ -51,28 +51,28 @@ public class SearchHandler {
 
         thisTimeSearch = new String(value);
         if (searchHistory.containsKey(thisTimeSearch)) {
-            System.out.println("can find in history");
+            //System.out.println("can find in history");
             this.qualifiedButtons = searchHistory.get(thisTimeSearch);
             return;
         }
         if (lastTimeSearch.equals(thisTimeSearch)) return;
         //it means that this is the first time search
         if (lastTimeSearch.isEmpty()) {
-            System.out.println("last is empty");
+            //System.out.println("last is empty");
             Iterator<PerkButton> iterator = allButtons.iterator();
             while (iterator.hasNext()) {
                 PerkButton next = iterator.next();
                 if (next.matchStrings.stream().anyMatch(x -> x.contains(thisTimeSearch)) || next.perk.locName().getString().toLowerCase().contains(thisTimeSearch))
                     qualifiedButtons.add(next);
             }
-            System.out.println("add all!");
+            //System.out.println("add all!");
         } else {
             //check if new search is inherited from the last time search.
-            System.out.println("is not empty");
+            //System.out.println("is not empty");
             if (thisTimeSearch.contains(lastTimeSearch)) {
-                System.out.println("contain");
-                System.out.println("last is: " + lastTimeSearch);
-                System.out.println("this is: " + thisTimeSearch);
+                //System.out.println("contain");
+                //System.out.println("last is: " + lastTimeSearch);
+                //System.out.println("this is: " + thisTimeSearch);
                 Iterator<PerkButton> iterator = qualifiedButtons.iterator();
                 while (iterator.hasNext()) {
                     PerkButton next = iterator.next();
@@ -80,7 +80,7 @@ public class SearchHandler {
                         iterator.remove();
                 }
             } else {
-                System.out.println("not contain");
+                //System.out.println("not contain");
                 qualifiedButtons.clear();
                 Iterator<PerkButton> iterator = allButtons.iterator();
                 while (iterator.hasNext()) {

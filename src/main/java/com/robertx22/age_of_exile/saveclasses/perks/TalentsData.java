@@ -170,52 +170,6 @@ public class TalentsData implements IStatCtx {
         }
     }
 
-    // use getStatus in a per-tick situation will affect performance a lot, this is a lazy version replacement.
-    // invoke this when clicking a button
-    public void updateRelatedButtonStatus(PerkButton button) {
-        // no need to check free point here, move this check to self check.
-        //if (!hasFreePoints(data, school.getSchool_type())) return;
-
-
-        CompletableFuture.runAsync(() ->
-        {
-            TalentTree school = button.school;
-            TalentTree.SchoolType schoolType = school.getSchool_type();
-            Perk perk = school.calcData.getPerk(button.point);
-
-            //wait for the playerData update.
-            SelfCheckTask waitingStatusUpdate = new SelfCheckTask(x -> {
-                System.out.println("lazy is: " + x.lazyStatus);
-                System.out.println("current is: " + getStatus(ClientOnly.getPlayer(), x.school, x.point));
-                return x.lazyStatus != getStatus(ClientOnly.getPlayer(), x.school, x.point);
-            }, x -> {
-                x.lazyStatus = getStatus(ClientOnly.getPlayer(), x.school, x.point);
-                x.updateTexture();
-                System.out.println("wait done!");
-            }, 1000);
-
-            //if this perk is a one-kind perk, send the self-check task to their checklist.
-            if (perk.one_kind != null && !perk.one_kind.isEmpty()) {
-
-                Set<String> qualifiedPerk = getAllAllocatedPerks(schoolType).values().stream().filter(x -> x.one_kind != null && x.one_kind.equals(perk.one_kind)).map(x -> x.id).collect(Collectors.toSet());
-                Iterator<PerkButton> iterator = new ArrayList<>(button.getScreen().pointPerkButtonMap.values()).iterator();
-                while (iterator.hasNext()) {
-                    PerkButton next = iterator.next();
-                    if (qualifiedPerk.contains(next.perk.id)) {
-                        waitingStatusUpdate.sendTo(next);
-                    }
-                }
-
-            }
-
-            Set<PointData> con = school.calcData.connections.get(button.point);
-            // todo if player don't have free points, and it closes the skill screen, this task will lose forever, it means that if a player closes the screen, and reopen it with no free point, and they get a new free point when this reopened screen is on, the button's status won't change at all, player must reopen the screen again to get the right status.
-
-            con.stream().filter(x -> x != null && !getSchool(schoolType).isAllocated(x)).forEach(x -> waitingStatusUpdate.sendTo(button.getScreen().pointPerkButtonMap.get(x)));
-            waitingStatusUpdate.sendTo(button);
-
-        });
-    }
 
     public Perk.Connection getConnection(TalentTree school, PointData one, PointData two) {
 

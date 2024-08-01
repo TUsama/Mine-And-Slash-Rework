@@ -21,7 +21,7 @@ public class NonSearching extends OpacityControllerState {
             Perk.PerkType type = button.perk.getType();
             return type == Perk.PerkType.START ? OpacityController.HIGHLIGHT : OpacityController.HIDE;
         }
-        return button.lazyStatus.getOpacity();
+        return button.getLazyStatus().getOpacity();
     }
 
     @Override
