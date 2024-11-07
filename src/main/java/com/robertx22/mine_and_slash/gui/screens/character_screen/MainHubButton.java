@@ -76,6 +76,7 @@ public class MainHubButton extends ImageButton {
             //System.out.println(getDynamicAlpha(40));
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, getDynamicAlpha(40));
             RenderUtils.render16Icon(gui, EXLAMATION_MARK_TEX, this.getX() + 5, this.getY() + 6);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.disableBlend();
 
         }
