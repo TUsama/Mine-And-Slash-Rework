@@ -461,6 +461,11 @@ public class MainHubScreen extends BaseScreen implements INamedScreen {
 
         }
 
+        @Override
+        public void onRelease(double pMouseX, double pMouseY) {
+            this.setFocused(false);
+        }
+
     }
 
 
