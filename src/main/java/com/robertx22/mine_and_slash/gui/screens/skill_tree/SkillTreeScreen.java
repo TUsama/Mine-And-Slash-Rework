@@ -231,7 +231,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
     @Override
     public boolean charTyped(char pCodePoint, int pModifiers) {
         SEARCH.setFocused(true);
-        return super.charTyped(pCodePoint, pModifiers);
+        return SEARCH.charTyped(pCodePoint, pModifiers);
     }
 
     @Override
