@@ -2,6 +2,7 @@ package com.robertx22.mine_and_slash.gui.screens.skill_tree.buttons;
 
 import com.google.common.collect.HashMultimap;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.robertx22.library_of_exile.utils.Watch;
 import com.robertx22.mine_and_slash.capability.player.PlayerData;
 import com.robertx22.mine_and_slash.database.data.perks.Perk;
 import com.robertx22.mine_and_slash.database.data.perks.PerkStatus;
@@ -26,6 +27,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.time.StopWatch;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -185,13 +187,8 @@ public class PerkButton extends ImageButton {
 
         var search = SkillTreeScreen.SEARCH.getValue();
 
-        boolean containsSearchStat = perk.stats.stream()
-                .anyMatch(item -> item.getStat().locName().getString().toLowerCase().contains(search.toLowerCase()));
 
-        boolean containsName = perk.locName().getString().toLowerCase().contains(search.toLowerCase());
-
-
-        float opacity = search.isEmpty() || containsSearchStat || containsName ? 1F : 0.2f;
+        float opacity;
 
         if (!search.isEmpty()) {
             if (search.equals("all")) {
@@ -200,6 +197,12 @@ public class PerkButton extends ImageButton {
                 } else {
                     opacity = 1;
                 }
+            } else {
+                boolean containsSearchStat = perk.stats.stream()
+                        .anyMatch(item -> item.getStat().locName().getString().toLowerCase().contains(search.toLowerCase()));
+
+                boolean containsName = perk.locName().getString().toLowerCase().contains(search.toLowerCase());
+                opacity = containsSearchStat || containsName ? 1F : 0.2f;
             }
         } else {
             opacity = status.getOpacity();
@@ -216,7 +219,7 @@ public class PerkButton extends ImageButton {
 
         int offcolor = (int) ((perk.getType().size - 20) / 2F);
 
-        gui.setColor(1.0F, 1.0F, 1.0F, opacity);
+        //gui.setColor(1.0F, 1.0F, 1.0F, opacity);
 
         HashMultimap<ResourceLocation, BufferInfo> container = screen.vertexContainer.map;
         var matrix4f = new Matrix4f(gui.pose().last().pose());
@@ -234,14 +237,14 @@ public class PerkButton extends ImageButton {
         }
 
 
-        gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
+        //gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
 
         container.put(perk.getIcon(), BufferInfo.of(xPos(offset, posMulti), yPos(offset, posMulti), -1, 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize, matrix4f).withRenderInfo(new BufferInfo.RenderInfo(opacity)));
 
 
 
         //   gui.pose().scale(1F / scale, 1F / scale, 1F / scale);
-        gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        //gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         gui.pose().popPose();
 
