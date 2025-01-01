@@ -60,7 +60,7 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
     public VertexContainer vertexContainer = new VertexContainer();
 
 
-    private void renderConnection(GuiGraphics graphics, PerkConnectionRender renderer, VertexConsumer buffer) {
+    private void renderConnection(GuiGraphics graphics, PerkConnectionRender renderer) {
 
         graphics.pose().pushPose();
         PerkPointPair pair = renderer.pair();
@@ -167,15 +167,9 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
 
     private void renderConnections(GuiGraphics gui) {
-        RenderSystem.setShaderTexture(0, SlashRef.id("textures/gui/skill_tree/skill_connection.png"));
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         for (PerkConnectionRender con : this.buttonConnections) {
-            this.renderConnection(gui, con, bufferbuilder);
+            this.renderConnection(gui, con);
         }
-
-        BufferUploader.drawWithShader(bufferbuilder.end());
     }
 
 
@@ -487,20 +481,9 @@ public abstract class SkillTreeScreen extends BaseScreen implements INamedScreen
 
 
             super.render(gui, x, y, ticks);
-            //Watch watch1 = new Watch();
-            for (Map.Entry<ResourceLocation, Collection<BufferInfo>> entry : this.vertexContainer.map.asMap().entrySet()) {
-                ResourceLocation key = entry.getKey();
-                RenderType skillTreeRenderType = SkillTreeRenderType.getSkillTreeRenderType(key.toString(), key);
-                VertexConsumer buffer = gui.bufferSource().getBuffer(skillTreeRenderType);
-
-                for (BufferInfo bufferInfo : entry.getValue()) {
-                    bufferInfo.upload(buffer);
-                }
-
-            }
-
+            // draw
+            this.vertexContainer.draw(gui.bufferSource());
             this.vertexContainer.refresh();
-            //System.out.println(watch1.getPrint());
             this.tick_count++;
 
         } catch (Exception e) {
