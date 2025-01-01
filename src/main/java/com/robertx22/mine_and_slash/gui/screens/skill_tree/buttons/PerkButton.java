@@ -222,13 +222,12 @@ public class PerkButton extends ImageButton {
         //gui.setColor(1.0F, 1.0F, 1.0F, opacity);
 
         HashMultimap<ResourceLocation, BufferInfo> container = screen.vertexContainer.map;
-        var matrix4f = new Matrix4f(gui.pose().last().pose());
 
         //BlitOffset indicate the distance to the camera.
         //bigger = closer
-        container.put(perk.getType().getColorTexture(status), BufferInfo.of(xPos(offcolor, posMulti), yPos(offcolor, posMulti),20, 20, -3, 0.0f, 0, 20, 20, 20, 20, matrix4f).withRenderInfo(new BufferInfo.RenderInfo(opacity)));
+        container.put(perk.getType().getColorTexture(status), BufferInfo.of(xPos(offcolor, posMulti), yPos(offcolor, posMulti),20, 20, -3, 0.0f, 0, 20, 20, 20, 20, gui.pose().last().pose()).withRenderInfo(new BufferInfo.RenderInfo(opacity)));
 
-        container.put(perk.getType().getBorderTexture(status), BufferInfo.of(xPos(0, posMulti), yPos(0, posMulti), -2, 0, 0, this.width, this.height, this.width, this.height, matrix4f).withRenderInfo(new BufferInfo.RenderInfo(opacity)));
+        container.put(perk.getType().getBorderTexture(status), BufferInfo.of(xPos(0, posMulti), yPos(0, posMulti), -2, 0, 0, this.width, this.height, this.width, this.height, gui.pose().last().pose()).withRenderInfo(new BufferInfo.RenderInfo(opacity)));
 
 
 
@@ -239,7 +238,7 @@ public class PerkButton extends ImageButton {
 
         //gui.setColor(1.0F, 1.0F, 1.0F, MathHelper.clamp(opacity, 0, 1));
 
-        container.put(perk.getIcon(), BufferInfo.of(xPos(offset, posMulti), yPos(offset, posMulti), -1, 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize, matrix4f).withRenderInfo(new BufferInfo.RenderInfo(opacity)));
+        container.put(perk.getIcon(), BufferInfo.of(xPos(offset, posMulti), yPos(offset, posMulti), -1, 0, 0, type.iconSize, type.iconSize, type.iconSize, type.iconSize, gui.pose().last().pose()).withRenderInfo(new BufferInfo.RenderInfo(opacity)));
 
 
 

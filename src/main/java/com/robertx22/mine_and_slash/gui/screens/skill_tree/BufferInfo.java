@@ -34,7 +34,7 @@ public record BufferInfo(float pX1, float pX2, float pY1, float pY2, float pBlit
     }
 
     public static BufferInfo of(float pX1, float pX2, float pY1, float pY2, float pBlitOffset, int pUWidth, int pVHeight, float pUOffset, float pVOffset, int pTextureWidth, int pTextureHeight, Matrix4f matrix4f) {
-        return new BufferInfo(pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0.0F) / (float)pTextureWidth, (pUOffset + (float)pUWidth) / (float)pTextureWidth, (pVOffset + 0.0F) / (float)pTextureHeight, (pVOffset + (float)pVHeight) / (float)pTextureHeight, matrix4f, new RenderInfo(1.0f));
+        return new BufferInfo(pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0.0F) / (float)pTextureWidth, (pUOffset + (float)pUWidth) / (float)pTextureWidth, (pVOffset + 0.0F) / (float)pTextureHeight, (pVOffset + (float)pVHeight) / (float)pTextureHeight, new Matrix4f(matrix4f), new RenderInfo(1.0f));
     }
 
     public BufferInfo withRenderInfo(RenderInfo renderInfo){
