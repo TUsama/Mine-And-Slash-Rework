@@ -336,7 +336,7 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         boolean showeffect = Screen.hasShiftDown();
 
 
-        Set<ExileEffect> effect = new HashSet<>();
+        Set<ExileEffect> effect = new LinkedHashSet<>();
         List<String> ticks = new ArrayList<>();
         //In CTE2 the duration of some effects is not an integer.
         DecimalFormat decimalFormat = new DecimalFormat("0.0");

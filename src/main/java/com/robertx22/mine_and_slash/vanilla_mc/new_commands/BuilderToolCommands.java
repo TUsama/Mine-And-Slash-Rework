@@ -1,21 +1,20 @@
 package com.robertx22.mine_and_slash.vanilla_mc.new_commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.robertx22.library_of_exile.command_wrapper.CommandBuilder;
-import com.robertx22.library_of_exile.command_wrapper.PermWrapper;
-import com.robertx22.library_of_exile.command_wrapper.PlayerWrapper;
-import com.robertx22.library_of_exile.command_wrapper.RegistryWrapper;
+import com.robertx22.library_of_exile.command_wrapper.*;
 import com.robertx22.mine_and_slash.database.registry.ExileRegistryTypes;
 import com.robertx22.mine_and_slash.maps.DungeonRoom;
 import com.robertx22.mine_and_slash.maps.dungeon_generation.RoomType;
 import com.robertx22.mine_and_slash.maps.dungeon_reg.Dungeon;
 import com.robertx22.mine_and_slash.vanilla_mc.commands.CommandRefs;
 import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 
@@ -26,6 +25,44 @@ import java.util.Map;
 
 public class BuilderToolCommands {
     public static void reg(CommandDispatcher dis) {
+        CommandBuilder.of(CommandRefs.ID, dis, b -> {
+            PlayerWrapper enarg = new PlayerWrapper();
+            var RADIUS = new IntWrapper("radius");
+            var HEIGHT = new IntWrapper("height");
+
+            b.addLiteral("builder_tool_warning", PermWrapper.OP);
+            b.addLiteral("generate_structure_blocks_per_chunk", PermWrapper.OP);
+            b.addArg(RADIUS);
+            b.addArg(HEIGHT);
+
+            b.addArg(enarg);
+
+            b.action(e -> {
+
+                Player p = enarg.get(e);
+
+                if (!p.isCreative()) {
+                    p.sendSystemMessage(Component.literal("You must be in creative mode to use this command. This is extra safety to make sure this command isn't usable accidentally."));
+                    return;
+                }
+                ServerLevel world = (ServerLevel) p.level();
+
+                BlockPos pos = p.blockPosition();
+                int radius = RADIUS.get(e);
+                int height = HEIGHT.get(e);
+                ChunkPos cp = new ChunkPos(pos);
+
+                for (int x = 0; x < radius; x++) {
+                    for (int z = 0; z < radius; z++) {
+                        var cpos = new ChunkPos(cp.x + x, cp.z + z);
+                        var fpos = cpos.getBlockAt(0, pos.getY(), 0);
+                        //world.setBlock(fpos, Blocks.STRUCTURE_BLOCK.defaultBlockState(), 2);
+                        StructureUtils.createNewEmptyStructureBlock(x + "_" + z, fpos, new BlockPos(16, height, 16), Rotation.NONE, world);
+                    }
+                }
+            });
+
+        }, "Gens structure blocks in radius for every chunk");
 
         CommandBuilder.of(CommandRefs.ID, dis, x -> {
             PlayerWrapper enarg = new PlayerWrapper();

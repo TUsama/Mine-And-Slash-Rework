@@ -20,6 +20,7 @@ public enum Chats implements IAutoLocName {
     TOTAL_MOBS("Mobs in Map: %1$s/%2$s"),
     TOTAL_CHESTS("Chests in Map: %1$s/%2$s"),
     NOT_INSIDE_MAP("You are not inside a valid Adventure Map"),
+    MAP_PROGRESS_HELP("Tip: Mob Kills and Chest Looting provide Map Exploration Progress!"),
 
 
     NOT_GEAR_OR_NOT_COMPAT("Not a Gear Item or not recognized as such."),

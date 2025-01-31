@@ -1,14 +1,14 @@
 package com.robertx22.mine_and_slash.database.data.spells.components.actions;
 
+import com.robertx22.library_of_exile.utils.RandomUtils;
+import com.robertx22.library_of_exile.utils.geometry.MyPosition;
+import com.robertx22.library_of_exile.vanilla_util.main.VanillaUTIL;
 import com.robertx22.mine_and_slash.database.data.spells.components.MapHolder;
 import com.robertx22.mine_and_slash.database.data.spells.components.Spell;
 import com.robertx22.mine_and_slash.database.data.spells.entities.StationaryFallingBlockEntity;
 import com.robertx22.mine_and_slash.database.data.spells.map_fields.MapField;
 import com.robertx22.mine_and_slash.database.data.spells.spell_classes.SpellCtx;
 import com.robertx22.mine_and_slash.database.data.spells.spell_classes.SpellUtils;
-import com.robertx22.library_of_exile.utils.RandomUtils;
-import com.robertx22.library_of_exile.utils.geometry.MyPosition;
-import com.robertx22.library_of_exile.vanilla_util.main.VanillaUTIL;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -69,7 +69,9 @@ public class SummonBlockAction extends SpellAction {
 
             int times = 0;
 
-            while (!found && pos.y() > 1 && SEARCH > times) {
+            int minHeight = ctx.world.getMinBuildHeight();
+
+            while (!found && pos.y() > minHeight && SEARCH > times) {
                 times++;
                 if (!isSolid(ctx.world, pos.asBlockPos()) && isSolid(ctx.world, pos.asBlockPos().below())) {
                     found = true;

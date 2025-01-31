@@ -110,6 +110,9 @@ public class MapBarButton extends ImageButton {
         } else {
             all.add(Chats.MAP_NOT_SCOUTED.locName().withStyle(ChatFormatting.RED));
         }
+
+        all.add(Chats.MAP_PROGRESS_HELP.locName().withStyle(ChatFormatting.BLUE));
+
         return all;
     }
 
