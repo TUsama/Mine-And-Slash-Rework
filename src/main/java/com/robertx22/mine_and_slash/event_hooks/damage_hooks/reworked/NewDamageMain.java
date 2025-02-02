@@ -42,6 +42,21 @@ public class NewDamageMain {
             }
         });
 
+        // uh to fix melee attacks not counting correct for recorded dmg..
+        ExileEvents.DAMAGE_AFTER_CALC.register(new EventConsumer<>() {
+            @Override
+            public int callOrder() {
+                return 9;
+            }
+
+            @Override
+            public void accept(ExileEvents.OnDamageEntity event) {
+                if (event.source != null) {
+                    var duck = (DamageSourceDuck) event.source;
+                    duck.tryOverrideDmgWithMns(event);
+                }
+            }
+        });
         // todo this isnt last sometimes, and other mods might modify it..
         ExileEvents.DAMAGE_AFTER_CALC.register(new EventConsumer<>() {
             @Override

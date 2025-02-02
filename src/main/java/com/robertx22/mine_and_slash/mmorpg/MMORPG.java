@@ -116,7 +116,7 @@ public class MMORPG {
     );
 
     public MMORPG() {
-
+        
         if (MMORPG.RUN_DEV_TOOLS) {
             ExileRegistryUtil.setCurrentRegistarMod(SlashRef.MODID);
         }
