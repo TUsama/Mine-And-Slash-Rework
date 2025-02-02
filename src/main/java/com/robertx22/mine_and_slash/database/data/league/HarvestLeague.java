@@ -21,7 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -148,7 +148,7 @@ public class HarvestLeague extends LeagueMechanic {
                         var spawnpos = be.getRandomMobSpawnPos(type);
 
                         if (spawnpos != null) {
-                            for (Mob mob : MobBuilder.of(getRandomMobToSpawn(), x -> {
+                            for (LivingEntity mob : MobBuilder.of(getRandomMobToSpawn(), x -> {
                                 x.amount = 1;
                             }).summonMobs(level, spawnpos)) {
 

@@ -206,22 +206,18 @@ public class MapData {
         return getStartChunk(new ChunkPos(pos), offset);
     }
 
-    // todo why the hell does this only work fine with the 11 minus
+    // todo need to test if the magic number 11 is important..
     public static ChunkPos getStartChunk(ChunkPos cp, int offset) {
         // var newcp = (new ChunkPos(cp.x / offset * offset, cp.z / offset * offset));
-
-        //return newcp;
-
+        //return newcp; i can't figure why this code fails but only on dungeon maps
 
         int chunkX = cp.x;
         int chunkZ = cp.z;
-        int distToEntranceX = 11 - (chunkX % DUNGEON_LENGTH);
-        int distToEntranceZ = 11 - (chunkZ % DUNGEON_LENGTH);
+        int distToEntranceX = 11 - (chunkX % offset);
+        int distToEntranceZ = 11 - (chunkZ % offset);
         chunkX += distToEntranceX;
         chunkZ += distToEntranceZ;
         return new ChunkPos(chunkX, chunkZ);
-
-
     }
 
 }

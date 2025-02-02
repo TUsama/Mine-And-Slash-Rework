@@ -8,6 +8,7 @@ import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 import com.robertx22.mine_and_slash.vanilla_mc.commands.CommandRefs;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 
@@ -29,7 +30,7 @@ public class SpawnBoss {
         try {
             EntityType<? extends Mob> type = EntityType.ZOMBIE;
 
-            for (Mob en : MobBuilder.of(type, x -> {
+            for (LivingEntity en : MobBuilder.of(type, x -> {
                 x.rarity = ExileDB.MobRarities().get(IRarity.MYTHIC_ID);
             }).summonMobs(p.level(), p.blockPosition())) {
                 Load.Unit(en).setupRandomBoss();

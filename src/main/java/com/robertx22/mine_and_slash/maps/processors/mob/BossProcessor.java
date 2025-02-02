@@ -10,6 +10,7 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
@@ -33,7 +34,7 @@ public class BossProcessor extends DataProcessor {
 
         EntityType<? extends Mob> type = SpawnedMob.random(map).getType();
 
-        for (Mob en : MobBuilder.of(type, x -> {
+        for (LivingEntity en : MobBuilder.of(type, x -> {
             x.rarity = ExileDB.MobRarities().get(IRarity.MYTHIC_ID);
         }).summonMobs(world, pos)) {
             // remove this later Load.Unit(en).setupRandomBoss(); // todo

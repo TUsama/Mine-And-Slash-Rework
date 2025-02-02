@@ -60,7 +60,7 @@ public class DungeonRoomPlacer {
 
     private static boolean generateStructure(MapData mapData, LevelAccessor world, ChunkPos cpos, RandomSource random) {
 
-        DungeonBuilder builder = new DungeonBuilder(0, cpos);
+        DungeonBuilder builder = new DungeonBuilder(DungeonBuilder.mineAndSlashDungeonSettings(world, cpos));
         builder.build();
 
         if (!builder.builtDungeon.hasRoomForChunk(cpos)) {

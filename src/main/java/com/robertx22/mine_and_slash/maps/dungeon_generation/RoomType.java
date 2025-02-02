@@ -128,10 +128,6 @@ public enum RoomType implements IWeighted {
             ExileLog.get().warn("No possible rooms?");
         }
 
-        if (builder.builtDungeon.bossRooms >= builder.maxBossRooms) {
-            possible = tryFilter(possible, r -> !r.isBoss);
-        }
-
         return RandomUtils.weightedRandom(possible, builder.rand.nextDouble());
 
 

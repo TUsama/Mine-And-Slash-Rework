@@ -283,7 +283,9 @@ public class SupportGems {
 
 
         new SupportGem("summon_health", "Summon Health", PlayStyle.INT, 1.3F,
-                Arrays.asList(new StatMod(20, 50, SummonHealth.getInstance(), ModType.MORE)
+                Arrays.asList(
+                        new StatMod(15, 25, SummonHealth.getInstance(), ModType.MORE),
+                        new StatMod(10, 30, SummonHealth.getInstance(), ModType.FLAT)
                 ))
                 .levelReq(10).addToSerializables(MMORPG.SERIAZABLE_REGISTRATION_INFO);
 

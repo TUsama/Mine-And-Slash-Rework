@@ -8,6 +8,7 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ChunkPos;
@@ -34,7 +35,7 @@ public class MobBuilder {
         return b;
     }
 
-    public <T extends Mob> List<T> summonMobs(Level world, BlockPos p) {
+    public <T extends LivingEntity> List<T> summonMobs(Level world, BlockPos p) {
         List<T> list = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
             T mob = (T) summon(type, world, p);
@@ -65,7 +66,7 @@ public class MobBuilder {
         try {
             if (WorldUtils.isMapWorldClass(world)) {
                 var map = Load.mapAt(world, p);
-                Load.Unit(mob).mapUUID = map.map.uuid;
+                Load.Unit(mob).mapUUID = map.map.uuid; // todo this isnt used?
                 map.rooms.get(new ChunkPos(p)).mobs.total++;
             }
         } catch (Exception e) {

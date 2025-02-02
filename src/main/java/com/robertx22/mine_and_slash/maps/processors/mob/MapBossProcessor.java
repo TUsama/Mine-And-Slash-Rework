@@ -8,6 +8,7 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
@@ -29,7 +30,7 @@ public class MapBossProcessor extends DataProcessor {
 
         EntityType<? extends Mob> type = ExileDB.BossArena().get(map.map.arena).getRandomBoss();
 
-        for (Mob en : MobBuilder.of(type, x -> {
+        for (LivingEntity en : MobBuilder.of(type, x -> {
             x.rarity = ExileDB.MobRarities().get(IRarity.BOSS);
 
         }).summonMobs(world, pos)) {

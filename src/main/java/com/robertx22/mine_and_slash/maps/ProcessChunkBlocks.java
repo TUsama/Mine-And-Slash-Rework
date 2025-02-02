@@ -42,7 +42,7 @@ public class ProcessChunkBlocks {
         try {
             ChunkPos cpos = new ChunkPos(pos);
 
-            DungeonBuilder builder = new DungeonBuilder(0, cpos); // todo
+            DungeonBuilder builder = new DungeonBuilder(DungeonBuilder.mineAndSlashDungeonSettings(world, cpos)); // todo
             builder.build();
             BuiltRoom room = builder.builtDungeon.getRoomForChunk(cpos);
 
@@ -94,7 +94,7 @@ public class ProcessChunkBlocks {
 
                 int maxtogen = 3;
 
-                DungeonBuilder builder = new DungeonBuilder(0, start);
+                DungeonBuilder builder = new DungeonBuilder(DungeonBuilder.mineAndSlashDungeonSettings(level, start));
                 builder.build();
 
                 var map = Load.mapAt(level, pos);

@@ -4,6 +4,8 @@ import com.robertx22.library_of_exile.registry.ExileRegistryType;
 import com.robertx22.library_of_exile.registry.IAutoGson;
 import com.robertx22.library_of_exile.registry.JsonExileRegistry;
 import com.robertx22.mine_and_slash.database.registry.ExileRegistryTypes;
+import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
+import net.minecraft.world.entity.player.Player;
 
 public class DimensionConfig implements JsonExileRegistry<DimensionConfig>, IAutoGson<DimensionConfig> {
 
@@ -79,9 +81,27 @@ public class DimensionConfig implements JsonExileRegistry<DimensionConfig>, IAut
     public int max_lvl = Integer.MAX_VALUE;
     public int mob_lvl_per_distance = 100;
     public int min_lvl_area = 100;
+    public MinMax secondary_lvl_range = new MinMax(-1, -1);
     public boolean scale_to_nearest_player = false;
 
     public EntityConfig.SpecialMobStats stats = new EntityConfig.SpecialMobStats();
+
+
+    public boolean hasSecondaryLevelRange() {
+        return secondary_lvl_range.min > -1 && this.scale_to_nearest_player;
+    }
+
+    public MinMax getLevelRangeFor(Player p) {
+        if (p != null) {
+            int lvl = Load.Unit(p).getLevel();
+            if (hasSecondaryLevelRange()) {
+                if (lvl >= secondary_lvl_range.min) {
+                    return secondary_lvl_range;
+                }
+            }
+        }
+        return new MinMax(min_lvl, max_lvl);
+    }
 
     @Override
     public ExileRegistryType getExileRegistryType() {

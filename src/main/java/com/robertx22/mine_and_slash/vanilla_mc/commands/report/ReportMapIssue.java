@@ -33,7 +33,7 @@ public class ReportMapIssue {
 
                 String text = "Map Bug Report, Problem Room: ";
 
-                DungeonBuilder builder = new DungeonBuilder(0, p.chunkPosition());
+                DungeonBuilder builder = new DungeonBuilder(DungeonBuilder.mineAndSlashDungeonSettings(p.level(), p.chunkPosition()));
                 builder.build();
                 BuiltRoom room = builder.builtDungeon.getRoomForChunk(p.chunkPosition());
 

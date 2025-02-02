@@ -14,6 +14,7 @@ import com.robertx22.mine_and_slash.uncommon.utilityclasses.StringUTIL;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -114,7 +115,7 @@ public class ComplexMobProcessor extends DataProcessor {
             // temps
             int finalAmount = amount;
             MobRarity finalRarity = rarity;
-            for (Mob mob : MobBuilder.of(type, x -> {
+            for (LivingEntity mob : MobBuilder.of(type, x -> {
                 x.amount = finalAmount;
                 if (finalRarity != null) {
                     x.rarity = finalRarity;

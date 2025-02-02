@@ -313,6 +313,9 @@ public class DamageEvent extends EffectEvent {
 
     private float getAttackSpeedDamageMulti() {
 
+        if (ServerContainer.get().REMOVE_ATK_SPEED_COOLDOWN.get()) {
+            return 1;
+        }
 
         float cool = data.getNumber(EventData.ATTACK_COOLDOWN).number;
 
@@ -331,15 +334,19 @@ public class DamageEvent extends EffectEvent {
         if (attackInfo != null && attackInfo.getSource() != null) {
             if (attackInfo.getSource().getDirectEntity() instanceof ProjectileEntityDuck) {
                 if (data.getWeaponType() == WeaponTypes.bow) {
-                    // don't use this for crossbows, only bows need to be charged fully
 
-                    ProjectileEntityDuck duck = (ProjectileEntityDuck) attackInfo.getSource().getDirectEntity();
+                    if (!ServerContainer.get().REMOVE_ATK_SPEED_COOLDOWN.get()) {
 
-                    float arrowmulti = duck.my$getDmgMulti();
+                        // don't use this for crossbows, only bows need to be charged fully
 
-                    this.addMoreMulti(Words.ARROW_DRAW_AMOUNT_MULTI.locName(), EventData.NUMBER, arrowmulti);
+                        ProjectileEntityDuck duck = (ProjectileEntityDuck) attackInfo.getSource().getDirectEntity();
 
-                    // multiply dmg by saved charge value
+                        float arrowmulti = duck.my$getDmgMulti();
+
+                        this.addMoreMulti(Words.ARROW_DRAW_AMOUNT_MULTI.locName(), EventData.NUMBER, arrowmulti);
+
+                        // multiply dmg by saved charge value
+                    }
                 }
             }
         }
@@ -411,7 +418,6 @@ public class DamageEvent extends EffectEvent {
         if (source instanceof Player) {
             if (data.isBasicAttack()) {
                 float multi = getAttackSpeedDamageMulti();
-
                 if (multi > 0.8F) {
                     float fullswing = sourceData.getUnit().getCalculatedStat(FullSwingDamage.getInstance()).getMultiplier();
                     this.addMoreMulti(FullSwingDamage.getInstance(), EventData.NUMBER, fullswing);

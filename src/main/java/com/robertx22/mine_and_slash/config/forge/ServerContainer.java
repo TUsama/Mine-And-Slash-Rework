@@ -51,6 +51,7 @@ public class ServerContainer {
         STATION_SUCK_NEARBY_CHESTS = b.define("STATION_SUCK_NEARBY_CHESTS", false);
         SKULL_HIDES_LEVEL = b.comment("Mobs that are much higher level will hide their levels.").define("SKULL_HIDES_LEVEL", true);
         FORCE_SURVIVAL_MODE_OUTSIDE_MAP = b.comment("Do not change this").define("FORCE_SURVIVAL_MODE_OUTSIDE_MAP", true);
+        REMOVE_ATK_SPEED_COOLDOWN = b.comment("Mns tries to replicate vanilla atk speed and reduces dmg of basic attacks if hit too often").define("REMOVE_ATK_SPEED_COOLDOWN", false);
         MIN_LEVEL_MAP_DROPS = b.defineInRange("min_level_map_drops", 25, 0, Integer.MAX_VALUE);
         MIN_SLIME_SIZE_FOR_LOOT = b.defineInRange("MIN_SLIME_SIZE_FOR_LOOT", 3, 0, Integer.MAX_VALUE);
         DEATH_PENALTY_START_LEVEL = b.defineInRange("DEATH_PENALTY_START_LEVEL", 25, 0, Integer.MAX_VALUE);
@@ -228,6 +229,7 @@ public class ServerContainer {
     public ForgeConfigSpec.BooleanValue STATION_SUCK_NEARBY_CHESTS;
     public ForgeConfigSpec.BooleanValue SKULL_HIDES_LEVEL;
     public ForgeConfigSpec.BooleanValue FORCE_SURVIVAL_MODE_OUTSIDE_MAP;
+    public ForgeConfigSpec.BooleanValue REMOVE_ATK_SPEED_COOLDOWN;
 
     public ForgeConfigSpec.IntValue MIN_LEVEL_MAP_DROPS;
     public ForgeConfigSpec.IntValue MIN_SLIME_SIZE_FOR_LOOT;

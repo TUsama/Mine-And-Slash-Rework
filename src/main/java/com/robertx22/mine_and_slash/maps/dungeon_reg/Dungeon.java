@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+// separate dungeon required things to 1 data class so i can make different shadow dungeons with extra data more easily?
 public class Dungeon implements IAutoGson<Dungeon>, JsonExileRegistry<Dungeon>, ITranslated {
 
     public static Dungeon SERIALIZER = new Dungeon();

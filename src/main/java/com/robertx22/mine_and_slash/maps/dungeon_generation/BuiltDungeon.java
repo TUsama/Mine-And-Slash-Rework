@@ -35,7 +35,6 @@ public class BuiltDungeon {
     private boolean started = false;
     public int amount = 0;
     int ends = 0;
-    public int bossRooms = 0;
 
     private BuiltRoom[][] rooms;
 
@@ -299,10 +298,7 @@ public class BuiltDungeon {
             if (room.data.type.equals(RoomType.END)) {
                 ends++;
             }
-            if (room.room.isBoss) {
-                bossRooms++;
-            }
-
+            
 
             this.started = true;
 

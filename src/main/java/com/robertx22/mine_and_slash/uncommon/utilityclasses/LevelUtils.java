@@ -105,7 +105,7 @@ public class LevelUtils {
             int variance = RandomUtils.RandomRange(-varianceConfig, varianceConfig);
             info.add(LevelInfo.LevelSource.LEVEL_VARIANCE, variance);
         }
-        info.capToRange(LevelInfo.LevelSource.DIMENSION, new MinMax(dimConfig.min_lvl, dimConfig.max_lvl));
+        info.capToRange(LevelInfo.LevelSource.DIMENSION, dimConfig.getLevelRangeFor(nearestPlayer));
         info.capToRange(LevelInfo.LevelSource.MAX_LEVEL, new MinMax(1, GameBalanceConfig.get().MAX_LEVEL));
 
         if (en != null) {
