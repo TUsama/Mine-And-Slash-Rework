@@ -87,6 +87,9 @@ public class AilmentChance extends Stat {
             if (effect.unconvertedDamagePercent <= 0) {
                 return false;
             }
+            if (effect.data.getBoolean(EventData.IS_DODGED)) {
+                return false;
+            }
             return !effect.data.getBoolean(EventData.IS_BLOCKED) && effect.getElement() != null && effect.getElement() == ailment.element && (effect.getAttackType().isHit() || effect.getAttackType() == AttackType.bonus_dmg) && RandomUtils.roll(data.getValue());
         }
 

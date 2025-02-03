@@ -116,7 +116,7 @@ public class MMORPG {
     );
 
     public MMORPG() {
-        
+
         if (MMORPG.RUN_DEV_TOOLS) {
             ExileRegistryUtil.setCurrentRegistarMod(SlashRef.MODID);
         }
@@ -235,7 +235,7 @@ public class MMORPG {
 
     public void interMod(InterModEnqueueEvent event) {
 
-
+      
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> new SlotTypeMessage.Builder(RefCurio.RING).size(2).build());
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> new SlotTypeMessage.Builder(RefCurio.NECKLACE).size(1).build());
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> new SlotTypeMessage.Builder(RefCurio.OMEN).size(1).build());

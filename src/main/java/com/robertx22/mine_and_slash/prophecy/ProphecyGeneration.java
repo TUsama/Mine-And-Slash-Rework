@@ -42,21 +42,29 @@ public class ProphecyGeneration {
 
         var b = start.create(lvl, tier);
 
-        for (ProphecyModifierType type : modtypes) {
-            if (start.acceptsModifier(type) && type.canApplyTo(start, b) && RandomUtils.roll(type.chanceToSpawn())) {
-                var mod = ExileDB.ProphecyModifiers().getFilterWrapped(x -> x.modifier_type == type).of(x -> {
-                    if (x.tier_req > tier) {
-                        return false;
+        try {
+            for (ProphecyModifierType type : modtypes) {
+                if (start.acceptsModifier(type) && type.canApplyTo(start, b) && RandomUtils.roll(type.chanceToSpawn())) {
+                    var mod = ExileDB.ProphecyModifiers().getFilterWrapped(x -> x.modifier_type == type).of(x -> {
+                        if (x.tier_req > tier) {
+                            return false;
+                        }
+                        if (x.lvl_req > lvl) {
+                            return false;
+                        }
+                        return true;
+                    }).random();
+                    if (mod != null) {
+                        ProphecyModifierData md = new ProphecyModifierData(mod.GUID());
+                        data.mods.add(md);
+                        cost *= mod.cost_multi;
+                    } else {
+                        //ExileLog.get().warn("test");
                     }
-                    if (x.lvl_req > lvl) {
-                        return false;
-                    }
-                    return true;
-                }).random();
-                ProphecyModifierData md = new ProphecyModifierData(mod.GUID());
-                data.mods.add(md);
-                cost *= mod.cost_multi;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         data.cost = (int) cost;

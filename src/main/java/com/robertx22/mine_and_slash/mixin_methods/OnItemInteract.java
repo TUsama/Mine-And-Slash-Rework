@@ -266,6 +266,7 @@ public class OnItemInteract {
 
 
         });
+
         ForgeEvents.registerForgeEvent(PlayerEvent.ItemCraftedEvent.class, x -> {
             try {
                 if (!x.getEntity().level().isClientSide) {

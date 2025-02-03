@@ -26,6 +26,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -148,7 +149,10 @@ public class StatSoulItem extends Item implements IGUID, ICreativeTabNbt, iHideJ
             if (data != null) {
                 tooltip.clear();
                 if (Screen.hasShiftDown() && data.gear != null) {
-                    data.gear.gear.BuildTooltip(new TooltipContext(stack, tooltip, Load.Unit(ClientOnly.getPlayer())));
+                    // todo temp solution to view extracted souls
+                    var gearstack = new ItemStack(Items.IRON_SWORD);
+                    data.gear.saveTo(gearstack);
+                    data.gear.gear.BuildTooltip(new TooltipContext(gearstack, tooltip, Load.Unit(ClientOnly.getPlayer())));
                 } else {
                     ExileTooltips exileTooltips = data.getTooltip(stack, false);
                     exileTooltips.accept(new NameBlock(Collections.singletonList(stack.getHoverName())));

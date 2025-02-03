@@ -230,7 +230,7 @@ public class ServerContainer {
     public ForgeConfigSpec.BooleanValue SKULL_HIDES_LEVEL;
     public ForgeConfigSpec.BooleanValue FORCE_SURVIVAL_MODE_OUTSIDE_MAP;
     public ForgeConfigSpec.BooleanValue REMOVE_ATK_SPEED_COOLDOWN;
-
+  
     public ForgeConfigSpec.IntValue MIN_LEVEL_MAP_DROPS;
     public ForgeConfigSpec.IntValue MIN_SLIME_SIZE_FOR_LOOT;
     public ForgeConfigSpec.IntValue DEATH_PENALTY_START_LEVEL;

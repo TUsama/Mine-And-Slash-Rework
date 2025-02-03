@@ -8,6 +8,7 @@ import com.robertx22.mine_and_slash.maps.MapItemData;
 import com.robertx22.mine_and_slash.mechanics.base.LeagueBlockData;
 import com.robertx22.mine_and_slash.mechanics.base.LeagueControlBlockEntity;
 import com.robertx22.mine_and_slash.mmorpg.MMORPG;
+import com.robertx22.mine_and_slash.mmorpg.MnsAddons;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -104,12 +105,18 @@ public class LeagueMechanics {
     public static MapBossLeague MAP_BOSS = new MapBossLeague();
     public static MapRewardLeague MAP_REWARD = new MapRewardLeague();
 
-
     public static void init() {
         UBER.registerToExileRegistry(MMORPG.HARDCODED_REGISTRATION_INFO);
         HARVEST.registerToExileRegistry(MMORPG.HARDCODED_REGISTRATION_INFO);
         PROPHECY.registerToExileRegistry(MMORPG.HARDCODED_REGISTRATION_INFO);
         MAP_BOSS.registerToExileRegistry(MMORPG.HARDCODED_REGISTRATION_INFO);
         MAP_REWARD.registerToExileRegistry(MMORPG.HARDCODED_REGISTRATION_INFO);
+
+        // todo i think this will load after mods because its called in lib event
+        if (MnsAddons.isObeliskLoaded()) {
+            new ObeliskLeague().registerToExileRegistry(MMORPG.HARDCODED_REGISTRATION_INFO);
+        }
     }
+
+
 }

@@ -76,6 +76,8 @@ public class BaseStatsData implements IRerollable, IStatsContainer, IGearPartToo
 
     // this can run on client
     public List<TooltipStatWithContext> getAllStatsWithCtx(ExileStack ex) {
+
+
         List<TooltipStatWithContext> list = new ArrayList<>();
 
         var gear = ex.get(StackKeys.GEAR).get();

@@ -51,7 +51,7 @@ public class DungeonBuilder {
         this.rand = settings.ran;
         this.dungeon = RandomUtils.weightedRandom(settings.possibleDungeons, rand.nextDouble());
         this.size = RandomUtils.RandomRange(settings.minRooms, settings.maxRooms, rand);
-
+    
     }
 
 
