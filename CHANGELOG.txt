@@ -1,8 +1,6 @@
 Changelog of recent updates: https://github.com/RobertSkalko/Mine-And-Slash-Rework/blob/1.20-Forge/changelogs/v.6.1.txt
 
-v.6.1.13
+v.6.1.14
 
-- fix extracted soul tooltip
-- obelisks should now spawn as normal mechanics in map, instead of from chests (this last part needs editing the obelisk config to set chance to 0 in maps)
-- fix prophecy gen error
-- fix harvest maps
+- fix quality not showing on gear
+- mobs are now immune to damage for 2 ticks after spawning

@@ -75,10 +75,10 @@ public class DatapackStats implements ExileRegistryInit {
     // bonus per effect charges
 
     public static Stat MORE_DMG_PER_POWER = BonusStatPerEffectStacks.of(ModEffects.POWER_CHARGE, "more_dmg_per_power", "Damage per Power Charge",
-            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.get(), ModType.MORE
+            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.getId(), ModType.MORE
             ));
     public static Stat MORE_DMG_PER_FRENZY = BonusStatPerEffectStacks.of(ModEffects.POWER_CHARGE, "more_dmg_per_frenzy", "Damage per Frenzy Charge",
-            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.get(), ModType.MORE
+            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.getId(), ModType.MORE
             ));
 
     public static Stat MOVE_SPEED_PER_ENDURANCE_CHARGE = BonusStatPerEffectStacks.of(ModEffects.ENDURANCE_CHARGE, "move_speed_per_endurance_charge", "Move Speed per Endurance Charge",
@@ -92,19 +92,19 @@ public class DatapackStats implements ExileRegistryInit {
 
 
     public static Stat DMG_PER_ENDURANCE_CHARGE = BonusStatPerEffectStacks.of(ModEffects.ENDURANCE_CHARGE, "dmg_per_endurance_charge", "Damage per Endurance Charge",
-            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.get(), ModType.FLAT
+            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.getId(), ModType.FLAT
             ));
     public static Stat AOE_PER_POWER_CHARGE = BonusStatPerEffectStacks.of(ModEffects.POWER_CHARGE, "aoe_per_power_charge", "Aoe Increase per Power Charge",
-            new OptScaleExactStat(1, SpellChangeStats.INCREASED_AREA.get(), ModType.FLAT));
+            new OptScaleExactStat(1, SpellChangeStats.INCREASED_AREA.getId(), ModType.FLAT));
 
     public static Stat DMG_PER_POWER_CHARGE = BonusStatPerEffectStacks.of(ModEffects.POWER_CHARGE, "dmg_per_power_charge", "Damage per Power Charge",
-            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.get(), ModType.FLAT));
+            new OptScaleExactStat(1, OffenseStats.TOTAL_DAMAGE.getId(), ModType.FLAT));
 
     public static Stat CRIT_DMG_PER_POWER_CHARGE = BonusStatPerEffectStacks.of(ModEffects.POWER_CHARGE, "crit_dmg_per_power_charge", "Crit Damage per Power Charge",
-            new OptScaleExactStat(1, OffenseStats.CRIT_DAMAGE.get(), ModType.FLAT));
+            new OptScaleExactStat(1, OffenseStats.CRIT_DAMAGE.getId(), ModType.FLAT));
 
     public static Stat DMG_REDUCTION_PER_GALE_FORCE = BonusStatPerEffectStacks.of(ModEffects.GALE_FORCE, "dmg_reduction_per_gale_force", "Damage Reduction per Gale Force",
-            new OptScaleExactStat(1, DefenseStats.DAMAGE_REDUCTION.get(), ModType.FLAT));
+            new OptScaleExactStat(1, DefenseStats.DAMAGE_REDUCTION.getId(), ModType.FLAT));
 
     public static Stat DODGE_PER_FRENZY_CHARGE = BonusStatPerEffectStacks.of(ModEffects.FRENZY_CHARGE, "dodge_er_power_charge", "Dodge per Frenzy Charge",
             new OptScaleExactStat(1, DodgeRating.getInstance(), ModType.FLAT).scale());

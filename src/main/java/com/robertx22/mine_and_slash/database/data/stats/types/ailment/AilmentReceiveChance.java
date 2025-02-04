@@ -18,6 +18,7 @@ public class AilmentReceiveChance extends Stat {
     Ailment ailment;
 
     public AilmentReceiveChance(Ailment ailment) {
+        this.minus_is_good = true;
         this.ailment = ailment;
         this.is_perc = true;
         this.statEffect = new Effect();

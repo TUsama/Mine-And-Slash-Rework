@@ -583,48 +583,6 @@
 "_comment": " [CATEGORY]: FOODS - NAMES",
 
 
-"_comment": " [CATEGORY]: CURRENCY ITEMS - NAMES",
-
-	"item.mmorpg.currency.affix_common_reroll": "Orb of New Beginnings",
-	"item.mmorpg.currency.affix_number_reroll": "Orb of Ciphers",
-	"item.mmorpg.currency.affix_random_mythic_reroll": "Orb of Divine Benevolence",
-	"item.mmorpg.currency.affix_tier_up_down": "Orb of Imbalance",
-	"item.mmorpg.currency.chaos_orb": "Orb of Chaos",
-	"item.mmorpg.currency.enchant_reroll": "Orb of Second Guessing",
-	"item.mmorpg.currency.entangled_affix_upgrade": "Entangled Orb of Upgrade",
-	"item.mmorpg.currency.entangled_potential": "Entangled Orb of Potential",
-	"item.mmorpg.currency.entangled_quality": "Entangled Orb of Quality",
-	"item.mmorpg.currency.entangled_unique_reroll": "Entangled Orb of Imperfection",
-	"item.mmorpg.currency.extract_gem": "Gem Extractor",
-	"item.mmorpg.currency.extract_rune": "Rune Extractor",
-	"item.mmorpg.currency.force_soul_tag_armor_stat": "Armor-Gear Soul Modifier",
-	"item.mmorpg.currency.force_soul_tag_dodge_stat": "Dodge-Gear Soul Modifier",
-	"item.mmorpg.currency.force_soul_tag_magic_shield_stat": "Magic Shield-Gear Soul Modifier",
-	"item.mmorpg.currency.harvest_essence_0": "Harvested Spiritual Essence",
-	"item.mmorpg.currency.harvest_essence_1": "Harvested Celestial Essence",
-	"item.mmorpg.currency.harvest_essence_2": "Harvested Empyrean Essence",
-	"item.mmorpg.currency.harvest_essence_3": "Harvested Angelic Essence",
-	"item.mmorpg.currency.harvest_essence_4": "Harvested Divine Essence",
-	"item.mmorpg.currency.jewel_corrupt": "Orb of Mesmerizing Chaos",
-	"item.mmorpg.currency.jewel_sure_upgrade": "Orb of Mystery",
-	"item.mmorpg.currency.jewel_upgrade_affix": "Orb of Glimmering Light",
-	"item.mmorpg.currency.level_up_orb": "Orb of Infinity",
-	"item.mmorpg.currency.orb_of_quality": "Orb of Quality",
-	"item.mmorpg.currency.orb_of_relief": "Orb of Relief",
-	"item.mmorpg.currency.sharpening_stone_0": "Spiritual Sharpening Stone",
-	"item.mmorpg.currency.sharpening_stone_1": "Celestial Sharpening Stone",
-	"item.mmorpg.currency.sharpening_stone_2": "Empyrean Sharpening Stone",
-	"item.mmorpg.currency.sharpening_stone_3": "Angelic Sharpening Stone",
-	"item.mmorpg.currency.sharpening_stone_4": "Divine Sharpening Stone",
-	"item.mmorpg.currency.sharpening_stone_5": "Godly Sharpening Stone",
-	"item.mmorpg.currency.socket_adder": "Orb of Digging",
-	"item.mmorpg.currency.unique_reroll": "Orb of Imperfection",
-	"item.mmorpg.currency.up_corrupt_affix": "Orb of Foolish Risk",
-	"item.mmorpg.currency.upgrade_common_affix": "Orb of Fledgling's Reprieve",
-
-"_comment": " [CATEGORY]: CURRENCY ITEMS - NAMES",
-
-
 "_comment": " [CATEGORY]: STATUSEFFECTS - NAMES",
 
 	"mmorpg.ailment.bleed": "Bleed",
@@ -666,6 +624,48 @@
 	"mmorpg.effect.wounds": "Wounds",
 
 "_comment": " [CATEGORY]: STATUSEFFECTS - NAMES",
+
+
+"_comment": " [CATEGORY]: CURRENCY ITEMS - NAMES",
+
+	"item.mmorpg.currency.affix_common_reroll": "Orb of New Beginnings",
+	"item.mmorpg.currency.affix_number_reroll": "Orb of Ciphers",
+	"item.mmorpg.currency.affix_random_mythic_reroll": "Orb of Divine Benevolence",
+	"item.mmorpg.currency.affix_tier_up_down": "Orb of Imbalance",
+	"item.mmorpg.currency.chaos_orb": "Orb of Chaos",
+	"item.mmorpg.currency.enchant_reroll": "Orb of Second Guessing",
+	"item.mmorpg.currency.entangled_affix_upgrade": "Entangled Orb of Upgrade",
+	"item.mmorpg.currency.entangled_potential": "Entangled Orb of Potential",
+	"item.mmorpg.currency.entangled_quality": "Entangled Orb of Quality",
+	"item.mmorpg.currency.entangled_unique_reroll": "Entangled Orb of Imperfection",
+	"item.mmorpg.currency.extract_gem": "Gem Extractor",
+	"item.mmorpg.currency.extract_rune": "Rune Extractor",
+	"item.mmorpg.currency.force_soul_tag_armor_stat": "Armor-Gear Soul Modifier",
+	"item.mmorpg.currency.force_soul_tag_dodge_stat": "Dodge-Gear Soul Modifier",
+	"item.mmorpg.currency.force_soul_tag_magic_shield_stat": "Magic Shield-Gear Soul Modifier",
+	"item.mmorpg.currency.harvest_essence_0": "Harvested Spiritual Essence",
+	"item.mmorpg.currency.harvest_essence_1": "Harvested Celestial Essence",
+	"item.mmorpg.currency.harvest_essence_2": "Harvested Empyrean Essence",
+	"item.mmorpg.currency.harvest_essence_3": "Harvested Angelic Essence",
+	"item.mmorpg.currency.harvest_essence_4": "Harvested Divine Essence",
+	"item.mmorpg.currency.jewel_corrupt": "Orb of Mesmerizing Chaos",
+	"item.mmorpg.currency.jewel_sure_upgrade": "Orb of Mystery",
+	"item.mmorpg.currency.jewel_upgrade_affix": "Orb of Glimmering Light",
+	"item.mmorpg.currency.level_up_orb": "Orb of Infinity",
+	"item.mmorpg.currency.orb_of_quality": "Orb of Quality",
+	"item.mmorpg.currency.orb_of_relief": "Orb of Relief",
+	"item.mmorpg.currency.sharpening_stone_0": "Spiritual Sharpening Stone",
+	"item.mmorpg.currency.sharpening_stone_1": "Celestial Sharpening Stone",
+	"item.mmorpg.currency.sharpening_stone_2": "Empyrean Sharpening Stone",
+	"item.mmorpg.currency.sharpening_stone_3": "Angelic Sharpening Stone",
+	"item.mmorpg.currency.sharpening_stone_4": "Divine Sharpening Stone",
+	"item.mmorpg.currency.sharpening_stone_5": "Godly Sharpening Stone",
+	"item.mmorpg.currency.socket_adder": "Orb of Digging",
+	"item.mmorpg.currency.unique_reroll": "Orb of Imperfection",
+	"item.mmorpg.currency.up_corrupt_affix": "Orb of Foolish Risk",
+	"item.mmorpg.currency.upgrade_common_affix": "Orb of Fledgling's Reprieve",
+
+"_comment": " [CATEGORY]: CURRENCY ITEMS - NAMES",
 
 
 "_comment": " [CATEGORY]: TALENTS - NAMES",
@@ -2860,18 +2860,6 @@
 "_comment": " [CATEGORY]: WORDS - NAMES",
 
 
-"_comment": " [CATEGORY]: CHAOS STAT - NAMES",
-
-	"mmorpg.chaos_stat.normal_high": "Ascended",
-	"mmorpg.chaos_stat.normal_low": "Upgraded",
-	"mmorpg.chaos_stat.normal_med": "Elevated",
-	"mmorpg.chaos_stat.unique_high": "Ascended",
-	"mmorpg.chaos_stat.unique_low": "Upgraded",
-	"mmorpg.chaos_stat.unique_med": "Elevated",
-
-"_comment": " [CATEGORY]: CHAOS STAT - NAMES",
-
-
 "_comment": " [CATEGORY]: OMENS - NAMES",
 
 	"mmorpg.omen.blood": "Omen of Blood",
@@ -2884,6 +2872,18 @@
 	"mmorpg.omen.waves": "Omen of Waves",
 
 "_comment": " [CATEGORY]: OMENS - NAMES",
+
+
+"_comment": " [CATEGORY]: CHAOS STAT - NAMES",
+
+	"mmorpg.chaos_stat.normal_high": "Ascended",
+	"mmorpg.chaos_stat.normal_low": "Upgraded",
+	"mmorpg.chaos_stat.normal_med": "Elevated",
+	"mmorpg.chaos_stat.unique_high": "Ascended",
+	"mmorpg.chaos_stat.unique_low": "Upgraded",
+	"mmorpg.chaos_stat.unique_med": "Elevated",
+
+"_comment": " [CATEGORY]: CHAOS STAT - NAMES",
 
 
 "_comment": " [CATEGORY]: LOOTMODIFIER - NAMES",
@@ -3446,13 +3446,6 @@
 "_comment": " [CATEGORY]: SPELLS - DESCRIPTIONS",
 
 
-"_comment": " [CATEGORY]: UBER MAP - DESCRIPTIONS",
-
-	"mmorpg.uber_map.desc.uber1": "A living mortal, in MY Realm?",
-
-"_comment": " [CATEGORY]: UBER MAP - DESCRIPTIONS",
-
-
 "_comment": " [CATEGORY]: STATUSEFFECTS - DESCRIPTIONS",
 
 	"mmorpg.ailment.desc.bleed": "Deals 120% of the damage as \u00A76\u2600 Physical\u00A77\u00A79 Damage over 5s.",
@@ -3463,6 +3456,13 @@
 	"mmorpg.effect.desc.thorn": "Attacking an enemy with Thorns consumes the thorns to deal [calc:thorn_bush] \u00A76\u2600 Physical\u00A77 Damage",
 
 "_comment": " [CATEGORY]: STATUSEFFECTS - DESCRIPTIONS",
+
+
+"_comment": " [CATEGORY]: UBER MAP - DESCRIPTIONS",
+
+	"mmorpg.uber_map.desc.uber1": "A living mortal, in MY Realm?",
+
+"_comment": " [CATEGORY]: UBER MAP - DESCRIPTIONS",
 
 	"item.mmorpg.currency.affix_common_reroll": "Orb of New Beginnings",
 	"item.mmorpg.currency.affix_number_reroll": "Orb of Ciphers",

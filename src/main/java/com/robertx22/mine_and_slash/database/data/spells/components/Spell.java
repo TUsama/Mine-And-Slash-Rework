@@ -306,6 +306,8 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
             list.add(Words.CAST_TIME.locName(casttime / 20).withStyle(ChatFormatting.GREEN));
         }
 
+        Set<String> radiuses = new LinkedHashSet<>();
+
         this.getAttached()
                 .getAllComponents()
                 .forEach(x -> {
@@ -313,11 +315,16 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
                         // adds radius for damage spells
                         if (x.acts.stream().anyMatch(e -> e.type.equals(SpellAction.DEAL_DAMAGE.GUID())) && a.has(MapField.RADIUS)) {
                             String rad = MMORPG.formatNumber(a.getOrDefault(MapField.RADIUS, 0D).floatValue());
-                            list.add(Words.Radius.locName(rad).withStyle(ChatFormatting.GOLD));
+                            radiuses.add(rad);
                         }
                     });
                 });
 
+
+        for (String radius : radiuses) {
+            list.add(Words.Radius.locName(radius).withStyle(ChatFormatting.GOLD));
+
+        }
 
         list.add(ExileText.emptyLine().get());
 

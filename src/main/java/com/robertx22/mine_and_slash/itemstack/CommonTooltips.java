@@ -19,7 +19,7 @@ public class CommonTooltips {
         list.add(exStack.isCorrupted() ? Component.literal("").append(Itemtips.POTENTIAL.locName(exStack.get(StackKeys.POTENTIAL).getOrCreate().potential).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.STRIKETHROUGH)).append(Component.literal(" ")).append(Words.Corrupted.locName().withStyle(ChatFormatting.RED)) : Itemtips.POTENTIAL.locName(exStack.get(StackKeys.POTENTIAL).getOrCreate().potential).withStyle(ChatFormatting.GOLD));
 
         if (doQuality) {
-            Itemtips.QUALITY.locName(exStack.get(StackKeys.CUSTOM).getOrCreate().data.get(CustomItemData.KEYS.QUALITY)).withStyle(ChatFormatting.GOLD);
+            list.add(Itemtips.QUALITY.locName(exStack.get(StackKeys.CUSTOM).getOrCreate().data.get(CustomItemData.KEYS.QUALITY)).withStyle(ChatFormatting.GOLD));
         }
         return new AdditionalBlock(list).showWhen(() -> Screen.hasShiftDown());
     }

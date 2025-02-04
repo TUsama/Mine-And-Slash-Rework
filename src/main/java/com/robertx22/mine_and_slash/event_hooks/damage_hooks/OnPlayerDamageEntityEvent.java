@@ -34,9 +34,18 @@ public class OnPlayerDamageEntityEvent extends EventConsumer<ExileEvents.OnDamag
             if (event.source.is(DamageTypes.FELL_OUT_OF_WORLD)) {
                 return;
             }
+            // stop mobs from being killed b4 they even had time to calculate stats?
+            // not sure yet why it happens but players report being able to instakill freshly spawned mobs
+            if (event.mob.tickCount < 3) {
+                event.damage = 0;
+                event.canceled = true;
+                return;
+            }
             if (DmgSourceUtils.isMyDmgSource(event.source)) {
                 return;
             }
+
+
             if (event.mob instanceof EnderDragon) {
                 return; // todo temp fix
             }

@@ -35,6 +35,12 @@ public class OptScaleExactStat {
         this.type = type.name();
     }
 
+    public OptScaleExactStat(float first, String stat, ModType type) {
+        this.v1 = first;
+        this.stat = stat;
+        this.type = type.name();
+    }
+
     public String getPerkIdSuffix() {
         if (getModType().isFlat()) {
             return "";
