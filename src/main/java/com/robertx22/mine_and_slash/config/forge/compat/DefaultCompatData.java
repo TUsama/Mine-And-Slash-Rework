@@ -39,6 +39,7 @@ public class DefaultCompatData implements CompatDummy {
 
     @Override
     public boolean capItemDuraLoss() {
+   
         return capItemDamage;
     }
 

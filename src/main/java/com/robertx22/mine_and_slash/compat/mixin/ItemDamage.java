@@ -19,6 +19,9 @@ public class ItemDamage {
             pAmount = max;
         }
 
+        if (pAmount < 1) {
+            return;
+        }
 
         if (!pEntity.level().isClientSide && (!(pEntity instanceof Player) || !((Player) pEntity).getAbilities().instabuild)) {
             if (stack.isDamageableItem()) {

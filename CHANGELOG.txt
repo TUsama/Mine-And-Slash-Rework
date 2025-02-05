@@ -1,6 +1,6 @@
 Changelog of recent updates: https://github.com/RobertSkalko/Mine-And-Slash-Rework/blob/1.20-Forge/changelogs/v.6.1.txt
 
-v.6.1.14
+v.6.1.15
 
-- fix quality not showing on gear
-- mobs are now immune to damage for 2 ticks after spawning
+- fixed a crafting output exploit
+- any curio should now work and apply stats

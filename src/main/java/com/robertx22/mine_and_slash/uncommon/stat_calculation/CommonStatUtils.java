@@ -71,8 +71,12 @@ public class CommonStatUtils {
 
     public static List<StatContext> addMapAffixStats(LivingEntity en) {
 
+      
         var list = new ArrayList<StatContext>();
 
+        // todo make this CONNECTED to other mods if they spawn in there.
+        // an obelisk that spawned in a map should also have map stats in it and count as a map
+        // ALSO, obelisks shouldnt be able to take more than 1 map per block, inside these dimensions
         if (WorldUtils.isMapWorldClass(en.level())) {
 
             MapData map = Load.mapAt(en.level(), en.blockPosition());

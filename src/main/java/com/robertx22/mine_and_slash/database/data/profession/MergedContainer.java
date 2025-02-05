@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class MergedContainer extends SimpleContainer implements WorldlyContainer {
@@ -34,9 +35,11 @@ public class MergedContainer extends SimpleContainer implements WorldlyContainer
                 return true;
             }
             if (current.getItem() == stack.getItem()) {
-                if (current.getCount() + stack.getCount() <= current.getMaxStackSize()) {
-                    current.setCount(current.getCount() + stack.getCount());
-                    return true;
+                if (Objects.equals(stack.getTag(), current.getTag())) {
+                    if (current.getCount() + stack.getCount() <= current.getMaxStackSize()) {
+                        current.setCount(current.getCount() + stack.getCount());
+                        return true;
+                    }
                 }
             }
         }

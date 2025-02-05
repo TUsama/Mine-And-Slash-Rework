@@ -52,7 +52,8 @@ public class CompatData implements CompatDummy {
                 .defineInRange("ITEM_DAMAGE_CAP_PER_HIT", defaults.itemDamageCapNumber, 0, 100);
 
         CAP_ITEM_DAMAGE = b
-                .comment("Enables item damage cap. WARNING! Disabling this means your items will instantly break if you get hit by a high level mob")
+                .comment("Enables item damage cap. WARNING! Disabling this means your items will instantly break if you get hit by a high level mob\n" +
+                        "This only works for when you take damage and only works for armor!")
                 .define("CAP_ITEM_DAMAGE", defaults.capItemDamage);
 
         ENABLE_MINUS_RESISTS_PER_LEVEL = b

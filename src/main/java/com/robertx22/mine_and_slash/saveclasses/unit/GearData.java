@@ -145,6 +145,7 @@ public class GearData {
             return slot == EquipmentSlot.OFFHAND;
         }
 
-        return false;
+        // if this causes problems, return to false instead
+        return true;
     }
 }

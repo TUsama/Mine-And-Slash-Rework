@@ -155,7 +155,7 @@ public class MobStatUtils {
         if (rar.forcesCustomHp()) {
             vanillahp = rar.force_custom_hp;
         }
-        
+
 
         float hpToAdd = vanillahp * rar.ExtraHealthMulti();
 
@@ -179,7 +179,7 @@ public class MobStatUtils {
             }
         }
 
-        stats.add(ExactStatData.scaleTo(5 * rar.DamageMultiplier(), ModType.FLAT, OffenseStats.CRIT_CHANCE.get().GUID(), lvl));
+        // stats.add(ExactStatData.scaleTo(5 * rar.DamageMultiplier(), ModType.FLAT, OffenseStats.CRIT_CHANCE.get().GUID(), lvl));
 
 
         list.add(new MiscStatCtx(stats));
