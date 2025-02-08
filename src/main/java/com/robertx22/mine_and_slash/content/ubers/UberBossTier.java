@@ -11,11 +11,7 @@ public class UberBossTier {
     public static UberBossTier T2 = new UberBossTier(60, 75, 1, 2);
     public static UberBossTier T3 = new UberBossTier(90, 100, 2, 3);
 
-    public static UberBossTier getTierForFragmentDrop(int lvl) {
-        UberBossTier tier = map.values().stream().filter(x -> lvl >= x.frag_drop_lvl).sorted(Comparator.comparingInt(x -> -x.tier)).findFirst().get();
-        return tier;
-    }
-
+  
     public static UberBossTier getTierFromMap(int lvl) {
         UberBossTier tier = map.values().stream().filter(x -> lvl >= x.boss_lvl).sorted(Comparator.comparingInt(x -> -x.tier)).findFirst().get();
         return tier;

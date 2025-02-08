@@ -39,11 +39,25 @@ public class OverlayConfig {
 
 
         if (target != OverlayType.SCREEN) {
-            var anchorTargetPos = ClientConfigs.getConfig().getOverlayConfig(target).getPos();
+            var anchorTargetPos = ClientConfigs.getConfig().getOverlayConfig(target).getPosNoAnchor();
 
             x += anchorTargetPos.x;
             y += anchorTargetPos.y;
         }
+        x += X_OFFSET.get();
+        y += Y_OFFSET.get();
+
+        PointData pos = new PointData(x, y);
+
+        return pos;
+    }
+
+    public PointData getPosNoAnchor() {
+        var target = ANCHOR_TARGET.get();
+
+        int x = ANCHOR_X.get().getAnchorPos(target).x;
+        int y = ANCHOR_Y.get().getAnchorPos(target).y;
+
         x += X_OFFSET.get();
         y += Y_OFFSET.get();
 

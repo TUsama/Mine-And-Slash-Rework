@@ -614,10 +614,9 @@ public class SimpleProjectileEntity extends AbstractArrow implements IMyRenderAs
         this.entityData.set(EXPIRE_ON_ENTITY_HIT, holder.getOrDefault(MapField.EXPIRE_ON_ENTITY_HIT, true));
         this.entityData.set(EXPIRE_ON_BLOCK_HIT, holder.getOrDefault(MapField.EXPIRE_ON_BLOCK_HIT, true));
         this.entityData.set(HIT_ALLIES, holder.getOrDefault(MapField.HITS_ALLIES, false));
-        this.entityData.set(CHAINS, holder.getOrDefault(MapField.CHAIN_COUNT, 0D).intValue());
+        this.entityData.set(CHAINS, holder.getOrDefault(MapField.CHAIN_COUNT, 0D).intValue() + (int) data.data.getNumber(EventData.BONUS_CHAINS).number);
 
         this.checkInsideBlocks();
-
 
         if (data.data.getBoolean(EventData.PIERCE)) {
             this.entityData.set(EXPIRE_ON_ENTITY_HIT, false);

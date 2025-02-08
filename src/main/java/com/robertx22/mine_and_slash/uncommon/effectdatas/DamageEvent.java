@@ -60,6 +60,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 
 public class DamageEvent extends EffectEvent {
@@ -138,7 +139,7 @@ public class DamageEvent extends EffectEvent {
                     this.addMoreMulti(Words.MOB_CONFIG_MULTI.locName(), EventData.NUMBER, enconfigmulti);
                 }
 
-                if (WorldUtils.isDungeonWorld(source.level())) {
+                if (WorldUtils.isMapWorldClass(source.level(), source.blockPosition())) {
                     if (target instanceof Player) {
                         var map = Load.mapAt(target.level(), target.blockPosition());
                         if (map != null && map.map != null) {
@@ -165,6 +166,16 @@ public class DamageEvent extends EffectEvent {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Optional<Ailment> getAilment() {
+        var id = data.getString(EventData.AILMENT);
+
+        if (ExileDB.Ailments().isRegistered(id)) {
+            var ailment = ExileDB.Ailments().get(id);
+            return Optional.of(ailment);
+        }
+        return Optional.empty();
     }
 
     public Component getDamageName() {
@@ -381,7 +392,7 @@ public class DamageEvent extends EffectEvent {
                 return false;
             }
         }
-        if (WorldUtils.isMapWorldClass(source.level())) {
+        if (WorldUtils.isMapWorldClass(source.level(), source.blockPosition())) {
             // in maps, we dont want mobs to damage each other
             if (AllyOrEnemy.allies.is(source, target)) {
                 cancelDamage();
@@ -456,8 +467,20 @@ public class DamageEvent extends EffectEvent {
             ele = Component.literal("\u2600" + " ").append(Words.MULTI_ELEMENT.locName()).withStyle(ChatFormatting.LIGHT_PURPLE);
         }
 
-        return Words.DAMAGE_MESSAGE.locName(source.getDisplayName(), MMORPG.DECIMAL_FORMAT.format(info.totalDmg), ele, getDamageName())
-                .withStyle(Style.EMPTY.applyFormat(ChatFormatting.RED).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getInfoHoverMessage(info, true))));
+        Words word = Words.DAMAGE_MESSAGE;
+
+        if (disableActivation && getAilment().isPresent()) {
+            word = Words.AILMENT_PROC_MESSAGE;
+        }
+
+        return word.locName(
+                        source.getDisplayName(),
+                        MMORPG.DECIMAL_FORMAT.format(info.totalDmg),
+                        ele,
+                        getDamageName()
+                )
+                .withStyle(Style.EMPTY.applyFormat(ChatFormatting.RED)
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getInfoHoverMessage(info, true))));
 
     }
 
@@ -529,7 +552,32 @@ public class DamageEvent extends EffectEvent {
             msg.append(Words.TOTAL_COMBINE_DAMAGE.locName((int) info.totalDmg).withStyle(ChatFormatting.GOLD));
         }
 
+        if (getAilment().isPresent()) {
+            msg.append(Words.AILMENT_DAMAGE_NOTE.locName().withStyle(ChatFormatting.BLUE));
+        }
+
         return msg;
+    }
+
+    public void sendDamageMessage(DmgByElement info) {
+        if (target instanceof Player p) {
+            if (Load.player(p).config.isConfigEnabled(PlayerConfigData.Config.DAMAGE_MESSAGES)) {
+                try {
+                    p.sendSystemMessage(getDamageMessage(info));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (source instanceof Player p) {
+            if (Load.player(p).config.isConfigEnabled(PlayerConfigData.Config.DAMAGE_MESSAGES)) {
+                try {
+                    p.sendSystemMessage(getDamageMessage(info));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -570,20 +618,8 @@ public class DamageEvent extends EffectEvent {
         float dmg = info.totalDmg;
 
 
-        if (target instanceof Player p) {
-            if (Load.player(p).config.isConfigEnabled(PlayerConfigData.Config.DAMAGE_MESSAGES)) {
-                try {
-                    p.sendSystemMessage(getDamageMessage(info));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        if (source instanceof Player p) {
-            if (Load.player(p).config.isConfigEnabled(PlayerConfigData.Config.DAMAGE_MESSAGES)) {
-                p.sendSystemMessage(getDamageMessage(info));
-            }
-        }
+        sendDamageMessage(info);
+
 
         if (target instanceof Player p) { // todo this code sucks
             // a getter should not modify anything

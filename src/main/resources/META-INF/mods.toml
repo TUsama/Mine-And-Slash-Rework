@@ -33,9 +33,15 @@ versionRange = "[${exile_library_version},)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.mmorpg]]
-modId = "orbs_of_crafting"
+modId = "dungeon_realm"
 mandatory = true
-versionRange = "[${orbs_of_crafting_version},)"
+versionRange = "[${dungeon_realm_version},)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.mmorpg]]
+modId = "the_harvest"
+mandatory = true
+versionRange = "[${the_harvest_version},)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.mmorpg]]

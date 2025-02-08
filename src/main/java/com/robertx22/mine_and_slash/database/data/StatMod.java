@@ -7,6 +7,7 @@ import com.robertx22.mine_and_slash.database.data.stats.Stat;
 import com.robertx22.mine_and_slash.database.data.stats.name_regex.StatNameRegex;
 import com.robertx22.mine_and_slash.database.data.stats.tooltips.StatTooltipType;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
+import com.robertx22.mine_and_slash.mmorpg.MMORPG;
 import com.robertx22.mine_and_slash.saveclasses.ExactStatData;
 import com.robertx22.mine_and_slash.saveclasses.gearitem.gear_bases.ModRange;
 import com.robertx22.mine_and_slash.saveclasses.gearitem.gear_bases.StatRangeInfo;
@@ -88,16 +89,16 @@ public class StatMod implements ISerializable<StatMod> {
     public MutableComponent getRangeToShow(int lvl) {
 
 
-        int fmin = (int) min;
-        int fmax = (int) max;
+        float fmin = min;
+        float fmax = max;
 
-        fmin = (int) GetStat().scale(getModType(), min, lvl);
-        fmax = (int) GetStat().scale(getModType(), max, lvl);
+        fmin = GetStat().scale(getModType(), min, lvl);
+        fmax = GetStat().scale(getModType(), max, lvl);
 
         Boolean perc = GetStat().IsPercent() || getModType().isPercent();
         String ptext = perc ? "%" : "";
 
-        String text = fmin + ptext + " -> " + fmax + ptext;
+        String text = MMORPG.formatNumber(fmin) + ptext + " -> " + MMORPG.formatNumber(fmax) + ptext;
 
         if (!perc && getModType() == ModType.MORE) {
             if (fmin > 0) {

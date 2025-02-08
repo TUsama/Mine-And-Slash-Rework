@@ -68,7 +68,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -173,7 +175,6 @@ public class EntityData implements ICap, INeededForClient {
     public SummonedPetData summonedPetData = new SummonedPetData();
 
     public String mapUUID = "";
-    public boolean isCorrectlySpawnedMapMob = false;
 
 
     public int lastHealth = 0;
@@ -195,11 +196,6 @@ public class EntityData implements ICap, INeededForClient {
 
     public boolean didStatCalcThisTickForPlayer = false;
 
-    private BossData boss = null;
-
-    public BossData getBossData() {
-        return boss;
-    }
 
     EntityTypeUtils.EntityClassification type = EntityTypeUtils.EntityClassification.PLAYER;
     // sync these for mobs
@@ -211,21 +207,6 @@ public class EntityData implements ICap, INeededForClient {
     ResourcesData resources = new ResourcesData();
     CustomExactStatsData customExactStats = new CustomExactStatsData();
 
-    public void setupRandomBoss() {
-        this.boss = new BossData();
-        boss.setupRandomBoss();
-    }
-
-
-    public boolean isValidMapMob() {
-        if (isCorrectlySpawnedMapMob) {
-            return true;
-        }
-        if (this.entity instanceof Mob mob) {
-            return mob.getSpawnType() == MobSpawnType.COMMAND;
-        }
-        return true;
-    }
 
     @Override
     public void addClientNBT(CompoundTag nbt) {
@@ -298,8 +279,6 @@ public class EntityData implements ICap, INeededForClient {
             nbt.putString(MAP_ID, this.mapUUID);
             nbt.putBoolean(SET_MOB_STATS, setMobStats);
             nbt.putBoolean(NEWBIE_STATUS, this.isNewbie);
-            nbt.putBoolean(MAP_MOB, this.isCorrectlySpawnedMapMob);
-
             LoadSave.Save(cooldowns, nbt, COOLDOWNS);
             // LoadSave.Save(ailments, nbt, AILMENTS);
             LoadSave.Save(summonedPetData, nbt, PET);
@@ -319,9 +298,7 @@ public class EntityData implements ICap, INeededForClient {
                 LoadSave.Save(threat, nbt, THREAT);
             }
 
-            if (boss != null) {
-                LoadSave.Save(boss, nbt, BOSS);
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -360,7 +337,6 @@ public class EntityData implements ICap, INeededForClient {
             if (nbt.contains(NEWBIE_STATUS)) {
                 this.isNewbie = nbt.getBoolean(NEWBIE_STATUS);
             }
-            this.isCorrectlySpawnedMapMob = nbt.getBoolean(MAP_MOB);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -379,8 +355,6 @@ public class EntityData implements ICap, INeededForClient {
             e.printStackTrace();
         }
 
-
-        this.boss = LoadSave.Load(BossData.class, new BossData(), nbt, BOSS); // we want this null if none
 
     }
 

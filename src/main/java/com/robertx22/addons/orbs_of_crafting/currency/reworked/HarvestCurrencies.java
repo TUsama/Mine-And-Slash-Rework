@@ -6,21 +6,21 @@ import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_mod.ItemMods
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.ItemReqs;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.RarityKeyInfo;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.SkillItemTierKey;
+import com.robertx22.library_of_exile.database.init.LibDatabase;
+import com.robertx22.library_of_exile.main.Ref;
 import com.robertx22.library_of_exile.registry.helpers.ExileKey;
 import com.robertx22.library_of_exile.registry.helpers.ExileKeyHolderSection;
 import com.robertx22.library_of_exile.registry.helpers.ExileKeyMap;
 import com.robertx22.library_of_exile.registry.helpers.IdKey;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanics;
 import com.robertx22.mine_and_slash.loot.req.DropRequirement;
-import com.robertx22.mine_and_slash.mechanics.harvest.HarvestItems;
 import com.robertx22.mine_and_slash.mmorpg.MMORPG;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.items.RarityItems;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
-import com.robertx22.orbs_of_crafting.main.OrbDatabase;
 import com.robertx22.orbs_of_crafting.misc.ShapedRecipeUTIL;
 import com.robertx22.orbs_of_crafting.register.ExileCurrency;
 import com.robertx22.orbs_of_crafting.register.Modifications;
 import com.robertx22.temp.SkillItemTier;
+import com.robertx22.the_harvest.main.HarvestEntries;
 import net.minecraft.world.item.Items;
 
 import java.util.Arrays;
@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+// todo separate into new mod
 public class HarvestCurrencies extends ExileKeyHolderSection<ExileCurrencies> {
 
     public HarvestCurrencies(ExileCurrencies holder) {
@@ -35,8 +36,11 @@ public class HarvestCurrencies extends ExileKeyHolderSection<ExileCurrencies> {
     }
 
     public static void harvestOnlyDrop(String id) {
-        new ExtendedOrb(id, DropRequirement.Builder.of().setOnlyDropsInLeague(LeagueMechanics.HARVEST_ID).build()).addToSerializables(MMORPG.SERIAZABLE_REGISTRATION_INFO);
+        new ExtendedOrb(id, DropRequirement.Builder.of().setOnlyDropsInLeague(Ref.Harvest.MODID).build()).addToSerializables(MMORPG.SERIAZABLE_REGISTRATION_INFO);
     }
+
+    // todo if i want harvest to be an optional dependency, then this becomes bad..
+    // i cant load things from harvest code here
 
     public ExileKeyMap<ExileCurrency, SkillItemTierKey> HARVEST_ESSENCE = new ExileKeyMap<ExileCurrency, SkillItemTierKey>(get(), "harvest_essence")
             .ofList(Arrays.stream(SkillItemTier.values()).toList().stream().filter(x -> x != SkillItemTier.TIER5).map(x -> new SkillItemTierKey(x)).collect(Collectors.toList()))
@@ -105,9 +109,8 @@ public class HarvestCurrencies extends ExileKeyHolderSection<ExileCurrencies> {
         harvestOnlyDrop(HARVEST_POTENTIAL_UPGRADE.GUID());
         harvestOnlyDrop(HARVEST_AFFIX_UPGRADE.GUID());
 
-
         for (Map.Entry<SkillItemTierKey, ExileKey<ExileCurrency, SkillItemTierKey>> en : HARVEST_ESSENCE.map.entrySet()) {
-            en.getValue().addRecipe(OrbDatabase.CURRENCY, x -> {
+            en.getValue().addRecipe(LibDatabase.CURRENCY, x -> {
                 return ShapedRecipeUTIL.of(x.getItem(), 1)
                         .define('X', HARVEST_AFFIX_UPGRADE.getItem())
                         .define('Y', RarityItems.RARITY_STONE.get(x.info.tier.higherTier().rar).get())
@@ -117,41 +120,42 @@ public class HarvestCurrencies extends ExileKeyHolderSection<ExileCurrencies> {
             });
         }
 
-
-        HARVEST_AFFIX_UPGRADE.addRecipe(OrbDatabase.CURRENCY, x -> {
+        HARVEST_AFFIX_UPGRADE.addRecipe(LibDatabase.CURRENCY, x -> {
             return ShapedRecipeUTIL.of(x.getItem(), 1)
                     .define('X', Items.IRON_INGOT)
-                    .define('Y', HarvestItems.BLUE_INGOT.get())
+                    .define('Y', HarvestEntries.BLUE.get())
                     .pattern("YYY")
                     .pattern("YXY")
                     .pattern("YYY");
         });
 
-        HARVEST_POTENTIAL_UPGRADE.addRecipe(OrbDatabase.CURRENCY, x -> {
+        HARVEST_POTENTIAL_UPGRADE.addRecipe(LibDatabase.CURRENCY, x -> {
             return ShapedRecipeUTIL.of(x.getItem(), 1)
                     .define('X', Items.GOLD_INGOT)
-                    .define('Y', HarvestItems.PURPLE_INGOT.get())
+                    .define('Y', HarvestEntries.PURPLE.get())
                     .pattern("YYY")
                     .pattern("YXY")
                     .pattern("YYY");
         });
-        HARVEST_QUALITY.addRecipe(OrbDatabase.CURRENCY, x -> {
+        HARVEST_QUALITY.addRecipe(LibDatabase.CURRENCY, x -> {
             return ShapedRecipeUTIL.of(x.getItem(), 1)
                     .define('X', Items.DIAMOND)
-                    .define('Y', HarvestItems.GREEN_INGOT.get())
+                    .define('Y', HarvestEntries.GREEN.get())
                     .pattern("YYY")
                     .pattern("YXY")
                     .pattern("YYY");
         });
 
-        HARVEST_UNIQUE_STATS.addRecipe(OrbDatabase.CURRENCY, x -> {
-            return ShapedRecipeUTIL.of(x.getItem(), 1)
+        // todo not needed if i make all these mods required deps anyway..
+        HARVEST_QUALITY.addConditional(Ref.Harvest.MODID, x -> {
+            return ShapedRecipeUTIL.of(HARVEST_UNIQUE_STATS.getItem(), 1)
                     .define('X', Items.DIAMOND_BLOCK)
-                    .define('Y', HarvestItems.PURPLE_INGOT.get())
+                    .define('Y', HarvestEntries.PURPLE.get())
                     .pattern("YYY")
                     .pattern("YXY")
                     .pattern("YYY");
         });
 
     }
+
 }

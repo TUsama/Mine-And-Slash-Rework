@@ -2,6 +2,7 @@ package com.robertx22.mine_and_slash.loot.blueprints.bases;
 
 import com.robertx22.library_of_exile.utils.RandomUtils;
 import com.robertx22.mine_and_slash.database.data.rarities.GearRarity;
+import com.robertx22.mine_and_slash.database.data.rarities.GearRarityType;
 import com.robertx22.mine_and_slash.database.data.stats.types.loot.TreasureQuality;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.loot.LootInfo;
@@ -12,7 +13,6 @@ import com.robertx22.mine_and_slash.loot.blueprints.SkillGemBlueprint;
 import com.robertx22.mine_and_slash.uncommon.MathHelper;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GearRarityPart extends BlueprintPart<GearRarity, ItemBlueprint> {
@@ -49,10 +49,7 @@ public class GearRarityPart extends BlueprintPart<GearRarity, ItemBlueprint> {
         }
 
         if (this.blueprint instanceof MapBlueprint) {
-            var list = new ArrayList<GearRarity>();
-            var rar = ExileDB.GearRarities().get(IRarity.COMMON_ID);
-            list.add(rar);
-            return list;
+            return ExileDB.GearRarities().getFiltered(x -> x.type == GearRarityType.NORMAL);
         }
 
         var filt = ExileDB.GearRarities().getFilterWrapped(x -> this.blueprint.info.level >= x.min_lvl);

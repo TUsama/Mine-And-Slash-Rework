@@ -18,6 +18,7 @@ public class RenderItemGlints {
 
         try {
 
+
             var mc = Minecraft.getInstance();
 
             if (mc.screen == null) {

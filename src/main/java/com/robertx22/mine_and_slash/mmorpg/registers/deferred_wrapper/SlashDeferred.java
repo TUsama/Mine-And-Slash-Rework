@@ -2,8 +2,6 @@ package com.robertx22.mine_and_slash.mmorpg.registers.deferred_wrapper;
 
 import com.robertx22.mine_and_slash.database.data.profession.all.ProfessionMatItems;
 import com.robertx22.mine_and_slash.database.data.profession.all.ProfessionProductItems;
-import com.robertx22.mine_and_slash.mechanics.harvest.HarvestBlocks;
-import com.robertx22.mine_and_slash.mechanics.harvest.HarvestItems;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.*;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.items.*;
@@ -57,7 +55,6 @@ public class SlashDeferred {
         SlashParticles.init();
         SlashEntities.init();
         SlashBlocks.init();
-        HarvestBlocks.init();
         SlashBlockEntities.init();
         SlashContainers.init();
 
@@ -68,8 +65,6 @@ public class SlashDeferred {
         SlashItems.GearItems.init();
         RuneItems.init();
         GemItems.init();
-        HarvestItems.init();
-
 
         ProfessionMatItems.init();
         ProfessionProductItems.init();

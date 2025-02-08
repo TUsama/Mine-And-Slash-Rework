@@ -80,7 +80,6 @@ public class MasterLootGen {
         }
 
         try {
-            items.addAll(new UberFragLootGen(info).tryGenerate());
             items.addAll(new WatcherEyeLootGen(info).tryGenerate());
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,7 +109,7 @@ public class MasterLootGen {
             items.addAll(new JewelLootGen(info).tryGenerate());
 
             items.addAll(new CurrencyLootGen(info).tryGenerate());
-            //items.addAll(new MapLootGen(info).tryGenerate());
+            items.addAll(new MapLootGen(info).tryGenerate());
             items.addAll(new GemLootGen(info).tryGenerate());
             items.addAll(new RuneLootGen(info).tryGenerate());
             items.addAll(new LootChestGen(info).tryGenerate());

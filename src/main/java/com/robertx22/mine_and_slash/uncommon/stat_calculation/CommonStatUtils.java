@@ -5,7 +5,6 @@ import com.robertx22.mine_and_slash.config.forge.compat.CompatConfig;
 import com.robertx22.mine_and_slash.database.data.base_stats.BaseStatsConfig;
 import com.robertx22.mine_and_slash.database.data.stat_compat.StatCompat;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
-import com.robertx22.mine_and_slash.maps.MapData;
 import com.robertx22.mine_and_slash.maps.MapItemData;
 import com.robertx22.mine_and_slash.saveclasses.ExactStatData;
 import com.robertx22.mine_and_slash.saveclasses.unit.stat_ctx.SimpleStatCtx;
@@ -71,23 +70,19 @@ public class CommonStatUtils {
 
     public static List<StatContext> addMapAffixStats(LivingEntity en) {
 
-      
+
         var list = new ArrayList<StatContext>();
 
         // todo make this CONNECTED to other mods if they spawn in there.
         // an obelisk that spawned in a map should also have map stats in it and count as a map
         // ALSO, obelisks shouldnt be able to take more than 1 map per block, inside these dimensions
-        if (WorldUtils.isMapWorldClass(en.level())) {
 
-            MapData map = Load.mapAt(en.level(), en.blockPosition());
-            if (map != null) {
-                MapItemData data = map.map;
-
-                for (StatContext stat : data.getStatAndContext(en)) {
-                    list.add(stat);
-                }
+        WorldUtils.ifMapData(en.level(), en.blockPosition()).ifPresent(map -> {
+            MapItemData data = map.map;
+            for (StatContext stat : data.getStatAndContext(en)) {
+                list.add(stat);
             }
-        }
+        });
 
         return list;
 

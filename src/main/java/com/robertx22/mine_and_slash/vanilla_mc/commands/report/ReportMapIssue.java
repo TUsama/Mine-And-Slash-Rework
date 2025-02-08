@@ -1,8 +1,10 @@
 package com.robertx22.mine_and_slash.vanilla_mc.commands.report;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.robertx22.mine_and_slash.maps.dungeon_generation.BuiltRoom;
-import com.robertx22.mine_and_slash.maps.dungeon_generation.DungeonBuilder;
+import com.robertx22.dungeon_realm.main.DungeonMain;
+import com.robertx22.dungeon_realm.structure.DungeonMapStructure;
+import com.robertx22.library_of_exile.dimension.structure.dungeon.BuiltRoom;
+import com.robertx22.library_of_exile.dimension.structure.dungeon.DungeonBuilder;
 import com.robertx22.mine_and_slash.vanilla_mc.commands.CommandRefs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -33,9 +35,9 @@ public class ReportMapIssue {
 
                 String text = "Map Bug Report, Problem Room: ";
 
-                DungeonBuilder builder = new DungeonBuilder(DungeonBuilder.mineAndSlashDungeonSettings(p.level(), p.chunkPosition()));
+                DungeonBuilder builder = new DungeonBuilder(DungeonMapStructure.dungeonSettings(p.chunkPosition()));
                 builder.build();
-                BuiltRoom room = builder.builtDungeon.getRoomForChunk(p.chunkPosition());
+                BuiltRoom room = builder.builtDungeon.getRoomForChunk(DungeonMain.MAIN_DUNGEON_STRUCTURE, p.chunkPosition());
 
                 text += room.room.loc.toString();
 

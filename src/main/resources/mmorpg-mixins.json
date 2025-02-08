@@ -9,16 +9,13 @@
     "PlayerAnimMixin",
     "ArrowShootMixin",
     "FallingBlockEntityMixin",
-    "DisableMobSpawnsInDungeon",
     "LivingEntityMixin",
     "LootTableMixin",
-    "StopMapMobDropsMixin",
     "EntityMixin",
     "StopMobDropWornGearInMapsMixin",
     "DamageSourceMixin",
     "DamageConflictCheckMixin",
     "AttributeMixin",
-    "StopFireInDungeonMixin",
     "RecipeTest"
   ],
   "client": [

@@ -60,26 +60,6 @@ public abstract class ItemStackMixin {
         }
     }
 
-    /*
-    @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
-    public void hookLoot(Level world, Player p, InteractionHand pUsedHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-
-        try {
-            ItemStack stack = (ItemStack) (Object) this;
-
-            if (WorldUtils.isDungeonWorld(world)) {
-                if (ServerContainer.get().isItemBanned(stack.getItem())) {
-                    p.sendSystemMessage(Component.literal("This item is banned in Adventure Maps: ").append(stack.getDisplayName()).withStyle(ChatFormatting.BOLD));
-                    cir.setReturnValue(InteractionResultHolder.fail(stack));
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-     */
 
     // copied from TooltipCallback fabric event
     @Inject(method = {"getTooltipLines"}, at = {@At("RETURN")})

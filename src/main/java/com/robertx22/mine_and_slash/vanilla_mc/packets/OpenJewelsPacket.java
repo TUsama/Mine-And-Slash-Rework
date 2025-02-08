@@ -1,9 +1,9 @@
 package com.robertx22.mine_and_slash.vanilla_mc.packets;
 
-import com.robertx22.mine_and_slash.mmorpg.SlashRef;
-import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.library_of_exile.main.MyPacket;
 import com.robertx22.library_of_exile.packets.ExilePacketContext;
+import com.robertx22.mine_and_slash.mmorpg.SlashRef;
+import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -39,7 +39,6 @@ public class OpenJewelsPacket extends MyPacket<OpenJewelsPacket> {
 
     @Override
     public void onReceived(ExilePacketContext ctx) {
-
 
         var inv = Load.player(ctx.getPlayer()).getJewels().inv;
 

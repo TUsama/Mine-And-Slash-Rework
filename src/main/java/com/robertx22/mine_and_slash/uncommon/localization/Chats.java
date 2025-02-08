@@ -63,8 +63,6 @@ public enum Chats implements IAutoLocName {
     RESISTS_TOO_LOW_FOR_MAP("You lack Resistances to Open/Enter this Map."),
     MAX_MAP_RARITY_FOR_LVL("This map is at maximum possible rarity for it's level."),
     MAX_MAP_RARITY("This map is at maximum possible rarity."),
-    NO_MORE_LIVES_REMAINING("You have no more lives remaining."),
-    MAP_DEATH_LIVES_LOSS("You have died, you can only enter the map %1$s more times."),
     ALREADY_CASTING("Already Casting a Spell"),
     PROPHECY_ALTAR_MSG("The altar reacted to your touch! Pick a Curse of your liking. (You can open the Prophecy Gui from Hub if you failed to pick)"),
     SPELL_IS_ON_CD("Spell is on cooldown"),
@@ -98,7 +96,6 @@ public enum Chats implements IAutoLocName {
     REQUIRE_RANGED("Requires Ranged Weapon to use."),
     INFUSES_STATS("Infuses stats into blank gear."),
     RIGHT_CLICK_TO_GEN_ITEM("You can also right-click to generate an item."),
-    MAP_COMPLETE_RARITY_UPGRADE("Your Map Exploration is now %1$s"),
     GIVEN_BOSS_ARENA_ITEM("Your exploration of the map has yielded results. Click to open the Map gui from where you can teleport to the Boss Arena."),
 
     REQ_LVL("Required Level: %1$s"),
@@ -143,7 +140,6 @@ public enum Chats implements IAutoLocName {
     MAP_SET_DESC("In case your Map Device was lost.\n\nYou can set your previous adventure map with this item."),
     FAILED_TO_AWARD_POINTS("Failed to give more %1$s points, you have reached the cap. The maximum allowed bonus %1$s points is %2$s. This is controlled by the Game balance datapack"),
 
-    NEED_PEARL("You need to have at least one %1$s in your inventory to enter."),
     LEVEL_EXPLANATION("Your player level, otherwise known as your Mine and Slash level."),
     PROF_MAT_DROPGUIDE("Mine and Slash Profession Material"),
     PROF_MAT_DROPGUIDE_COMMON("Common Drop"),
@@ -160,13 +156,14 @@ public enum Chats implements IAutoLocName {
     NEW_DAY("A new day has arrived! Profession drop rates have been boosted for the following items:"),
 
     ERROR_TYPE_AND_REASON("%1$s %2$s"),
-    TOO_LOW_LEVEL("Your level is too low."),
+    TOO_LOW_LEVEL("You need to be level %1$s to do this"),
 
     EAT_FOOD_ERROR("[Food Eat Fail]: "),
     EQUIP_AURA_ERROR("[Augment Equip Fail]: "),
     EQUIP_JEWEL_ERROR("[Jewel Equip Fail]: "),
     EQUIP_SUPP_ERROR("[Support Gem Equip Fail]: "),
     MAP_DEVICE_USE_ERROR("[Map Device Use Fail]: "),
+    INVALID_MAP_ITEM("Invalid Map item"),
     PROPHECY_ALTAR_USE_ERROR("[Prophecy Altar Use Fail]: "),
     LEARN_ERROR("[Learn Fail]: "),
 

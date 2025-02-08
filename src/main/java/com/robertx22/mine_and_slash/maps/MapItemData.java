@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.robertx22.library_of_exile.utils.ItemstackDataSaver;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.OffenseStats;
-import com.robertx22.mine_and_slash.content.ubers.UberBossArena;
 import com.robertx22.mine_and_slash.database.data.game_balance_config.GameBalanceConfig;
 import com.robertx22.mine_and_slash.database.data.rarities.GearRarity;
 import com.robertx22.mine_and_slash.database.data.stats.types.generated.ElementalResist;
@@ -50,7 +49,9 @@ import static com.robertx22.mine_and_slash.gui.texts.ExileTooltips.EMPTY_LINE;
 public class MapItemData implements ICommonDataItem<GearRarity> {
 
     private static MapItemData empty;
-    public String uber = "";
+
+    // todo this is in dungeon mod
+    // public String uber = "";
 
     public int lvl = 1;
     public int tier = 0;
@@ -58,25 +59,20 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
 
     public List<MapAffixData> affixes = new ArrayList<MapAffixData>();
 
-    public String arena = "";
 
     public String uuid = UUID.randomUUID().toString();
 
 
     public void setRarityAndRerollNeeded(GearRarity rar) {
-        //int current = this.affixes.size();
-        //int needed = rar.min_affixes;
 
         this.rar = rar.GUID();
 
         // todo make it so only affixes that are added or removed are changed
-
         MapBlueprint.genAffixes(this, rar);
 
         tier = getRarity().map_tiers.random();
         uuid = UUID.randomUUID().toString();
 
-        randomizeArena();
     }
 
 
@@ -85,9 +81,6 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
 
     }
 
-    public void randomizeArena() {
-        arena = ExileDB.BossArena().random().GUID();
-    }
 
     public static MapItemData empty() {
         if (empty == null) {
@@ -97,14 +90,6 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
 
     }
 
-
-    public boolean isUber() {
-        return ExileDB.UberBoss().isRegistered(uber);
-    }
-
-    public UberBossArena getUber() {
-        return ExileDB.UberBoss().get(uber);
-    }
 
     public StatRequirement getStatReq() {
 
@@ -238,9 +223,8 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
                 .accept(WorksOnBlock.possibleDrops(ExileDB.GearRarities().getFilterWrapped(
                         x -> this.tier >= ExileDB.GearRarities().get(x.min_map_rarity_to_drop).map_tiers.min
                 ).list).notDraggable());
-        if (this.isUber()) {
-            tip.accept(new AdditionalBlock(Collections.singletonList(Words.AreaContains.locName().withStyle(ChatFormatting.RED))));
-        }
+
+
         tip.accept(new OperationTipBlock().setAlt());
 
         return tip.release();

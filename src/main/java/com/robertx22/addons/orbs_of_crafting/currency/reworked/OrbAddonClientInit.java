@@ -6,7 +6,7 @@ import com.robertx22.orbs_of_crafting.api.CurrencyTooltip;
 public class OrbAddonClientInit {
 
     public static void init() {
-
+        // todo make map items like this too
         ExileTooltipHooks.register(CurrencyTooltip.DEFAULT, new CurrencyTooltipHook());
     }
 }

@@ -26,11 +26,7 @@ public class RenderRegister {
         x.registerEntityRenderer(SlashEntities.COLD_GOLEM.get(), ctx -> new ModSkeletonRender(SlashRef.id("textures/entity/cold_golem.png"), ctx));
         x.registerEntityRenderer(SlashEntities.LIGHTNING_GOLEM.get(), ctx -> new ModSkeletonRender(SlashRef.id("textures/entity/lightning_golem.png"), ctx));
 
-        // minions
-        x.registerEntityRenderer(SlashEntities.THORNY_MINION.get(), ctx -> new ModSkeletonRender(SlashRef.id("textures/entity/thorny_minion.png"), ctx));
-        x.registerEntityRenderer(SlashEntities.EXPLODE_MINION.get(), ctx -> new ModSkeletonRender(SlashRef.id("textures/entity/explody_minion.png"), ctx));
-
-
+ 
         x.registerEntityRenderer(SlashEntities.SIMPLE_PROJECTILE.get(), (d) -> new MySpriteRenderer<>(d, Minecraft.getInstance()
                 .getItemRenderer()));
 

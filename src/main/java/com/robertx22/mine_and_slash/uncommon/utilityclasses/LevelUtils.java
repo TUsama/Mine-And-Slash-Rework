@@ -70,20 +70,20 @@ public class LevelUtils {
 
         ServerLevel sw = (ServerLevel) world;
 
-        if (WorldUtils.isMapWorldClass(world)) {
-            try {
-                var data = Load.mapAt(world, pos);
-                if (data != null) {
-                    info.set(LevelInfo.LevelSource.MAP_DIMENSION, data.map.getLevel());
-                    return info;
-                } else {
-                    System.out.print("A mob spawned in a dungeon world without a dungeon data nearby!");
-                }
+        var opt = WorldUtils.ifMapData(world, pos);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (opt.isPresent()) {
+
+            var data = opt.get();
+
+            if (data != null) {
+                info.set(LevelInfo.LevelSource.MAP_DIMENSION, data.map.getLevel());
+                return info;
+            } else {
+                System.out.print("A mob spawned in a dungeon world without a dungeon data nearby!");
             }
         }
+
         DimensionConfig dimConfig = ExileDB.getDimensionConfig(world);
 
         if (ServerContainer.get().SCALE_MOB_LEVEL_TO_NEAREST_PLAYER.get() && nearestPlayer != null) {

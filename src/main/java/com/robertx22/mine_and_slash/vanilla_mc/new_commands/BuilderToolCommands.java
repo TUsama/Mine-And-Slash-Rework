@@ -1,11 +1,11 @@
 package com.robertx22.mine_and_slash.vanilla_mc.new_commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.robertx22.dungeon_realm.database.DungeonDatabase;
+import com.robertx22.dungeon_realm.database.dungeon.Dungeon;
 import com.robertx22.library_of_exile.command_wrapper.*;
-import com.robertx22.mine_and_slash.database.registry.ExileRegistryTypes;
-import com.robertx22.mine_and_slash.maps.DungeonRoom;
-import com.robertx22.mine_and_slash.maps.dungeon_generation.RoomType;
-import com.robertx22.mine_and_slash.maps.dungeon_reg.Dungeon;
+import com.robertx22.library_of_exile.dimension.structure.dungeon.DungeonRoom;
+import com.robertx22.library_of_exile.dimension.structure.dungeon.RoomType;
 import com.robertx22.mine_and_slash.vanilla_mc.commands.CommandRefs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.StructureUtils;
@@ -66,7 +66,7 @@ public class BuilderToolCommands {
 
         CommandBuilder.of(CommandRefs.ID, dis, x -> {
             PlayerWrapper enarg = new PlayerWrapper();
-            var DUNGEON = new RegistryWrapper<Dungeon>(ExileRegistryTypes.DUNGEON);
+            var DUNGEON = new RegistryWrapper<Dungeon>(DungeonDatabase.DUNGEON);
 
             x.addLiteral("builder_tool_warning", PermWrapper.OP);
             x.addLiteral("generate_dungeon_pieces", PermWrapper.OP);
@@ -92,8 +92,8 @@ public class BuilderToolCommands {
                 int z = 0;
                 for (RoomType type : RoomType.values()) {
                     z = 0;
-                    for (String room : dungeon.getRoomList(type)) {
-                        var aroom = new DungeonRoom(dungeon, room, type);
+                    for (String room : dungeon.data.getRoomList(type)) {
+                        var aroom = new DungeonRoom(dungeon.getDungeonData().folder, room, type);
                         var roomPos = new BlockPos(cp.getMinBlockX() + (i * 20), pos.getY(), cp.getMaxBlockZ() + (z * 20));
 
                         world.setBlock(roomPos, Blocks.STRUCTURE_BLOCK.defaultBlockState(), 2);

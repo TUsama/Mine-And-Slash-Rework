@@ -161,6 +161,7 @@ public class SpellChangeStats {
                 x.format = ChatFormatting.GREEN.getName();
             })
             .build();
+
     public static DataPackStatAccessor<EmptyAccessor> PROJECTILE_COUNT = DatapackStatBuilder
             .ofSingle("projectile_count", Elements.Physical)
             .worksWithEvent(SpellStatsCalculationEvent.ID)
@@ -174,6 +175,21 @@ public class SpellChangeStats {
                 x.is_perc = false;
             })
             .build();
+
+    public static DataPackStatAccessor<EmptyAccessor> CHAIN_COUNT = DatapackStatBuilder
+            .ofSingle("chain_count", Elements.Physical)
+            .worksWithEvent(SpellStatsCalculationEvent.ID)
+            .setPriority(StatPriority.Spell.FIRST)
+            .setSide(EffectSides.Source)
+            .addCondition(StatConditions.SPELL_HAS_TAG.get(SpellTags.chaining))
+            .addEffect(StatEffects.BONUS_CHAINS)
+            .setLocName(x -> "Chain Count")
+            .setLocDesc(x -> "")
+            .modifyAfterDone(x -> {
+                x.is_perc = false;
+            })
+            .build();
+
     public static DataPackStatAccessor<EmptyAccessor> PROJECTILE_BARRAGE = DatapackStatBuilder
             .ofSingle("projectile_barrage", Elements.Physical)
             .worksWithEvent(SpellStatsCalculationEvent.ID)

@@ -1,6 +1,7 @@
 package com.robertx22.mine_and_slash.gui.wiki;
 
 import com.robertx22.addons.orbs_of_crafting.currency.base.CodeCurrency;
+import com.robertx22.library_of_exile.database.init.LibDatabase;
 import com.robertx22.library_of_exile.tooltip.ExileTooltipUtils;
 import com.robertx22.library_of_exile.utils.CLOC;
 import com.robertx22.mine_and_slash.database.data.StatMod;
@@ -31,7 +32,6 @@ import com.robertx22.mine_and_slash.saveclasses.skill_gem.SkillGemData;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 import com.robertx22.mine_and_slash.uncommon.localization.Gui;
 import com.robertx22.mine_and_slash.uncommon.localization.Words;
-import com.robertx22.orbs_of_crafting.main.OrbDatabase;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -52,7 +52,7 @@ public abstract class BestiaryGroup<T> {
     public static BestiaryGroup<?> CURRENCY = new BestiaryGroup<CodeCurrency>() {
         @Override
         public List<BestiaryEntry> getAll(int lvl) {
-            return OrbDatabase.Currency().getList().stream().map(x -> new BestiaryEntry.Item(x, x.getItem().getDefaultInstance())).collect(Collectors.toList());
+            return LibDatabase.Currency().getList().stream().map(x -> new BestiaryEntry.Item(x, x.getItem().getDefaultInstance())).collect(Collectors.toList());
         }
 
         @Override

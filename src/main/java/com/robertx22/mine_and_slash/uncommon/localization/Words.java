@@ -8,6 +8,7 @@ import java.util.Locale;
 // to use a "%" here, do %% or '%'
 public enum Words implements IAutoLocName {
     TOTAL_COMBINE_DAMAGE("Total Combined Damage: %1$s\n"),
+    AILMENT_DAMAGE_NOTE("Note: Ailment damage is calculated and shown when it's applied, instead of when the damage actually hurts the enemy.\n"),
     BONUS_DAMAGE_TYPE("\n- Bonus Damage Types:\n"),
     FINAL_DAMAGE("Final Damage: %1$s\n"),
     MULTIPLIERS("Multipliers: \n"),
@@ -110,6 +111,7 @@ public enum Words implements IAutoLocName {
     TARGET("Target"),
 
     DAMAGE_MESSAGE("[%1$s] dealt %2$s %3$s with %4$s"),
+    AILMENT_PROC_MESSAGE("[%1$s] applied %2$s %3$s with %4$s"),
 
     LOOT_MODIFIERS_INFO("Modifiers:"),
 
@@ -339,7 +341,7 @@ public enum Words implements IAutoLocName {
     UNSALVAGEABLE("Unsalvageable"),
 
     SALVAGEABLE("Salvageable"),
-   
+
     UsableOn("Usable On: "),
 
     Energy_Cost_Per_Mob("Energy Cost: %1$s + %2$s Per mob, x %3$s Dmg"),

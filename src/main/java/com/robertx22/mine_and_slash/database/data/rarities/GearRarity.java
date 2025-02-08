@@ -76,8 +76,6 @@ public final class GearRarity extends BaseRarity implements IGearRarity, IAutoGs
 
     public float map_xp_multi = 1;
 
-    public MapRarityRewardData map_reward = null;
-
     public int map_resist_req = 0;
 
     public Rarity getVanillaRarity() {
@@ -89,17 +87,11 @@ public final class GearRarity extends BaseRarity implements IGearRarity, IAutoGs
     transient ResourceLocation glintCircle;
     transient ResourceLocation glintTexBorder;
 
-    public boolean isNear(GearRarity rar) {
-        return Math.abs(rar.item_tier - this.item_tier) < 2;
-    }
 
     public MinMax getPossibleMapTiers() {
         return this.map_tiers;
     }
 
-    public static GearRarity getRarityFromMapTier(int tier) {
-        return ExileDB.GearRarities().getFiltered(x -> x.map_tiers.isInRange(tier)).stream().findAny().orElse(ExileDB.GearRarities().getDefault());
-    }
 
     public enum LootableGearTier {
         LOW(0), MID(1), HIGH(2);

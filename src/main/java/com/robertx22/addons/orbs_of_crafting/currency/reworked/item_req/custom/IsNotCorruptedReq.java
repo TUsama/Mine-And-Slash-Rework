@@ -43,6 +43,9 @@ public class IsNotCorruptedReq extends ItemRequirement {
         if (ex.get(StackKeys.CUSTOM).hasAndTrue(x -> x.isCorrupted())) {
             return false;
         }
+        if (ex.get(StackKeys.JEWEL).hasAndTrue(x -> x.cor.isEmpty())) {
+            return false;
+        }
         return true;
     }
 

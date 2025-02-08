@@ -72,6 +72,7 @@ public class ComponentPart {
         } else {
             throw new NullPointerException("Activation not found"); // ... why did i do it like this
         }
+        
         return this;
     }
 
@@ -145,7 +146,7 @@ public class ComponentPart {
                     if (!EffectCondition.conditionsPass(onEn.ifs, chainedCtx)) {
                         return;
                     }
-                    
+
                     for (MapHolder part : onEn.acts) {
                         SpellAction action = SpellAction.MAP.get(part.type);
                         action.tryActivate(single, chainedCtx, part);

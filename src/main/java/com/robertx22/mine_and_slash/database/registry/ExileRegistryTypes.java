@@ -4,14 +4,12 @@ import com.robertx22.addons.orbs_of_crafting.currency.reworked.addon.ExtendedOrb
 import com.robertx22.library_of_exile.registry.ExileRegistryType;
 import com.robertx22.library_of_exile.registry.SyncTime;
 import com.robertx22.library_of_exile.registry.loaders.BaseDataPackLoader;
-import com.robertx22.mine_and_slash.content.ubers.UberBossArena;
 import com.robertx22.mine_and_slash.database.Serializers;
 import com.robertx22.mine_and_slash.database.data.DimensionConfig;
 import com.robertx22.mine_and_slash.database.data.affixes.Affix;
 import com.robertx22.mine_and_slash.database.data.aura.AuraGem;
 import com.robertx22.mine_and_slash.database.data.auto_item.AutoItem;
 import com.robertx22.mine_and_slash.database.data.base_stats.BaseStatsConfig;
-import com.robertx22.mine_and_slash.database.data.boss_arena.BossArena;
 import com.robertx22.mine_and_slash.database.data.chaos_stats.ChaosStat;
 import com.robertx22.mine_and_slash.database.data.custom_item.CustomItem;
 import com.robertx22.mine_and_slash.database.data.exile_effects.ExileEffect;
@@ -41,8 +39,6 @@ import com.robertx22.mine_and_slash.database.data.talent_tree.TalentTree;
 import com.robertx22.mine_and_slash.database.data.unique_items.UniqueGear;
 import com.robertx22.mine_and_slash.database.data.value_calc.ValueCalculation;
 import com.robertx22.mine_and_slash.database.empty_entries.AffixSerializer;
-import com.robertx22.mine_and_slash.maps.dungeon_reg.Dungeon;
-import com.robertx22.mine_and_slash.maps.spawned_map_mobs.SpawnedMobList;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.action.StatEffect;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.condition.StatCondition;
@@ -87,14 +83,8 @@ public class ExileRegistryTypes {
     public static ExileRegistryType AURA = ExileRegistryType.register(SlashRef.MODID, "aura", 28, AuraGem.SERIALIZER, SyncTime.ON_LOGIN);
     public static ExileRegistryType SUPPORT_GEM = ExileRegistryType.register(SlashRef.MODID, "support_gem", 29, SupportGem.SER, SyncTime.ON_LOGIN);
     public static ExileRegistryType MAP_AFFIX = ExileRegistryType.register(SlashRef.MODID, "map_affix", 30, MapAffix.SER, SyncTime.ON_LOGIN);
-    public static ExileRegistryType BOSS_SPELL = ExileRegistryType.register(SlashRef.MODID, "boss", 31, null, SyncTime.NEVER);
 
-    public static ExileRegistryType LEAGUE_MECHANIC = ExileRegistryType.register(new ExileRegistryType(SlashRef.MODID, "league_mechanic", 32, null, SyncTime.NEVER) {
-        @Override
-        public BaseDataPackLoader getLoader() {
-            return null;
-        }
-    });
+
     public static ExileRegistryType LOOT_CHEST = ExileRegistryType.register(new ExileRegistryType(SlashRef.MODID, "loot_chest", 33, null, SyncTime.NEVER) {
         @Override
         public BaseDataPackLoader getLoader() {
@@ -102,7 +92,6 @@ public class ExileRegistryTypes {
         }
     });
 
-    public static ExileRegistryType DUNGEON = ExileRegistryType.register(SlashRef.MODID, "dungeon", 34, Dungeon.SERIALIZER, SyncTime.ON_LOGIN); // todo does the client need this?
     public static ExileRegistryType PROFESSION = ExileRegistryType.register(SlashRef.MODID, "profession", 35, Profession.SERIALIZER, SyncTime.ON_LOGIN);
     public static ExileRegistryType RECIPE = ExileRegistryType.register(SlashRef.MODID, "profession_recipe", 35, ProfessionRecipe.SERIALIZER, SyncTime.ON_LOGIN);
     public static ExileRegistryType STAT_BUFF = ExileRegistryType.register(SlashRef.MODID, "stat_buff", 36, StatBuff.SERIALIZER, SyncTime.ON_LOGIN);
@@ -114,12 +103,9 @@ public class ExileRegistryTypes {
     public static ExileRegistryType CHAOS_STAT = ExileRegistryType.register(SlashRef.MODID, "chaos_stat", 42, ChaosStat.SERIALIZER, SyncTime.ON_LOGIN);
     public static ExileRegistryType STAT_COMPAT = ExileRegistryType.register(SlashRef.MODID, "stat_compat", 44, StatCompat.SERIALIZER, SyncTime.ON_LOGIN);
     // these 2 need to go in lib, at least the mob one
-    public static ExileRegistryType UBER_BOSS = ExileRegistryType.register(SlashRef.MODID, "uber_boss", 45, UberBossArena.SERIALIZER, SyncTime.ON_LOGIN);
     // mobs could be deterministic per pos, based on the current map world? but with an event to change it to specific if needed
-    public static ExileRegistryType SPAWNED_MOBS = ExileRegistryType.register(SlashRef.MODID, "map_mob_list", 46, SpawnedMobList.SERIALIZER, SyncTime.NEVER);
     public static ExileRegistryType OMEN = ExileRegistryType.register(SlashRef.MODID, "omen", 47, Omen.SERIALIZER, SyncTime.ON_LOGIN);
 
-    public static ExileRegistryType BOSS_ARENA = ExileRegistryType.register(SlashRef.MODID, "boss_arena", 51, BossArena.SERIALIZER, SyncTime.NEVER);
     public static ExileRegistryType ORB_EXTEND = ExileRegistryType.register(SlashRef.MODID, "orb_extension", 100, ExtendedOrb.SERIALIZER, SyncTime.ON_LOGIN);
 
 

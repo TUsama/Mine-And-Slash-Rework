@@ -6,11 +6,13 @@ import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.custom.H
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.custom.IsNotCorruptedReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.custom.MaximumUsesReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.gear.*;
+import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.item_types.BeDungeonMapReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.item_types.BeGearReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.item_types.BeJewelReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.item_types.BeSoulReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.jewel.JewelHasAffixesReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.map.MapHasHigherRarityReq;
+import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.map.MapIsRarityReq;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.MaxUsesKey;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.RarityKeyInfo;
 import com.robertx22.library_of_exile.registry.helpers.ExileKey;
@@ -81,6 +83,7 @@ public class ItemReqs extends ExileKeyHolder<ItemRequirement> {
 
     // maps
     public ExileKey<ItemRequirement, KeyInfo> MAP_HAS_HIGHER_RARITY = ExileKey.ofId(this, "map_has_higher_rar", x -> new MapHasHigherRarityReq(x.GUID()));
+    public ExileKey<ItemRequirement, KeyInfo> MAP_IS_MYTHIC = ExileKey.ofId(this, "map_is_mythic", x -> new MapIsRarityReq(x.GUID(), new MapIsRarityReq.Data(IRarity.MYTHIC_ID)));
 
 
     // any
@@ -103,7 +106,8 @@ public class ItemReqs extends ExileKeyHolder<ItemRequirement> {
     // item types
     public ExileKey<ItemRequirement, KeyInfo> IS_SOUL = ExileKey.ofId(this, "is_soul", x -> new BeSoulReq());
     public ExileKey<ItemRequirement, KeyInfo> IS_JEWEL = ExileKey.ofId(this, "is_jewel", x -> new BeJewelReq());
-    public ExileKey<ItemRequirement, KeyInfo> IS_GEAR = ExileKey.ofId(this, "is_gear", x -> new BeGearReq());
+    public ExileKey<ItemRequirement, KeyInfo> IS_GEAR = ExileKey.ofId(this, "is_gear", x -> new BeGearReq(x.GUID()));
+    public ExileKey<ItemRequirement, KeyInfo> IS_MAP = ExileKey.ofId(this, "is_map", x -> new BeDungeonMapReq(x.GUID()));
 
 
     @Override

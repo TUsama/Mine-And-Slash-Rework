@@ -15,8 +15,6 @@ import com.robertx22.mine_and_slash.database.data.stats.types.generated.Elementa
 import com.robertx22.mine_and_slash.database.data.stats.types.resources.health.Health;
 import com.robertx22.mine_and_slash.database.data.stats.types.resources.health.HealthRegen;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
-import com.robertx22.mine_and_slash.maps.MapData;
-import com.robertx22.mine_and_slash.maps.MapItemData;
 import com.robertx22.mine_and_slash.saveclasses.ExactStatData;
 import com.robertx22.mine_and_slash.saveclasses.unit.StatData;
 import com.robertx22.mine_and_slash.saveclasses.unit.stat_ctx.MiscStatCtx;
@@ -24,6 +22,7 @@ import com.robertx22.mine_and_slash.saveclasses.unit.stat_ctx.StatContext;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.Elements;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.ModType;
+import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
@@ -61,13 +60,11 @@ public class MobStatUtils {
     public static List<StatContext> addMapTierStats(LivingEntity en) {
         List<StatContext> list = new ArrayList<>();
 
-        MapData map = Load.mapAt(en.level(), en.blockPosition());
-        if (map != null) {
-            MapItemData data = map.map;
-
-
-            list.add(new MiscStatCtx(data.getTierStats()));
-        }
+        WorldUtils.ifMapData(en.level(), en.blockPosition()).ifPresent(x -> {
+            if (x.map != null) {
+                list.add(new MiscStatCtx(x.map.getTierStats()));
+            }
+        });
 
         return list;
 

@@ -1,5 +1,6 @@
 package com.robertx22.mine_and_slash.database.data.unique_items;
 
+import com.robertx22.library_of_exile.database.league.League;
 import com.robertx22.library_of_exile.registry.ExileRegistryType;
 import com.robertx22.library_of_exile.registry.IAutoGson;
 import com.robertx22.library_of_exile.registry.JsonExileRegistry;
@@ -7,7 +8,6 @@ import com.robertx22.library_of_exile.registry.serialization.ISerializable;
 import com.robertx22.mine_and_slash.database.data.StatMod;
 import com.robertx22.mine_and_slash.database.data.gear_slots.GearSlot;
 import com.robertx22.mine_and_slash.database.data.gear_types.bases.BaseGearType;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanic;
 import com.robertx22.mine_and_slash.database.data.rarities.GearRarity;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.database.registry.ExileRegistryTypes;
@@ -40,7 +40,7 @@ public class UniqueGear implements JsonExileRegistry<UniqueGear>, IAutoLocName, 
     public transient String langName;
 
 
-    public boolean canSpawnInLeague(LeagueMechanic league) {
+    public boolean canSpawnInLeague(League league) {
         if (!this.league.isEmpty()) {
             return this.league.equals(league.GUID());
         }

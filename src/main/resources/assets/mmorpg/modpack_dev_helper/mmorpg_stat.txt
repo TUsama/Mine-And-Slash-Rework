@@ -90,6 +90,7 @@ cast_speed_to_cooldown_spell_dmg
 cast_speed_to_cooldown_spell_dmg_taken
 cd_ticks
 cdr
+chain_count
 chaining_cast_time
 chaining_cdr
 chaining_spell_dmg

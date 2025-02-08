@@ -1,5 +1,6 @@
 package com.robertx22.mine_and_slash.prophecy;
 
+import com.robertx22.library_of_exile.main.ExileLog;
 import com.robertx22.library_of_exile.utils.RandomUtils;
 import com.robertx22.mine_and_slash.database.data.prophecy.ProphecyModifierType;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
@@ -45,7 +46,7 @@ public class ProphecyGeneration {
         try {
             for (ProphecyModifierType type : modtypes) {
                 if (start.acceptsModifier(type) && type.canApplyTo(start, b) && RandomUtils.roll(type.chanceToSpawn())) {
-                    var mod = ExileDB.ProphecyModifiers().getFilterWrapped(x -> x.modifier_type == type).of(x -> {
+                    var possible = ExileDB.ProphecyModifiers().getFilterWrapped(x -> x.modifier_type == type).of(x -> {
                         if (x.tier_req > tier) {
                             return false;
                         }
@@ -53,13 +54,18 @@ public class ProphecyGeneration {
                             return false;
                         }
                         return true;
-                    }).random();
-                    if (mod != null) {
-                        ProphecyModifierData md = new ProphecyModifierData(mod.GUID());
-                        data.mods.add(md);
-                        cost *= mod.cost_multi;
+                    });
+                    if (!possible.list.isEmpty()) {
+                        var mod = possible.random();
+                        if (mod != null) {
+                            ProphecyModifierData md = new ProphecyModifierData(mod.GUID());
+                            data.mods.add(md);
+                            cost *= mod.cost_multi;
+                        } else {
+                            //ExileLog.get().warn("test");
+                        }
                     } else {
-                        //ExileLog.get().warn("test");
+                        ExileLog.get().warn(type.name() + " prophecy type " + " of start " + start.GUID() + " has no modifiers for tier/lvl" + tier + "," + lvl);
                     }
                 }
             }

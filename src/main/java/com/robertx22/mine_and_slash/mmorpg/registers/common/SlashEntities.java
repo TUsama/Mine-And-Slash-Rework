@@ -9,8 +9,6 @@ import com.robertx22.mine_and_slash.database.data.spells.summons.entity.ZombieSu
 import com.robertx22.mine_and_slash.database.data.spells.summons.entity.golems.ColdGolem;
 import com.robertx22.mine_and_slash.database.data.spells.summons.entity.golems.FireGolem;
 import com.robertx22.mine_and_slash.database.data.spells.summons.entity.golems.LightningGolem;
-import com.robertx22.mine_and_slash.entity.minions.ExplodeMinion;
-import com.robertx22.mine_and_slash.entity.minions.ThornyMinion;
 import com.robertx22.mine_and_slash.mmorpg.registers.deferred_wrapper.Def;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -35,11 +33,6 @@ public class SlashEntities {
     public static RegObj<EntityType<FireGolem>> FIRE_GOLEM = mob(FireGolem::new, EntityType.WOLF, "fire_golem");
     public static RegObj<EntityType<ColdGolem>> COLD_GOLEM = mob(ColdGolem::new, EntityType.WOLF, "cold_golem");
     public static RegObj<EntityType<LightningGolem>> LIGHTNING_GOLEM = mob(LightningGolem::new, EntityType.WOLF, "lightning_golem");
-
-
-    //minions
-    public static RegObj<EntityType<ThornyMinion>> THORNY_MINION = mob(ThornyMinion::new, EntityType.SKELETON, "thorny_minion");
-    public static RegObj<EntityType<ExplodeMinion>> EXPLODE_MINION = mob(ExplodeMinion::new, EntityType.SKELETON, "explody_minion");
 
 
     private static <T extends Entity> RegObj<EntityType<T>> projectile(EntityType.EntityFactory<T> factory, String id) {

@@ -1,15 +1,15 @@
 package com.robertx22.mine_and_slash.gui.wiki.reworked.filters.all;
 
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.addon.ExtendedOrb;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanic;
+import com.robertx22.library_of_exile.database.league.League;
 import com.robertx22.mine_and_slash.gui.wiki.BestiaryEntry;
 import com.robertx22.mine_and_slash.gui.wiki.reworked.filters.GroupFilterEntry;
 import net.minecraft.network.chat.MutableComponent;
 
 public class CurrencyLeagueFilter extends GroupFilterEntry {
-    LeagueMechanic league;
+    League league;
 
-    public CurrencyLeagueFilter(LeagueMechanic league) {
+    public CurrencyLeagueFilter(League league) {
         this.league = league;
     }
 
@@ -27,6 +27,6 @@ public class CurrencyLeagueFilter extends GroupFilterEntry {
 
     @Override
     public MutableComponent getName() {
-        return league.locName();
+        return league.getPrettifiedName();
     }
 }

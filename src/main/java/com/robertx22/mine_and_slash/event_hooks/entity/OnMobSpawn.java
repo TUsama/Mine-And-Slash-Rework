@@ -6,13 +6,10 @@ import com.robertx22.mine_and_slash.database.data.rarities.MobRarity;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.saveclasses.unit.Unit;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
-import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.PlayerUtils;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 
 public class OnMobSpawn {
@@ -32,32 +29,6 @@ public class OnMobSpawn {
         Load.Unit(entity).immuneTicks = 10;
 
         setupNewMobOnSpawn((LivingEntity) entity);
-
-
-        if (WorldUtils.isMapWorldClass(entity.level())) {
-            if (entity instanceof Mob mob) {
-                if (Load.Unit(entity).getRarity().equals(IRarity.BOSS)) {
-                    mob.setPersistenceRequired();
-                }
-            }
-        }
-            /*
-            if (entity instanceof Mob mob) {
-                if (ServerContainer.get().DO_NOT_DESPAWN_MAP_MOBS.get()) {
-                    // todo have a better check that it was a spawned map mob
-                    if (entity instanceof SummonEntity == false) {
-                        // int count = EntityFinder.start(entity, LivingEntity.class, entity.position()).radius(100).searchFor(AllyOrEnemy.all).build().size();
-                        //if (ServerContainer.get().DONT_MAKE_MAP_MOBS_PERSISTENT_IF_MOB_COUNT_IS_ABOVE.get() > count) {
-                        if (Load.Unit(entity).getRarity().equals(IRarity.BOSS)) {
-                            mob.setPersistenceRequired();
-                        }
-                    }
-
-                }
-            }
-        }
-
-             */
 
 
     }

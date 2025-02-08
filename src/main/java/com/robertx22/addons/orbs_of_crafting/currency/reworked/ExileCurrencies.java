@@ -8,14 +8,15 @@ import com.robertx22.addons.orbs_of_crafting.currency.reworked.item_req.ItemReqs
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.MaxUsesKey;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.RarityKeyInfo;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.SkillItemTierKey;
+import com.robertx22.library_of_exile.database.init.LibDatabase;
 import com.robertx22.library_of_exile.registry.helpers.*;
 import com.robertx22.library_of_exile.registry.register_info.ModRequiredRegisterInfo;
 import com.robertx22.mine_and_slash.mmorpg.MMORPG;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
+import com.robertx22.mine_and_slash.mmorpg.registers.common.items.RarityItems;
 import com.robertx22.mine_and_slash.mmorpg.registers.deferred_wrapper.Def;
 import com.robertx22.mine_and_slash.tags.all.SlotTags;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
-import com.robertx22.orbs_of_crafting.main.OrbDatabase;
 import com.robertx22.orbs_of_crafting.misc.ShapedRecipeUTIL;
 import com.robertx22.orbs_of_crafting.register.ExileCurrency;
 import com.robertx22.orbs_of_crafting.register.Modifications;
@@ -234,23 +235,28 @@ public class ExileCurrencies extends ExileKeyHolder<ExileCurrency> {
             .weight(CodeCurrency.Weights.RARE)
             .build(this);
 
+    public ExileKey<ExileCurrency, IdKey> UPGRADE_MAP_RARITY = ExileCurrency.Builder.of("map_rarity_upgrade", "Orb of Map Rarity", ItemReqs.INSTANCE.IS_MAP)
+            .rarity(IRarity.EPIC_ID)
+            .addAlwaysUseModification(ItemMods.INSTANCE.UPGRADE_MAP_RARITY)
+            .potentialCost(0)
+            .weight(CodeCurrency.Weights.RARE)
+            .build(this);
+
 
     @Override
     public void loadClass() {
 
-        /*
-        MAP_RARITY_UPGRADE.addRecipe(ExileRegistryTypes.CURRENCY, x -> {
-            return IShapedRecipe.of(x.getItem(), 3)
-                    .define('X', Items.DIAMOND)
-                    .define('Y', Items.REDSTONE)
-                    .pattern("YYY")
-                    .pattern("YXY")
-                    .pattern("YYY");
+
+        UPGRADE_MAP_RARITY.addRecipe(LibDatabase.CURRENCY, x -> {
+            return ShapedRecipeUTIL.of(x.getItem(), 5)
+                    .define('X', RarityItems.RARITY_STONE.get(IRarity.EPIC_ID).get())
+                    .define('Y', Items.DIAMOND)
+                    .pattern("XXX")
+                    .pattern("XYX")
+                    .pattern("XXX");
         });
 
-         */
-
-        EXTRACT_GEM.addRecipe(OrbDatabase.CURRENCY, x -> {
+        EXTRACT_GEM.addRecipe(LibDatabase.CURRENCY, x -> {
             return ShapedRecipeUTIL.of(x.getItem(), 3)
                     .define('X', Items.GOLD_INGOT)
                     .define('Y', Items.STICK)
@@ -259,7 +265,7 @@ public class ExileCurrencies extends ExileKeyHolder<ExileCurrency> {
                     .pattern(" Y ");
         });
 
-        EXTRACT_RUNE.addRecipe(OrbDatabase.CURRENCY, x -> {
+        EXTRACT_RUNE.addRecipe(LibDatabase.CURRENCY, x -> {
             return ShapedRecipeUTIL.of(x.getItem(), 3)
                     .define('X', Items.DIAMOND)
                     .define('Y', Items.STICK)
@@ -279,7 +285,7 @@ public class ExileCurrencies extends ExileKeyHolder<ExileCurrency> {
                 item = Items.LEATHER;
             }
             Item finalItem = item;
-            en.getValue().addRecipe(OrbDatabase.CURRENCY, x -> {
+            en.getValue().addRecipe(LibDatabase.CURRENCY, x -> {
                 return ShapedRecipeUTIL.of(x.getItem(), 1)
                         .define('X', finalItem)
                         .define('Y', Items.IRON_INGOT)

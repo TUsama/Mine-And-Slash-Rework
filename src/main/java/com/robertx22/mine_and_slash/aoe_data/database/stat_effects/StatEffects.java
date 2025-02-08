@@ -148,6 +148,7 @@ public class StatEffects implements ExileRegistryInit {
     public static StatEffect INCREASE_MANA_COST = new IncreaseNumberByPercentEffect(EventData.MANA_COST);
     public static StatEffect INCREASE_PROJ_SPEED = new IncreaseNumberByPercentEffect(EventData.PROJECTILE_SPEED_MULTI);
     public static StatEffect PROJECTILE_COUNT = new AddToNumberEffect("proj_count", EventData.BONUS_PROJECTILES, NumberProvider.ofStatData());
+    public static StatEffect BONUS_CHAINS = new AddToNumberEffect("bonus_chains", EventData.BONUS_CHAINS, NumberProvider.ofStatData());
     public static StatEffect DURATION_INCREASE = new IncreaseNumberByPercentEffect(EventData.DURATION_MULTI);
     public static StatEffect AGGRO_INCREASE = new IncreaseNumberByPercentEffect(EventData.AGGRO_RADIUS);
     public static StatEffect DECREASE_CAST_TIME = new DecreaseNumberByPercentEffect(EventData.CAST_TICKS);
@@ -156,7 +157,7 @@ public class StatEffects implements ExileRegistryInit {
     public static StatEffect CANCEL_EVENT = new CancelEvent();
     public static StatEffect DISABLE_ATTACKER_STAT_EFFECTS = new DisableSourceStatsEffect();
 
-    
+
     public static DataHolder<SetCooldownEffect.Data, StatEffect> SET_COOLDOWN = new DataHolder<>(
             Arrays.asList(
                     SetCooldownEffect.BONE_SHATTER

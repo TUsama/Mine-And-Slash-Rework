@@ -86,7 +86,7 @@ public class ProcStats {
             })
             .build();
 
- 
+
     public static DataPackStatAccessor<EmptyAccessor> PROC_SHATTER = DatapackStatBuilder
             .ofSingle("proc_shatter", Elements.Physical)
             .worksWithEvent(DamageEvent.ID)
@@ -99,7 +99,7 @@ public class ProcStats {
             .addEffect(e -> StatEffects.GIVE_EFFECT_TO_SOURCE_30_SEC.get(ModEffects.ESSENCE_OF_FROST))
             .addEffect(e -> StatEffects.REMOVE_EFFECT_FROM_TARGET.get(ModEffects.BONE_CHILL))
 
-            .setLocName(x -> Stat.format(VAL1 + "% Chance to casts Bone Shatter when you shatter a bone-chilled enemy. Also gives you Essence of Frost"))
+            .setLocName(x -> Stat.format(VAL1 + "% Chance to cast Bone Shatter when you shatter a bone-chilled enemy. Also gives you Essence of Frost"))
             .setLocDesc(x -> "")
             .modifyAfterDone(x -> {
                 x.is_perc = true;

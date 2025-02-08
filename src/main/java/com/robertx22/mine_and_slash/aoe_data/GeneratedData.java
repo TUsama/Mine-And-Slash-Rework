@@ -28,9 +28,7 @@ import com.robertx22.mine_and_slash.aoe_data.database.stats.Stats;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.old.AutoDatapackStats;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.old.DatapackStats;
 import com.robertx22.mine_and_slash.aoe_data.database.unique_gears.UniqueGearReg;
-import com.robertx22.mine_and_slash.content.ubers.UberBosses;
 import com.robertx22.mine_and_slash.database.data.aura.AuraGems;
-import com.robertx22.mine_and_slash.database.data.boss_arena.BossArenas;
 import com.robertx22.mine_and_slash.database.data.game_balance_config.GameBalanceConfig;
 import com.robertx22.mine_and_slash.database.data.game_balance_config.PlayerPointsConfig;
 import com.robertx22.mine_and_slash.database.data.game_balance_config.PlayerPointsType;
@@ -40,8 +38,6 @@ import com.robertx22.mine_and_slash.database.data.profession.all.Professions;
 import com.robertx22.mine_and_slash.database.data.profession.buffs.StatBuffs;
 import com.robertx22.mine_and_slash.database.data.stats.layers.StatLayers;
 import com.robertx22.mine_and_slash.database.data.support_gem.SupportGems;
-import com.robertx22.mine_and_slash.maps.dungeon_reg.Dungeons;
-import com.robertx22.mine_and_slash.maps.spawned_map_mobs.SpawnedMobs;
 import com.robertx22.mine_and_slash.mmorpg.MMORPG;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.WeaponTypes;
 
@@ -99,9 +95,6 @@ public class GeneratedData {
 
         new Runewords().registerAll();
 
-        SpawnedMobs.init();
-        Dungeons.init();
-        BossArenas.init();
 
         Professions.init();
         StatBuffs.init();
@@ -113,8 +106,7 @@ public class GeneratedData {
         new StatCompats().registerAll();
 
         new ProphecyModifiers().registerAll();
-        UberBosses.init();
-
+       
         GameBalanceConfig orig = new GameBalanceConfig();
         orig.id = GameBalanceConfig.BalanceEnum.ORIGINAL_BALANCE.id;
         orig.player_points.put(PlayerPointsType.TALENTS, new PlayerPointsConfig(PlayerPointsType.TALENTS, 1, 1, 30, 200));

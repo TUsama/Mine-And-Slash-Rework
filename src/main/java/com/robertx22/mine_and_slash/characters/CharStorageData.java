@@ -39,7 +39,7 @@ public class CharStorageData {
             p.sendSystemMessage(Chats.CANT_CHANGE_CHAR_IN_COMBAT.locName().withStyle(ChatFormatting.RED));
             return false;
         }
-        if (WorldUtils.isMapWorldClass(p.level())) {
+        if (WorldUtils.isMapWorldClass(p.level(), p.blockPosition())) {
             p.sendSystemMessage(Chats.CANT_CHANGE_CHAR_IN_MAP.locName().withStyle(ChatFormatting.RED));
             return false;
         }

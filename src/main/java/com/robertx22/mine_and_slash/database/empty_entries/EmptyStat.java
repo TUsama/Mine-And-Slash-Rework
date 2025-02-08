@@ -1,7 +1,7 @@
 package com.robertx22.mine_and_slash.database.empty_entries;
 
-import com.robertx22.mine_and_slash.database.data.stats.Stat;
 import com.robertx22.library_of_exile.registry.ExileRegistryType;
+import com.robertx22.mine_and_slash.database.data.stats.Stat;
 import com.robertx22.mine_and_slash.database.registry.ExileRegistryTypes;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.Elements;
 

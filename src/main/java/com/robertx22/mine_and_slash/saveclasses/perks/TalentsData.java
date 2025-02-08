@@ -54,22 +54,20 @@ public class TalentsData implements IStatCtx {
         Perk perk = school.calcData.getPerk(point);
 
 
-        if (perk.one_kind != null && !perk.one_kind.isEmpty()) {
-            return getAllAllocatedPerks(school.getSchool_type()).values().stream().noneMatch(x -> x.one_kind != null && x.one_kind.equals(perk.one_kind));
-        }
-
         // todo you can take multiple starts??
 
         if (!perk.is_entry) {
             Set<PointData> con = school.calcData.connections.get(point);
 
-            if (con == null || !con.stream()
-                    .anyMatch(x -> getSchool(school.getSchool_type())
-                            .isAllocated(x))) {
+            if (con == null || !con.stream().anyMatch(x -> getSchool(school.getSchool_type()).isAllocated(x))) {
                 return false;
             }
         }
-
+        if (perk.one_kind != null && !perk.one_kind.isEmpty()) {
+            if (getAllAllocatedPerks(school.getSchool_type()).values().stream().anyMatch(x -> x.one_kind != null && x.one_kind.equals(perk.one_kind))) {
+                return false;
+            }
+        }
         return true;
 
     }

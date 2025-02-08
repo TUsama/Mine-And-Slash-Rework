@@ -1,7 +1,8 @@
 package com.robertx22.mine_and_slash.gui.texts.textblocks.dropblocks;
 
+import com.robertx22.library_of_exile.database.league.League;
+import com.robertx22.library_of_exile.localization.TranslationType;
 import com.robertx22.library_of_exile.util.UNICODE;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanic;
 import com.robertx22.mine_and_slash.gui.texts.ExileTooltips;
 import com.robertx22.mine_and_slash.gui.texts.textblocks.AbstractTextBlock;
 import com.robertx22.mine_and_slash.uncommon.localization.Chats;
@@ -14,9 +15,9 @@ import java.util.List;
 
 public class LeagueBlock extends AbstractTextBlock {
 
-    LeagueMechanic league;
+    League league;
 
-    public LeagueBlock(LeagueMechanic l) {
+    public LeagueBlock(League l) {
         this.league = l;
     }
 
@@ -24,7 +25,7 @@ public class LeagueBlock extends AbstractTextBlock {
     public List<? extends Component> getAvailableComponents() {
         var list = new ArrayList<MutableComponent>();
 
-        list.add(Component.literal(UNICODE.SKULL + " ").withStyle(league.getTextColor()).append(league.locName().withStyle(league.getTextColor())));
+        list.add(Component.literal(UNICODE.SKULL + " ").withStyle(league.getTextColor()).append(league.getTranslation(TranslationType.NAME).getTranslatedName().withStyle(league.getTextColor())));
 
         if (Screen.hasShiftDown()) {
             list.add(Chats.ITEM_AQUIRED_THROUGH_LEAGUE.locName().withStyle(league.getTextColor()));

@@ -6,6 +6,7 @@ import com.robertx22.mine_and_slash.capability.player.PlayerBackpackData;
 import com.robertx22.mine_and_slash.capability.player.PlayerData;
 import com.robertx22.mine_and_slash.capability.world.WorldData;
 import com.robertx22.mine_and_slash.maps.MapData;
+import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,19 +31,17 @@ public class Load {
         return player.getCapability(PlayerBackpackData.INSTANCE).orElse(null);
     }
 
-
     public static WorldData worldData(Level l) {
         return l.getServer().overworld().getCapability(WorldData.INSTANCE).orElse(null);
     }
 
+    // todo add connected maps
     public static MapData mapAt(Level l, BlockPos pos) {
         try {
-            MapData d = l.getServer().overworld().getCapability(WorldData.INSTANCE).orElse(null).map.getMap(pos).get();
-            return d;
+            return WorldUtils.ifMapData(l, pos).get();
         } catch (Exception e) {
-            // throw new RuntimeException(e);
+            return null;
         }
-        return null;
     }
 
     public static ChunkCap chunkData(LevelChunk c) {

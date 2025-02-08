@@ -1,4 +1,18 @@
 These are all default registry entries of this type.
 This registry is modify-able through datapacks.
+boss
+chance_chest
+chest
+elite_mob
+elite_mob_horde
 empty
+harvest_spawner
+league_back
+league_spawn_pos
+map_boss
+map_reward
+map_teleporter
+mob
+mob_horde
 teleport_back_block
+uber_boss_altar

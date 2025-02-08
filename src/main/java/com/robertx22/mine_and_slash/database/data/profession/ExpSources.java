@@ -49,7 +49,7 @@ public class ExpSources {
 
         map.get(tier.tier).add(new ExpSource(type, exp, id, Arrays.asList(req)));
 
-
+        
     }
 
     public static class ExpSource {
@@ -202,7 +202,7 @@ public class ExpSources {
 
         public float getLootChanceMulti(Player p, Profession pro) {
             float lvlmulti = MathHelper.clamp((float) Load.player(p).professions.getLevel(pro.GUID()) / (float) getLevelOfMastery(), 0F, 1F);
-            return exp / 100F * lvlmulti;
+            return ((exp + 50) / 100F) * lvlmulti;
         }
     }
 }

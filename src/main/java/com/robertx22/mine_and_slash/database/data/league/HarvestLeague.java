@@ -1,35 +1,8 @@
 package com.robertx22.mine_and_slash.database.data.league;
 
-import com.robertx22.library_of_exile.utils.RandomUtils;
-import com.robertx22.mine_and_slash.database.data.spells.map_fields.MapField;
-import com.robertx22.mine_and_slash.loot.LootInfo;
-import com.robertx22.mine_and_slash.maps.LeagueData;
-import com.robertx22.mine_and_slash.maps.MapData;
-import com.robertx22.mine_and_slash.maps.MapItemData;
-import com.robertx22.mine_and_slash.maps.processors.helpers.MobBuilder;
-import com.robertx22.mine_and_slash.mechanics.base.LeagueBlockData;
-import com.robertx22.mine_and_slash.mechanics.base.LeagueControlBlockEntity;
-import com.robertx22.mine_and_slash.mechanics.harvest.HarvestItems;
-import com.robertx22.mine_and_slash.mmorpg.registers.common.SlashBlocks;
-import com.robertx22.mine_and_slash.uncommon.localization.Chats;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.OnScreenMessageUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
+// todo remake as separate mod
 
-import java.util.Arrays;
-import java.util.List;
-
+/*
 public class HarvestLeague extends LeagueMechanic {
 
     public static MapField<Double> KILLS = new MapField<>("kills");
@@ -204,3 +177,6 @@ public class HarvestLeague extends LeagueMechanic {
         return "Harvest League";
     }
 }
+
+
+ */

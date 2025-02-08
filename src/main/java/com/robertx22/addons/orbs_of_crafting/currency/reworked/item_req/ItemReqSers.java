@@ -17,9 +17,5 @@ public class ItemReqSers {
     public static String JEWEL_HAS_AFFIXES = "jewel_has_affixes";
     public static String HAS_SOCKET_OF_TYPE = "has_socket_of_type";
 
-    public static String IS_GEAR = "is_gear";
-    public static String IS_JEWEL = "is_jewel";
-    public static String IS_SOUL = "is_soul";
 
- 
 }

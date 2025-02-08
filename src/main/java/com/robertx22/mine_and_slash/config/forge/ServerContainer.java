@@ -45,12 +45,10 @@ public class ServerContainer {
         REQUIRE_TEAM_FOR_TEAM_DUNGEONS = b.define("require_team_for_dungeons", true);
         DONT_SYNC_DATA_OF_AMBIENT_MOBS = b.define("dont_sync_ambient_mob_data", true);
         SCALE_MOB_LEVEL_TO_NEAREST_PLAYER = b.define("SCALE_MOB_LEVEL_TO_NEAREST_PLAYER", true);
-        MAPS_DONT_DROP_IN_MAPS = b.define("maps_dont_drop_in_maps", true);
         LOG_ERRORS = b.define("log_errors", true);
         STOP_ERROR_SPAM = b.define("stop_error_spam", true);
         STATION_SUCK_NEARBY_CHESTS = b.define("STATION_SUCK_NEARBY_CHESTS", false);
         SKULL_HIDES_LEVEL = b.comment("Mobs that are much higher level will hide their levels.").define("SKULL_HIDES_LEVEL", true);
-        FORCE_SURVIVAL_MODE_OUTSIDE_MAP = b.comment("Do not change this").define("FORCE_SURVIVAL_MODE_OUTSIDE_MAP", true);
         REMOVE_ATK_SPEED_COOLDOWN = b.comment("Mns tries to replicate vanilla atk speed and reduces dmg of basic attacks if hit too often").define("REMOVE_ATK_SPEED_COOLDOWN", false);
         MIN_LEVEL_MAP_DROPS = b.defineInRange("min_level_map_drops", 25, 0, Integer.MAX_VALUE);
         MIN_SLIME_SIZE_FOR_LOOT = b.defineInRange("MIN_SLIME_SIZE_FOR_LOOT", 3, 0, Integer.MAX_VALUE);
@@ -88,7 +86,6 @@ public class ServerContainer {
         GEAR_DROPRATE = b.defineInRange("gear_drop_rate", 7D, 0, 1000);
         SOUl_DROPRATE = b.defineInRange("soul_drop_rate", 0.3D, 0, 1000);
         GEM_DROPRATE = b.defineInRange("gem_drop_rate", 1D, 0, 1000);
-        UBER_FRAG_DROPRATE = b.defineInRange("UBER_FRAG_DROP_RATE", 10D, 0, 1000);
         SKILL_GEM_DROPRATE = b.defineInRange("skill_gem_drop_rate", 3D, 0, 1000);
         SUPP_GEM_DROPRATE = b.defineInRange("support_gem_drop_rate", 2D, 0, 1000);
         AURA_GEM_DROPRATE = b.defineInRange("aura_gem_drop_rate", 2D, 0, 1000);
@@ -99,12 +96,11 @@ public class ServerContainer {
         JEWEL_DROPRATE = b.defineInRange("jewel_drop_rate", 0.25D, 0, 1000);
         LOOT_CHEST_DROPRATE = b.defineInRange("loot_chest_drop_rate", 0.1D, 0, 1000);
         OMEN_DROPRATE = b.defineInRange("OMEN_DROPRATE", 0.1D, 0, 1000);
+        MAP_DROPRATE = b.defineInRange("MAP_DROPRATE", 1D, 0, 1000);
 
 
         BLOCK_COST = b.defineInRange("block_cost", 0.25D, 0, 1000);
 
-        PACK_MOB_MIN = b.defineInRange("pack_mob_min", 3, 0, 20);
-        PACK_MOB_MAX = b.defineInRange("pack_mob_max", 6, 0, 20);
 
         // DONT_MAKE_MAP_MOBS_PERSISTENT_IF_MOB_COUNT_IS_ABOVE = b.defineInRange("DONT_MAKE_MAP_MOBS_PERSISTENT_IF_MOB_COUNT_IS_ABOVE", 25, 0, 10000);
 
@@ -112,17 +108,11 @@ public class ServerContainer {
         MAP_GEN_TERRAIN_RADIUS = b.defineInRange("MAP_GEN_TERRAIN_RADIUS", 4, 0, 10);
 
 
-        MIN_MAP_ROOMS = b.defineInRange("MIN_MAP_ROOMS", 12, 1, 100);
-        MAX_MAP_ROOMS = b.defineInRange("MAX_MAP_ROOMS", 20, 1, 100);
-
         ITEM_LEVEL_VARIANCE = b.defineInRange("ITEM_LEVEL_VARIANCE", 3, 0, 100);
         MOB_LEVEL_VARIANCE = b.defineInRange("MOB_LEVEL_VARIANCE", 3, 0, 100);
 
         PROPHECY_OFFERS_PER_REROLL = b.defineInRange("PROPHECY_OFFERS_PER_REROLL", 18, 1, 18);
 
-
-        MOB_MIN = b.defineInRange("mob_min", 1, 0, 20);
-        MOB_MAX = b.defineInRange("mob_max", 2, 0, 20);
 
         BONUS_EXP_PERCENT_PER_HIGHER_LVL_CHARACTERS = b.defineInRange("BONUS_EXP_PERCENT_PER_HIGHER_LVL_CHARACTERS", 10, 0, 1000);
 
@@ -146,11 +136,7 @@ public class ServerContainer {
         List<String> items = new ArrayList<>();
         items.add(VanillaUTIL.REGISTRY.items().getKey(Items.ENDER_PEARL).toString());
         items.add(VanillaUTIL.REGISTRY.items().getKey(Items.CHORUS_FRUIT).toString());
-        BANNED_ITEMS = b.comment("Stops items from being used in maps/adventuremaps. This is used for items that allow cheesing mechanics like teleporation items mostly.")
-                .defineList("disabled_items_in_maps", items, x -> {
-                    String str = (String) x;
-                    return true;
-                });
+
 
         SOUL_CLEANER_ITEM_BLACKLIST = b
                 .defineList("SOUL_CLEANER_ITEM_BLACKLIST", Arrays.asList("minecraft:diamond"), x -> {
@@ -203,10 +189,6 @@ public class ServerContainer {
 
     }
 
-    public boolean isItemBanned(Item item) {
-        String id = VanillaUTIL.REGISTRY.items().getKey(item).toString();
-        return BANNED_ITEMS.get().stream().anyMatch(x -> x.equals(id));
-    }
 
     public boolean isSoulCleanBanned(Item item) {
         String id = VanillaUTIL.REGISTRY.items().getKey(item).toString();
@@ -214,7 +196,6 @@ public class ServerContainer {
     }
 
     public ForgeConfigSpec.ConfigValue<List<? extends String>> GEAR_COMPATS;
-    public ForgeConfigSpec.ConfigValue<List<? extends String>> BANNED_ITEMS;
     public ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_CLEANER_ITEM_BLACKLIST;
 
     //public ForgeConfigSpec.BooleanValue DO_NOT_DESPAWN_MAP_MOBS;
@@ -222,15 +203,13 @@ public class ServerContainer {
     public ForgeConfigSpec.BooleanValue ENABLE_LOOT_ANNOUNCEMENTS;
     public ForgeConfigSpec.BooleanValue REQUIRE_TEAM_FOR_TEAM_DUNGEONS;
     public ForgeConfigSpec.BooleanValue DONT_SYNC_DATA_OF_AMBIENT_MOBS;
-    public ForgeConfigSpec.BooleanValue MAPS_DONT_DROP_IN_MAPS;
     public ForgeConfigSpec.BooleanValue SCALE_MOB_LEVEL_TO_NEAREST_PLAYER;
     public ForgeConfigSpec.BooleanValue LOG_ERRORS;
     public ForgeConfigSpec.BooleanValue STOP_ERROR_SPAM;
     public ForgeConfigSpec.BooleanValue STATION_SUCK_NEARBY_CHESTS;
     public ForgeConfigSpec.BooleanValue SKULL_HIDES_LEVEL;
-    public ForgeConfigSpec.BooleanValue FORCE_SURVIVAL_MODE_OUTSIDE_MAP;
     public ForgeConfigSpec.BooleanValue REMOVE_ATK_SPEED_COOLDOWN;
-  
+
     public ForgeConfigSpec.IntValue MIN_LEVEL_MAP_DROPS;
     public ForgeConfigSpec.IntValue MIN_SLIME_SIZE_FOR_LOOT;
     public ForgeConfigSpec.IntValue DEATH_PENALTY_START_LEVEL;
@@ -269,7 +248,6 @@ public class ServerContainer {
     public ForgeConfigSpec.DoubleValue GEAR_DROPRATE;
     public ForgeConfigSpec.DoubleValue SOUl_DROPRATE;
     public ForgeConfigSpec.DoubleValue GEM_DROPRATE;
-    public ForgeConfigSpec.DoubleValue UBER_FRAG_DROPRATE;
     public ForgeConfigSpec.DoubleValue SKILL_GEM_DROPRATE;
     public ForgeConfigSpec.DoubleValue LOOT_CHEST_DROPRATE;
     public ForgeConfigSpec.DoubleValue SUPP_GEM_DROPRATE;
@@ -280,17 +258,14 @@ public class ServerContainer {
     public ForgeConfigSpec.DoubleValue WATCHER_EYE_DROPRATE;
     public ForgeConfigSpec.DoubleValue PROPHECY_COIN_DROPRATE;
     public ForgeConfigSpec.DoubleValue OMEN_DROPRATE;
+    public ForgeConfigSpec.DoubleValue MAP_DROPRATE;
 
 
     public ForgeConfigSpec.DoubleValue BLOCK_COST;
 
-    public ForgeConfigSpec.IntValue PACK_MOB_MIN;
-    public ForgeConfigSpec.IntValue PACK_MOB_MAX;
     public ForgeConfigSpec.IntValue MAX_POSSIBLE_FAVOR;
 
 
-    public ForgeConfigSpec.IntValue MIN_MAP_ROOMS;
-    public ForgeConfigSpec.IntValue MAX_MAP_ROOMS;
     public ForgeConfigSpec.IntValue MAP_GEN_TERRAIN_RADIUS;
     public ForgeConfigSpec.IntValue MAP_GEN_MOB_RADIUS;
 
@@ -298,8 +273,6 @@ public class ServerContainer {
 
     public ForgeConfigSpec.IntValue BONUS_EXP_PERCENT_PER_HIGHER_LVL_CHARACTERS;
 
-    public ForgeConfigSpec.IntValue MOB_MIN;
-    public ForgeConfigSpec.IntValue MOB_MAX;
     public ForgeConfigSpec.IntValue MAX_CHARACTERS;
     public ForgeConfigSpec.IntValue ITEM_LEVEL_VARIANCE;
     public ForgeConfigSpec.IntValue MOB_LEVEL_VARIANCE;

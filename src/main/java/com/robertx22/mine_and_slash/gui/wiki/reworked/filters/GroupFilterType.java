@@ -1,5 +1,6 @@
 package com.robertx22.mine_and_slash.gui.wiki.reworked.filters;
 
+import com.robertx22.library_of_exile.database.init.LibDatabase;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.gui.wiki.BestiaryGroup;
 import com.robertx22.mine_and_slash.gui.wiki.reworked.NewWikiScreen;
@@ -20,8 +21,8 @@ public class GroupFilterType {
 
 
     public static GroupFilterType UNIQUE_SLOTS = new GroupFilterType(BestiaryGroup.UNIQUE_GEAR, Words.ON_SLOTS, () -> ExileDB.GearSlots().getList().stream().map(x -> new UniqueSlotFilter(x)).collect(Collectors.toList()));
-    public static GroupFilterType UNIQUE_LEAGUES = new GroupFilterType(BestiaryGroup.UNIQUE_GEAR, Words.LEAGUE, () -> ExileDB.LeagueMechanics().getList().stream().map(x -> new UniqueLeagueFilter(x)).collect(Collectors.toList()));
-    public static GroupFilterType CURRENCY_LEAGUES = new GroupFilterType(BestiaryGroup.CURRENCY, Words.LEAGUE, () -> ExileDB.LeagueMechanics().getList().stream().map(x -> new CurrencyLeagueFilter(x)).collect(Collectors.toList()));
+    public static GroupFilterType UNIQUE_LEAGUES = new GroupFilterType(BestiaryGroup.UNIQUE_GEAR, Words.LEAGUE, () -> LibDatabase.Leagues().getList().stream().map(x -> new UniqueLeagueFilter(x)).collect(Collectors.toList()));
+    public static GroupFilterType CURRENCY_LEAGUES = new GroupFilterType(BestiaryGroup.CURRENCY, Words.LEAGUE, () -> LibDatabase.Leagues().getList().stream().map(x -> new CurrencyLeagueFilter(x)).collect(Collectors.toList()));
 
 
     public static GroupFilterType RUNEWORD_SLOTS = new GroupFilterType(BestiaryGroup.RUNEWORD, Words.ON_SLOTS, () -> ExileDB.GearSlots().getList().stream().map(x -> new RunewordSlotFilter(x)).collect(Collectors.toList()));

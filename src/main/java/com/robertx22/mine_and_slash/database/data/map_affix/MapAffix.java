@@ -1,10 +1,10 @@
 package com.robertx22.mine_and_slash.database.data.map_affix;
 
+import com.robertx22.addons.dungeon_realm.MnsLeagues;
 import com.robertx22.library_of_exile.registry.ExileRegistryType;
 import com.robertx22.library_of_exile.registry.IAutoGson;
 import com.robertx22.library_of_exile.registry.JsonExileRegistry;
 import com.robertx22.mine_and_slash.database.data.StatMod;
-import com.robertx22.mine_and_slash.database.data.league.ProphecyLeague;
 import com.robertx22.mine_and_slash.database.data.mob_affixes.MobAffix;
 import com.robertx22.mine_and_slash.database.registry.ExileRegistryTypes;
 import com.robertx22.mine_and_slash.maps.AffectedEntities;
@@ -35,7 +35,7 @@ public class MapAffix implements JsonExileRegistry<MobAffix>, IAutoGson<MapAffix
     }
 
     public MapAffix setProphecyLeague() {
-        this.req = new ProphecyLeague().GUID();
+        this.req = MnsLeagues.INSTANCE.PROPHECY.GUID();
         return this;
     }
 
@@ -83,7 +83,7 @@ public class MapAffix implements JsonExileRegistry<MobAffix>, IAutoGson<MapAffix
 
     public List<ExactStatData> getStats(int perc, int lvl) {
         var list = stats.stream().map(x -> x.ToExactStat(perc, lvl)).collect(Collectors.toList());
-        
+
         return list;
     }
 

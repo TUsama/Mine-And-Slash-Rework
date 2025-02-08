@@ -1,5 +1,7 @@
 package com.robertx22.mine_and_slash.aoe_data.database.unique_gears.uniques;
 
+import com.robertx22.addons.dungeon_realm.MnsLeagues;
+import com.robertx22.library_of_exile.registry.ExileRegistryInit;
 import com.robertx22.mine_and_slash.aoe_data.database.base_gear_types.BaseGearTypes;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.OffenseStats;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.ResourceStats;
@@ -7,7 +9,6 @@ import com.robertx22.mine_and_slash.aoe_data.database.stats.old.DatapackStats;
 import com.robertx22.mine_and_slash.aoe_data.database.unique_gears.UniqueGearBuilder;
 import com.robertx22.mine_and_slash.aoe_data.database.unique_gears.UniqueRarityTier;
 import com.robertx22.mine_and_slash.database.data.StatMod;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanics;
 import com.robertx22.mine_and_slash.database.data.stats.types.gear_base.GearDefense;
 import com.robertx22.mine_and_slash.database.data.stats.types.generated.ElementalResist;
 import com.robertx22.mine_and_slash.database.data.stats.types.resources.health.Health;
@@ -17,7 +18,6 @@ import com.robertx22.mine_and_slash.database.data.stats.types.resources.mana.Man
 import com.robertx22.mine_and_slash.tags.all.SpellTags;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.Elements;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.ModType;
-import com.robertx22.library_of_exile.registry.ExileRegistryInit;
 
 import java.util.Arrays;
 
@@ -39,7 +39,7 @@ public class ProphecyUniques implements ExileRegistryInit {
                         DatapackStats.MANA_PER_10_INT.mod(25, 50),
                         DatapackStats.ENERGY_PER_10_DEX.mod(25, 50)
                 ))
-                .leagueOnly((LeagueMechanics.PROPHECY).GUID())
+                .leagueOnly((MnsLeagues.INSTANCE.PROPHECY).GUID())
                 .build();
 
         UniqueGearBuilder.of("curse_of_numbers", "Curse of Numbers", BaseGearTypes.NECKLACE)
@@ -59,7 +59,7 @@ public class ProphecyUniques implements ExileRegistryInit {
                         DatapackStats.MANA_PER_10_DEX.mod(-50, 50)
                 ))
                 .rarityWeight(UniqueRarityTier.UBER)
-                .leagueOnly((LeagueMechanics.PROPHECY).GUID())
+                .leagueOnly((MnsLeagues.INSTANCE.PROPHECY).GUID())
                 .build();
 
         UniqueGearBuilder.of("the_beast", "The Beast", BaseGearTypes.PLATE_CHEST)
@@ -77,7 +77,7 @@ public class ProphecyUniques implements ExileRegistryInit {
                         DatapackStats.HEALTH_PER_10_STR.mod(25, 50),
                         HealthRegen.getInstance().mod(10, 25).percent()
                 ))
-                .leagueOnly((LeagueMechanics.PROPHECY).GUID())
+                .leagueOnly((MnsLeagues.INSTANCE.PROPHECY).GUID())
                 .build();
 
 
@@ -96,7 +96,7 @@ public class ProphecyUniques implements ExileRegistryInit {
                         HealthRegen.getInstance().mod(10, 25).percent(),
                         DatapackStats.INT.mod(5, 15).percent()
                 ))
-                .leagueOnly((LeagueMechanics.PROPHECY).GUID())
+                .leagueOnly((MnsLeagues.INSTANCE.PROPHECY).GUID())
                 .build();
 
 
@@ -112,7 +112,7 @@ public class ProphecyUniques implements ExileRegistryInit {
                         ManaRegen.getInstance().mod(10, 20).percent(),
                         DatapackStats.STR.mod(5, 15).percent()
                 ))
-                .leagueOnly((LeagueMechanics.PROPHECY).GUID())
+                .leagueOnly((MnsLeagues.INSTANCE.PROPHECY).GUID())
                 .build();
 
     }

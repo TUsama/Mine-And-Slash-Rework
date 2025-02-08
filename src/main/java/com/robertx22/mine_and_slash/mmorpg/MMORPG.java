@@ -1,10 +1,14 @@
 package com.robertx22.mine_and_slash.mmorpg;
 
+import com.robertx22.addons.dungeon_realm.DungeonAddonEvents;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.addon.OrbAddonEvents;
 import com.robertx22.library_of_exile.events.base.EventConsumer;
 import com.robertx22.library_of_exile.events.base.ExileEvents;
 import com.robertx22.library_of_exile.localization.ExileLangFile;
+import com.robertx22.library_of_exile.localization.ExileTranslation;
+import com.robertx22.library_of_exile.localization.TranslationBuilder;
 import com.robertx22.library_of_exile.registry.ExileRegistryType;
+import com.robertx22.library_of_exile.registry.helpers.OrderedModConstructor;
 import com.robertx22.library_of_exile.registry.register_info.HardcodedRegistration;
 import com.robertx22.library_of_exile.registry.register_info.ModRequiredRegisterInfo;
 import com.robertx22.library_of_exile.registry.register_info.SeriazableRegistration;
@@ -38,20 +42,20 @@ import com.robertx22.mine_and_slash.mmorpg.registers.client.S2CPacketRegister;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.C2SPacketRegister;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.SlashCapabilities;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.SlashItemTags;
+import com.robertx22.mine_and_slash.mmorpg.registers.common.items.SlashItems;
 import com.robertx22.mine_and_slash.tags.ModTags;
 import com.robertx22.mine_and_slash.uncommon.coins.Coin;
 import com.robertx22.mine_and_slash.uncommon.datasaving.StackSaving;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.action.StatEffect;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.condition.StatCondition;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.VanillaRarities;
-import com.robertx22.orbs_of_crafting.main.OrbsOfCraftingMain;
+import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -91,6 +95,8 @@ public class MMORPG {
 
     // idk how else to pass arguments to a method reference
     public static void createMnsLangFile() {
+        TranslationBuilder.of(SlashRef.MODID).name(ExileTranslation.item(SlashItems.RELIC.get(), ChatFormatting.GREEN + "Dungeon Relic")).build();
+
         // todo eventually i'll replace the entire old CreateLangFile class
         ExileLangFile.createFile(SlashRef.MODID, CreateLangFile.create());
     }
@@ -116,12 +122,11 @@ public class MMORPG {
     );
 
     public MMORPG() {
+        final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        OrderedModConstructor.register(new MnsConstructor(SlashRef.MODID), bus);
 
         if (MMORPG.RUN_DEV_TOOLS) {
             ExileRegistryUtil.setCurrentRegistarMod(SlashRef.MODID);
-        }
-        if (OrbsOfCraftingMain.RUN_DEV_TOOLS) {
-            throw new RuntimeException("CANT RUN DEV TOOLS ON DEP MOD");
         }
 
         Watch watch = new Watch();
@@ -147,12 +152,6 @@ public class MMORPG {
 
         ForgeEvents.registerForgeEvent(RegisterClientTooltipComponentFactoriesEvent.class, x -> {
             x.register(SocketTooltip.SocketComponent.class, SocketTooltip::new);
-        });
-
-        final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        ForgeEvents.registerForgeEvent(AddReloadListenerEvent.class, event -> {
-            ExileRegistryType.registerJsonListeners(event);
         });
 
 
@@ -221,11 +220,11 @@ public class MMORPG {
         PlayerStats.register();
         PlayerStats.initialize();
 
-        var constructor = new MnsConstructor(SlashRef.MODID, FMLJavaModLoadingContext.get().getModEventBus());
-
         DerivedRegistries.init();
 
         // OnClick.register();
+
+        DungeonAddonEvents.init();
 
         watch.print("Mine and slash mod initialization ");
 
@@ -249,14 +248,6 @@ public class MMORPG {
 
         ProfessionRecipes.init();
 
-        /*
-        GeneratedData.addAllObjectsToGenerate();
-        BossSpells.init();
-        LeagueMechanics.init();
-        LootChests.init();
-        new ProphecyStarts().registerAll();
-
-         */
 
         SlashCapabilities.register();
 

@@ -7,16 +7,12 @@ public enum LootType implements IGUID {
 
     Gear("Gear", "gear", Words.Gear, 0),
     Gem("Gem", "gem", Words.Gem, 1),
-    DungeonKey("Dungeon Key", "dungeon_keys", Words.DungeonKey, 0),
-    LevelingRewards("Leveling Rewards", "lvl_rewards", Words.LevelRewards, 0),
     Rune("Rune", "rune", Words.Rune, 2),
     Currency("Currency", "currency", Words.Currency, 3),
-    Backpack("Backpack", "backpack", Words.Backpack, 3),
     SkillGem("Skill Gem", "skill_gem", Words.SkillGem, 5),
     Map("Map", "map", Words.Map, 6),
     Jewel("Jewel", "jewel", Words.Jewel, 7),
     LootChest("Loot Chest", "loot_chest", Words.Loot, 8),
-    UberFrag("Uber Fragment", "uber_frag", Words.UBER_FRAG, 9),
     WatcherEye("Watcher Eye", "watcher_eye", Words.None, 10),
     ProphecyCoin("Prophecy Coin", "prophecy_coin", Words.None, 11),
     Omen("Omen", "omen", Words.None, 12),
@@ -29,6 +25,8 @@ public enum LootType implements IGUID {
         this.id = id;
         this.word = word;
         this.custommodeldata = custommodeldata;
+
+        
     }
 
     public static LootType of(String str) {

@@ -1,8 +1,8 @@
 package com.robertx22.mine_and_slash.prophecy;
 
+import com.robertx22.addons.dungeon_realm.MnsLeagues;
 import com.robertx22.library_of_exile.utils.SoundUtils;
 import com.robertx22.mine_and_slash.config.forge.ServerContainer;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanics;
 import com.robertx22.mine_and_slash.database.data.map_affix.MapAffix;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.maps.AffectedEntities;
@@ -58,7 +58,7 @@ public class PlayerProphecies implements IStatCtx {
             // todo did i figure it out correctly
             MapAffix affix = ExileDB.MapAffixes()
                     .getFilterWrapped(x ->
-                            x.req.equals(LeagueMechanics.PROPHECY.GUID()) &&
+                            x.req.equals(MnsLeagues.INSTANCE.PROPHECY.GUID()) &&
                                     x.affected == AffectedEntities.Players &&
                                     affixOffers.stream().map(a -> ExileDB.MapAffixes().get(a)).allMatch(e -> !e.prophecy_type.equals(x.prophecy_type))
                     ).random();
@@ -86,7 +86,7 @@ public class PlayerProphecies implements IStatCtx {
             p.sendSystemMessage(Chats.MUST_BE_IN_MAP_TO_ACCEPT_PROPHECY.locName().withStyle(ChatFormatting.RED));
             return;
         }
-        if (!WorldUtils.isDungeonWorld(p.level()) || !map.map.uuid.equals(this.mapid)) {
+        if (!WorldUtils.isMapWorldClass(p.level(), p.blockPosition()) || !map.map.uuid.equals(this.mapid)) {
             // this is to stop people gathering points in lvl 1 maps and going into lvl 100 tier 100 maps to claim rewards
             p.sendSystemMessage(Chats.MUST_BE_IN_MAP_TO_ACCEPT_PROPHECY.locName().withStyle(ChatFormatting.RED));
             return;
@@ -116,18 +116,14 @@ public class PlayerProphecies implements IStatCtx {
     @Override
     public List<StatContext> getStatAndContext(LivingEntity en) {
         List<ExactStatData> list = new ArrayList<>();
-
-        if (WorldUtils.isMapWorldClass(en.level())) {
-            var map = Load.mapAt(en.level(), en.blockPosition());
+        WorldUtils.ifMapData(en.level(), en.blockPosition()).ifPresent(map -> {
             if (map != null && map.map.uuid.equals(this.mapid)) {
                 for (String s : this.affixesTaken) {
                     list.addAll(ExileDB.MapAffixes().get(s).getStats(100, Load.Unit(en).getLevel()));
                 }
             }
-        }
-
+        });
         var ctx = new SimpleStatCtx(StatContext.StatCtxType.PROPHECY_CURSE, list);
-
         return Arrays.asList(ctx);
     }
 }

@@ -111,7 +111,6 @@ public class PlayerData implements ICap {
     public TalentsData talents = new TalentsData();
     public StatPointsData statPoints = new StatPointsData();
     public DeathStatsData deathStats = new DeathStatsData();
-    public PlayerMapData map = new PlayerMapData();
     public SpellSchoolsData ascClass = new SpellSchoolsData();
     public PlayerProphecies prophecy = new PlayerProphecies();
     public SpellCastingData spellCastingData = new SpellCastingData();
@@ -134,8 +133,7 @@ public class PlayerData implements ICap {
 
     public int bonusTalents = 0;
 
-    public int emptyMapTicks = 0;
-
+  
     public int omensFilled = 0;
 
     public PlayerData(Player player) {
@@ -160,7 +158,6 @@ public class PlayerData implements ICap {
         LoadSave.Save(prophecy, nbt, PROPHECY);
         LoadSave.Save(statPoints, nbt, STAT_POINTS);
         LoadSave.Save(deathStats, nbt, DEATH_STATS);
-        LoadSave.Save(map, nbt, MAP);
         LoadSave.Save(ascClass, nbt, ASC);
         LoadSave.Save(spellCastingData, nbt, CAST);
         LoadSave.Save(config, nbt, CONFIG);
@@ -191,7 +188,6 @@ public class PlayerData implements ICap {
         this.talents = loadOrBlank(TalentsData.class, new TalentsData(), nbt, TALENTS_DATA, new TalentsData());
         this.statPoints = loadOrBlank(StatPointsData.class, new StatPointsData(), nbt, STAT_POINTS, new StatPointsData());
         this.deathStats = loadOrBlank(DeathStatsData.class, new DeathStatsData(), nbt, DEATH_STATS, new DeathStatsData());
-        this.map = loadOrBlank(PlayerMapData.class, new PlayerMapData(), nbt, MAP, new PlayerMapData());
         this.ascClass = loadOrBlank(SpellSchoolsData.class, new SpellSchoolsData(), nbt, ASC, new SpellSchoolsData());
         this.spellCastingData = loadOrBlank(SpellCastingData.class, new SpellCastingData(), nbt, CAST, new SpellCastingData());
         this.config = loadOrBlank(PlayerConfigData.class, new PlayerConfigData(), nbt, CONFIG, new PlayerConfigData());
@@ -252,7 +248,7 @@ public class PlayerData implements ICap {
     }
 
     public Unit getSpellUnitStats(Player p, Spell spell) {
-        
+
         if (!spellUnits.containsKey(spell.GUID())) {
             int key = keyOf(spell);
             if (spell.config.usesSupportGemsFromAnotherSpell()) {

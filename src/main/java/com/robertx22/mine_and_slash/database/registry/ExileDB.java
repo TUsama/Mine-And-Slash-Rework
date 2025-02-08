@@ -6,23 +6,19 @@ import com.robertx22.library_of_exile.registry.Database;
 import com.robertx22.library_of_exile.registry.ExileRegistryContainer;
 import com.robertx22.library_of_exile.registry.ExileRegistryType;
 import com.robertx22.mine_and_slash.aoe_data.database.ailments.Ailment;
-import com.robertx22.mine_and_slash.aoe_data.database.boss_spell.BossSpell;
 import com.robertx22.mine_and_slash.capability.entity.EntityData;
-import com.robertx22.mine_and_slash.content.ubers.UberBossArena;
 import com.robertx22.mine_and_slash.database.data.DimensionConfig;
 import com.robertx22.mine_and_slash.database.data.EntityConfig;
 import com.robertx22.mine_and_slash.database.data.affixes.Affix;
 import com.robertx22.mine_and_slash.database.data.aura.AuraGem;
 import com.robertx22.mine_and_slash.database.data.auto_item.AutoItem;
 import com.robertx22.mine_and_slash.database.data.base_stats.BaseStatsConfig;
-import com.robertx22.mine_and_slash.database.data.boss_arena.BossArena;
 import com.robertx22.mine_and_slash.database.data.chaos_stats.ChaosStat;
 import com.robertx22.mine_and_slash.database.data.custom_item.CustomItem;
 import com.robertx22.mine_and_slash.database.data.exile_effects.ExileEffect;
 import com.robertx22.mine_and_slash.database.data.gear_slots.GearSlot;
 import com.robertx22.mine_and_slash.database.data.gear_types.bases.BaseGearType;
 import com.robertx22.mine_and_slash.database.data.gems.Gem;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanic;
 import com.robertx22.mine_and_slash.database.data.loot_chest.base.LootChest;
 import com.robertx22.mine_and_slash.database.data.map_affix.MapAffix;
 import com.robertx22.mine_and_slash.database.data.mob_affixes.MobAffix;
@@ -46,8 +42,6 @@ import com.robertx22.mine_and_slash.database.data.support_gem.SupportGem;
 import com.robertx22.mine_and_slash.database.data.talent_tree.TalentTree;
 import com.robertx22.mine_and_slash.database.data.unique_items.UniqueGear;
 import com.robertx22.mine_and_slash.database.data.value_calc.ValueCalculation;
-import com.robertx22.mine_and_slash.maps.dungeon_reg.Dungeon;
-import com.robertx22.mine_and_slash.maps.spawned_map_mobs.SpawnedMobList;
 import com.robertx22.mine_and_slash.mmorpg.MMORPG;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.action.StatEffect;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.condition.StatCondition;
@@ -208,13 +202,6 @@ public class ExileDB {
         return Database.getRegistry(ExileRegistryTypes.VALUE_CALC);
     }
 
-    public static ExileRegistryContainer<Dungeon> Dungeons() {
-        return Database.getRegistry(ExileRegistryTypes.DUNGEON);
-    }
-
-    public static ExileRegistryContainer<SpawnedMobList> MapMobs() {
-        return Database.getRegistry(ExileRegistryTypes.SPAWNED_MOBS);
-    }
 
     public static ExileRegistryContainer<Omen> Omens() {
         return Database.getRegistry(ExileRegistryTypes.OMEN);
@@ -234,22 +221,11 @@ public class ExileDB {
         return Database.getRegistry(ExileRegistryTypes.SPELL_SCHOOL);
     }
 
-    public static ExileRegistryContainer<BossSpell> BossSpells() {
-        return Database.getRegistry(ExileRegistryTypes.BOSS_SPELL);
-    }
-
-
+   
     public static ExileRegistryContainer<MapAffix> MapAffixes() {
         return Database.getRegistry(ExileRegistryTypes.MAP_AFFIX);
     }
 
-    public static ExileRegistryContainer<LeagueMechanic> LeagueMechanics() {
-        return Database.getRegistry(ExileRegistryTypes.LEAGUE_MECHANIC);
-    }
-
-    public static ExileRegistryContainer<UberBossArena> UberBoss() {
-        return Database.getRegistry(ExileRegistryTypes.UBER_BOSS);
-    }
 
     public static ExileRegistryContainer<LootChest> LootChests() {
         return Database.getRegistry(ExileRegistryTypes.LOOT_CHEST);
@@ -282,10 +258,6 @@ public class ExileDB {
 
     public static ExileRegistryContainer<ProfessionRecipe> Recipes() {
         return Database.getRegistry(ExileRegistryTypes.RECIPE);
-    }
-
-    public static ExileRegistryContainer<BossArena> BossArena() {
-        return Database.getRegistry(ExileRegistryTypes.BOSS_ARENA);
     }
 
     public static ExileRegistryContainer<WeaponTypes> WeaponTypes() {

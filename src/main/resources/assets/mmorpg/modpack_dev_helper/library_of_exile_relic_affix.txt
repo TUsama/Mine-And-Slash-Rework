@@ -1,0 +1,22 @@
+These are all default registry entries of this type.
+This registry is modify-able through datapacks.
+bonus_content_chance
+bonus_currency
+bonus_gear
+bonus_gem
+bonus_harvest_chance
+bonus_jewel
+bonus_loot_chest
+bonus_map
+bonus_omen
+bonus_prophecy_coin
+bonus_rune
+bonus_skill_gem
+bonus_watcher_eye
+double_harvest_chance
+empty
+extra_map_boss_chance
+harvest_content
+mob_spawns
+pack_size
+uber_frag_chance

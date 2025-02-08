@@ -67,8 +67,9 @@ public class EntityAilmentData {
                     x.data.setString(EventData.SPELL, spell.GUID());
                 }
             });
-
-            b.build().Activate();
+            var ev = b.build();
+            ev.Activate();
+            //  ev.sendDamageMessage(ev.calculateAllBonusElementalDamage());
         }
     }
 

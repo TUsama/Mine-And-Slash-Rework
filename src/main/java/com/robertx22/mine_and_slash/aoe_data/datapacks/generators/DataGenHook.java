@@ -17,12 +17,11 @@ public class DataGenHook implements DataProvider {
     @Override
     public CompletableFuture<?> run(CachedOutput pOutput) {
 
-
         new LootTableGenerator().generateAll(pOutput);
 
         MnsRecipeGenerator.addRecipes();
 
-        new RecipeGenerator().generateAll(pOutput, SlashRef.MODID);
+        RecipeGenerator.generateAll(pOutput, SlashRef.MODID);
 
         for (ExileRegistryType type : ExileRegistryType.getAllInRegisterOrder()) {
             type.getDatapackGenerator().run(pOutput);

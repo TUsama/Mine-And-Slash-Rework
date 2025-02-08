@@ -4,7 +4,6 @@ import com.robertx22.library_of_exile.registry.Database;
 import com.robertx22.library_of_exile.registry.ExileRegistryContainer;
 import com.robertx22.mine_and_slash.aoe_data.database.base_gear_types.BaseGearTypes;
 import com.robertx22.mine_and_slash.aoe_data.database.base_stats.BaseStatsAdder;
-import com.robertx22.mine_and_slash.aoe_data.database.boss_spell.SummonExplodyMobs;
 import com.robertx22.mine_and_slash.aoe_data.database.gear_slots.GearSlots;
 import com.robertx22.mine_and_slash.aoe_data.database.mob_affixes.MobAffixes;
 import com.robertx22.mine_and_slash.aoe_data.database.perks.Perks;
@@ -14,7 +13,6 @@ import com.robertx22.mine_and_slash.aoe_data.database.spells.impl.IntSpells;
 import com.robertx22.mine_and_slash.aoe_data.database.unique_gears.UniqueGearReg;
 import com.robertx22.mine_and_slash.database.data.aura.AuraGems;
 import com.robertx22.mine_and_slash.database.data.game_balance_config.GameBalanceConfig;
-import com.robertx22.mine_and_slash.database.data.league.HarvestLeague;
 import com.robertx22.mine_and_slash.database.data.loot_chest.GearLootChest;
 import com.robertx22.mine_and_slash.database.data.map_affix.MapAffixes;
 import com.robertx22.mine_and_slash.database.data.support_gem.SupportGems;
@@ -65,10 +63,7 @@ public class ExileDBInit {
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.SUPPORT_GEM, SupportGems.PROJ_COUNT));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.AURA, AuraGems.health_reg.id));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.MAP_AFFIX, MapAffixes.crit));
-        Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.BOSS_SPELL, new SummonExplodyMobs().GUID()));
-        Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.LEAGUE_MECHANIC, new HarvestLeague().GUID()));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.LOOT_CHEST, new GearLootChest().GUID()));
-        Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.DUNGEON, ""));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.RECIPE, ""));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.PROFESSION, ""));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.STAT_BUFF, ""));
@@ -80,11 +75,8 @@ public class ExileDBInit {
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.CHAOS_STAT, ""));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.STAT_COMPAT, ""));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.STAT_LAYER, ""));
-        Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.UBER_BOSS, ""));
-        Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.SPAWNED_MOBS, UNKNOWN_ID));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.OMEN, ""));
 
-        Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.BOSS_ARENA, "sandstone"));
         Database.addRegistry(new ExileRegistryContainer<>(ExileRegistryTypes.ORB_EXTEND, ""));
 
     }

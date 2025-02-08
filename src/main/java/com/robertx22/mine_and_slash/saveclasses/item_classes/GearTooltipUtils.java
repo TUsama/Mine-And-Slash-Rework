@@ -1,11 +1,11 @@
 package com.robertx22.mine_and_slash.saveclasses.item_classes;
 
 import com.google.common.collect.ImmutableList;
+import com.robertx22.library_of_exile.database.init.LibDatabase;
 import com.robertx22.library_of_exile.tooltip.ExileTooltipUtils;
 import com.robertx22.mine_and_slash.capability.entity.EntityData;
 import com.robertx22.mine_and_slash.config.forge.ClientConfigs;
 import com.robertx22.mine_and_slash.database.data.stats.types.resources.energy.Energy;
-import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.gui.texts.ExileTooltips;
 import com.robertx22.mine_and_slash.gui.texts.IgnoreNullList;
 import com.robertx22.mine_and_slash.gui.texts.StatCategory;
@@ -258,7 +258,7 @@ public class GearTooltipUtils {
                 );
 
         if (gear.isUnique() && !gear.uniqueStats.getUnique(exStack).league.isEmpty()) {
-            etip.accept(new LeagueBlock(ExileDB.LeagueMechanics().get(gear.uniqueStats.getUnique(exStack).league)));
+            etip.accept(new LeagueBlock(LibDatabase.Leagues().get(gear.uniqueStats.getUnique(exStack).league)));
         }
 
         etip.accept(new SalvageBlock(gear, exStack))

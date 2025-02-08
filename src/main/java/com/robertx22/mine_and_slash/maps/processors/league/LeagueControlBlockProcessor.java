@@ -1,13 +1,7 @@
 package com.robertx22.mine_and_slash.maps.processors.league;
 
-import com.robertx22.mine_and_slash.maps.dungeon_generation.ChunkProcessData;
-import com.robertx22.mine_and_slash.maps.processors.DataProcessor;
-import com.robertx22.mine_and_slash.mechanics.base.LeagueBlockData;
-import com.robertx22.mine_and_slash.mechanics.base.LeagueControlBlockEntity;
-import com.robertx22.mine_and_slash.mmorpg.registers.common.SlashBlocks;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-
+// todo transform this into harvest spawner block
+/*
 public class LeagueControlBlockProcessor extends DataProcessor {
 
     public LeagueControlBlockProcessor() {
@@ -46,3 +40,6 @@ public class LeagueControlBlockProcessor extends DataProcessor {
     }
 }
 
+
+
+ */

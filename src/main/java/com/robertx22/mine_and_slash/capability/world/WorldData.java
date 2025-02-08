@@ -1,8 +1,12 @@
 package com.robertx22.mine_and_slash.capability.world;
 
+import com.robertx22.dungeon_realm.main.DungeonMain;
 import com.robertx22.library_of_exile.components.ICap;
+import com.robertx22.library_of_exile.dimension.MapDataFinder;
+import com.robertx22.library_of_exile.dimension.MapDimensionInfo;
 import com.robertx22.library_of_exile.utils.LoadSave;
-import com.robertx22.mine_and_slash.maps.MapsData;
+import com.robertx22.mine_and_slash.maps.MapData;
+import com.robertx22.mine_and_slash.maps.MnsMapDataHolder;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -33,12 +37,20 @@ public class WorldData implements ICap {
 
     }
 
+    public static WorldData get(Level level) {
+        if (level.isClientSide) {
+            return new WorldData(level);
+        }
 
-    private static final String MAP = "map";
+        return level.getServer().overworld().getCapability(INSTANCE).orElse(new WorldData(level));
+    }
+
+
+    private static final String MAP = "mapdata";
 
     transient Level level;
 
-    public MapsData map = new MapsData();
+    public MnsMapDataHolder map = new MnsMapDataHolder();
 
 
     public WorldData(Level level) {
@@ -53,20 +65,13 @@ public class WorldData implements ICap {
 
         LoadSave.Save(map, nbt, MAP);
 
-
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
 
-        /*
-        TypeToken<?> token = TypeToken.getParameterized(MapsData.class, Integer.class);
-        IAutoGson.GSON.fromJson("", token);
-         */
-
-        this.map = loadOrBlank(MapsData.class, new MapsData(), nbt, MAP, new MapsData());
-
+        this.map = loadOrBlank(MnsMapDataHolder.class, new MnsMapDataHolder(), nbt, MAP, new MnsMapDataHolder());
 
     }
 
@@ -89,4 +94,16 @@ public class WorldData implements ICap {
         return "world_data";
     }
 
+    public static MapDataFinder<MapData> DATA_GETTER = new MapDataFinder<>() {
+        @Override
+        public MapData getData(Pos pos) {
+            return get(pos.level).map.getData(this.getInfo().structure, pos.pos);
+        }
+
+        @Override
+        public MapDimensionInfo getInfo() {
+            return DungeonMain.MAP;
+        }
+
+    };
 }

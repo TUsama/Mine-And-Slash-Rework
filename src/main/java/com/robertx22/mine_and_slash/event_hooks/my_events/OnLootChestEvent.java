@@ -6,7 +6,6 @@ import com.robertx22.library_of_exile.events.base.ExileEvents;
 import com.robertx22.mine_and_slash.loot.LootInfo;
 import com.robertx22.mine_and_slash.loot.MasterLootGen;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,19 +40,7 @@ public class OnLootChestEvent extends EventConsumer<ExileEvents.OnChestLooted> {
             }
         }
 
-        if (WorldUtils.isMapWorldClass(player.level())) {
-            Load.mapAt(player.level(), event.pos).rooms.get(player.chunkPosition()).chests.done++;
-        }
 
-        /*
-        if (Load.player(player).config.isConfigEnabled(PlayerConfigData.Config.DROP_MAP_CHEST_CONTENTS_ON_GROUND) && WorldUtils.isMapWorldClass(player.level())) {
-            for (int i = 0; i < event.inventory.getContainerSize(); i++) {
-                player.spawnAtLocation(event.inventory.getItem(i), 1F);
-                event.inventory.setItem(i, ItemStack.EMPTY);
-            }
-        }
-
-         */
     }
 
     private static List<Integer> mygetEmptySlotsRandomized(Container inventory, Random rand) {

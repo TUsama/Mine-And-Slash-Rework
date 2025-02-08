@@ -34,8 +34,8 @@ import java.util.*;
 
 public class ProfessionBlockEntity extends BlockEntity {
 
-    static MergedContainer.Inventory INPUTS = new MergedContainer.Inventory("INPUTS", 9, Direction.UP);
-    static MergedContainer.Inventory OUTPUTS = new MergedContainer.Inventory("OUTPUTS", 9, Direction.DOWN);
+    public static MergedContainer.Inventory INPUTS = new MergedContainer.Inventory("INPUTS", 9, Direction.UP);
+    public static MergedContainer.Inventory OUTPUTS = new MergedContainer.Inventory("OUTPUTS", 9, Direction.DOWN);
 
     public MergedContainer inventory = new MergedContainer(Arrays.asList(INPUTS, OUTPUTS), this);
 

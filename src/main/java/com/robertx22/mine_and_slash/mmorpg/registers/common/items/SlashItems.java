@@ -1,20 +1,16 @@
 package com.robertx22.mine_and_slash.mmorpg.registers.common.items;
 
+import com.robertx22.library_of_exile.database.relic.relic_type.RelicItem;
 import com.robertx22.library_of_exile.deferred.RegObj;
 import com.robertx22.mine_and_slash.aoe_data.database.exile_effects.adders.ModEffects;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.base.EffectCtx;
 import com.robertx22.mine_and_slash.capability.player.BackpackItem;
-import com.robertx22.mine_and_slash.content.ubers.UberBossMapItem;
-import com.robertx22.mine_and_slash.content.ubers.UberBossTier;
-import com.robertx22.mine_and_slash.content.ubers.UberEnum;
-import com.robertx22.mine_and_slash.content.ubers.UberFragmentItem;
 import com.robertx22.mine_and_slash.database.data.game_balance_config.PlayerPointsType;
 import com.robertx22.mine_and_slash.database.data.loot_chest.base.LootChestItem;
 import com.robertx22.mine_and_slash.database.data.omen.OmenItem;
 import com.robertx22.mine_and_slash.database.data.profession.all.Professions;
 import com.robertx22.mine_and_slash.database.data.profession.items.DestroyOutputMegaExpItem;
 import com.robertx22.mine_and_slash.database.data.profession.items.StationBlockItem;
-import com.robertx22.mine_and_slash.maps.MapItem;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.SlashBlocks;
 import com.robertx22.mine_and_slash.mmorpg.registers.deferred_wrapper.Def;
 import com.robertx22.mine_and_slash.saveclasses.stat_soul.StatSoulItem;
@@ -29,7 +25,6 @@ import com.robertx22.mine_and_slash.vanilla_mc.items.gearitems.baubles.ItemNeckl
 import com.robertx22.mine_and_slash.vanilla_mc.items.gearitems.baubles.ItemRing;
 import com.robertx22.mine_and_slash.vanilla_mc.items.gearitems.weapons.StaffWeapon;
 import com.robertx22.mine_and_slash.vanilla_mc.items.misc.*;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -62,22 +57,6 @@ public class SlashItems {
             RESET_POINT_POTIONS.put(type, Def.item(() -> new ResetPotion(type, ResetPotion.ResetType.ADD_POINTS), "potions/" + ResetPotion.ResetType.ADD_POINTS.id + "_" + type.GUID()));
         }
 
-        for (UberBossTier tier : UberBossTier.map.values()) {
-            for (UberEnum uber : UberEnum.values()) {
-
-                if (!UBER_MAPS.containsKey(uber)) {
-                    UBER_MAPS.put(uber, new HashMap<>());
-                }
-                var maps = UBER_MAPS.get(uber);
-                maps.put(tier.tier, Def.item(() -> new UberBossMapItem(tier.tier, uber), "uber/map_" + uber.id + "_tier" + tier.tier));
-
-                if (!UBER_FRAGS.containsKey(uber)) {
-                    UBER_FRAGS.put(uber, new HashMap<>());
-                }
-                var frags = UBER_FRAGS.get(uber);
-                frags.put(tier.tier, Def.item(() -> new UberFragmentItem(tier.tier, uber), "uber/frag_" + uber.id + "_tier" + tier.tier));
-            }
-        }
 
     }
 
@@ -93,9 +72,6 @@ public class SlashItems {
 
     }
 
-    public static HashMap<UberEnum, HashMap<Integer, RegObj<UberBossMapItem>>> UBER_MAPS = new HashMap<>();
-    public static HashMap<UberEnum, HashMap<Integer, RegObj<UberFragmentItem>>> UBER_FRAGS = new HashMap<>();
-
 
     public static HashMap<PlayerPointsType, RegObj<Item>> FULL_RESET_POTIONS = new HashMap<>();
     public static HashMap<PlayerPointsType, RegObj<Item>> RESET_POINT_POTIONS = new HashMap<>();
@@ -103,16 +79,13 @@ public class SlashItems {
     public static RegObj<CommonGearProducerItem> COMMON_SOUL_PRODUCE = Def.item(() -> new CommonGearProducerItem(), "common_soul_produce");
 
     public static RegObj<StatSoulItem> STAT_SOUL = Def.item(() -> new StatSoulItem(), "stat_soul");
-    public static RegObj<MapItem> MAP = Def.item(() -> new MapItem(), "map");
-    public static RegObj<Item> MAP_SETTER = Def.item(() -> new Item(new Item.Properties()), "set_map"); // todo add tooltips for this
-    public static RegObj<Item> MAP_DEVICE = Def.item(() -> new BlockItem(SlashBlocks.MAP.get(), new Item.Properties()), "teleporter");
-    public static RegObj<Item> TP_BACK = Def.item(() -> new TpBackItem(), "tp_back");
     public static RegObj<Item> INVISIBLE_ICON = Def.item(() -> new Item(new Item.Properties()), "invisible_item");
     public static RegObj<Item> TEST_GEN = Def.item(() -> new Item(new Item.Properties()), "test_gen");
     public static RegObj<Item> MASTER_BAG = Def.item(() -> new BackpackItem(), "master_bag");
     public static RegObj<Item> OMEN = Def.item(() -> new OmenItem(VanillaMaterial.DIAMOND), "omen");
     public static RegObj<Item> MAP_CREATOR = Def.item(() -> new MapCreator(), "map_creator");
     public static RegObj<LootCrateItem> LOOT_CRATE = Def.item(() -> new LootCrateItem(), "loot_crate/default");
+    public static RegObj<RelicItem> RELIC = Def.item(() -> new RelicItem(), "relic");
 
 
     public static RegObj<ProjectileItem> FIREBALL = Def.item(() -> new ProjectileItem("fireball"), "projectile/" + "fireball");

@@ -39,8 +39,8 @@ public class AilmentChance extends Stat {
         if (dmg <= 0) {
             return;
         }
-
         // todo will probably have to tweak this
+        // todo add dmg msg for this!
         var event = EventBuilder.ofDamage(source, target, dmg).setupDamage(AttackType.dot, WeaponTypes.none, PlayStyle.INT).set(x -> {
             x.disableActivation = true; // we dont actually want to do the dmg now
             x.setElement(ailment.element);
@@ -51,6 +51,7 @@ public class AilmentChance extends Stat {
         }).build();
 
         event.Activate();
+        event.sendDamageMessage(event.calculateAllBonusElementalDamage());
 
         Load.Unit(target).ailments.onAilmentCausingDamage(source, target, ailment, event.data.getNumber());
     }

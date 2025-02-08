@@ -13,7 +13,7 @@ public class CurrencyTooltipHook extends ExileTooltipHook<CurrencyTooltip> {
 
     @Override
     public void apply(TooltipBuilder<CurrencyTooltip> b) {
-
+       
         b.add(x -> {
             return new ExileTooltipPart(TooltipOrder.LATE, new RarityBlock(ExileDB.GearRarities().get(b.item.currency.rar)).getAvailableComponents());
         });

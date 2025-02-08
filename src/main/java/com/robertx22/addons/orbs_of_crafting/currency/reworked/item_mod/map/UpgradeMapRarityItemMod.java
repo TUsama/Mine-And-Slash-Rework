@@ -7,7 +7,6 @@ import com.robertx22.library_of_exile.localization.TranslationBuilder;
 import com.robertx22.library_of_exile.localization.TranslationType;
 import com.robertx22.mine_and_slash.itemstack.ExileStack;
 import com.robertx22.mine_and_slash.itemstack.StackKeys;
-import com.robertx22.mine_and_slash.loot.blueprints.MapBlueprint;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -34,9 +33,9 @@ public class UpgradeMapRarityItemMod extends MapModification {
     @Override
     public void modifyMap(ExileStack stack) {
         stack.get(StackKeys.MAP).edit(data -> {
-            data.rar = data.getRarity().getHigherRarity().GUID();
-            MapBlueprint.genAffixes(data, data.getRarity());
-            data.tier = data.getRarity().map_tiers.random();
+            if (data.getRarity().hasHigherRarity()) {
+                data.setRarityAndRerollNeeded(data.getRarity().getHigherRarity());
+            }
         });
     }
 

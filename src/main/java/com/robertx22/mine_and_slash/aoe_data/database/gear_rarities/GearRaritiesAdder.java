@@ -7,9 +7,7 @@ import com.robertx22.mine_and_slash.database.data.MinMax;
 import com.robertx22.mine_and_slash.database.data.omen.OmenDifficulty;
 import com.robertx22.mine_and_slash.database.data.rarities.GearRarity;
 import com.robertx22.mine_and_slash.database.data.rarities.GearRarityType;
-import com.robertx22.mine_and_slash.database.data.rarities.MapRarityRewardData;
 import com.robertx22.mine_and_slash.database.registry.ExileRegistryTypes;
-import com.robertx22.mine_and_slash.maps.processors.reward.ModLootTables;
 import com.robertx22.mine_and_slash.mmorpg.MMORPG;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 
@@ -48,14 +46,11 @@ public class GearRaritiesAdder extends ExileRegistryEventClass {
             x.setCommonFields();
             x.addToSerializables(MMORPG.SERIAZABLE_REGISTRATION_INFO);
 
-            x.map_reward = new MapRarityRewardData(0, ModLootTables.TIER_1_DUNGEON_CHEST, 1, 1);
         });
 
         GearRarity uncommon = new GearRarity().edit(x -> {
 
             x.omens = new OmenDifficulty(new MinMax(1, 1), new MinMax(1, 1), new MinMax(1, 1), new MinMax(0, 0), new MinMax(1, 1), 0.4F);
-
-            x.map_reward = new MapRarityRewardData(50, ModLootTables.TIER_1_DUNGEON_CHEST, 2, 1.1F);
 
 
             x.map_resist_req = 10;
@@ -81,7 +76,6 @@ public class GearRaritiesAdder extends ExileRegistryEventClass {
         });
 
         GearRarity rar = new GearRarity().edit(x -> {
-            x.map_reward = new MapRarityRewardData(60, ModLootTables.TIER_2_DUNGEON_CHEST, 3, 1.2F);
 
             x.omens = new OmenDifficulty(new MinMax(1, 2), new MinMax(1, 2), new MinMax(1, 2), new MinMax(1, 1), new MinMax(1, 2), 0.6F);
 
@@ -110,7 +104,6 @@ public class GearRaritiesAdder extends ExileRegistryEventClass {
 
         });
         GearRarity epic = new GearRarity().edit(x -> {
-            x.map_reward = new MapRarityRewardData(70, ModLootTables.TIER_3_DUNGEON_CHEST, 5, 1.2F);
 
             x.omens = new OmenDifficulty(new MinMax(1, 2), new MinMax(1, 2), new MinMax(1, 2), new MinMax(1, 1), new MinMax(1, 2), 1);
 
@@ -144,7 +137,6 @@ public class GearRaritiesAdder extends ExileRegistryEventClass {
 
             x.omens = new OmenDifficulty(new MinMax(1, 3), new MinMax(1, 2), new MinMax(1, 2), new MinMax(2, 3), new MinMax(2, 3), 1.25F);
 
-            x.map_reward = new MapRarityRewardData(80, ModLootTables.TIER_4_DUNGEON_CHEST, 7, 1.5F);
 
             x.map_resist_req = 40;
 
@@ -179,9 +171,7 @@ public class GearRaritiesAdder extends ExileRegistryEventClass {
 
             x.omens = new OmenDifficulty(new MinMax(1, 3), new MinMax(1, 2), new MinMax(1, 2), new MinMax(2, 3), new MinMax(2, 3), 1.5F);
 
-            x.map_reward = new MapRarityRewardData(90, ModLootTables.TIER_5_DUNGEON_CHEST, 10, 2);
-
-
+           
             x.map_resist_req = 50;
 
             x.map_tiers = new MinMax(80, 100);

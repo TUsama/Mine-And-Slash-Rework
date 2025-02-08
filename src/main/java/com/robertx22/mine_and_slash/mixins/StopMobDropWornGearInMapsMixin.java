@@ -17,7 +17,7 @@ public class StopMobDropWornGearInMapsMixin {
 
         try {
             LivingEntity en = (LivingEntity) (Object) this;
-            if (WorldUtils.isMapWorldClass(en.level())) {
+            if (WorldUtils.isMapWorldClass(en.level(), en.blockPosition())) {
                 if (en instanceof Mob mob) {
                     for (EquipmentSlot slot : EquipmentSlot.values()) {
                         mob.setDropChance(slot, 0);

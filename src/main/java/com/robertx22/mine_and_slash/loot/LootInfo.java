@@ -1,12 +1,16 @@
 package com.robertx22.mine_and_slash.loot;
 
+import com.robertx22.addons.orbs_of_crafting.currency.reworked.keys.LootTypeKey;
+import com.robertx22.dungeon_realm.database.holders.DungeonLeagues;
+import com.robertx22.dungeon_realm.main.DungeonMain;
+import com.robertx22.library_of_exile.components.LibMapCap;
+import com.robertx22.library_of_exile.database.league.League;
+import com.robertx22.library_of_exile.database.league.LibLeagues;
 import com.robertx22.library_of_exile.events.base.ExileEvents;
 import com.robertx22.mine_and_slash.capability.entity.EntityData;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanic;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanics;
-import com.robertx22.mine_and_slash.database.data.league.LeagueStructure;
 import com.robertx22.mine_and_slash.database.data.stats.types.loot.TreasureQuantity;
 import com.robertx22.mine_and_slash.database.data.stats.types.misc.ExtraMobDropsStat;
+import com.robertx22.mine_and_slash.database.holders.MnsRelicStats;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.loot.generators.BaseLootGen;
 import com.robertx22.mine_and_slash.maps.MapData;
@@ -18,8 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-
-import java.util.Optional;
 
 public class LootInfo {
 
@@ -48,7 +50,7 @@ public class LootInfo {
     public BlockPos pos;
 
 
-    public LeagueMechanic league = LeagueMechanics.NONE;
+    public League league = LibLeagues.INSTANCE.EMPTY.get();
 
 
     public int getMinItems() {
@@ -99,7 +101,7 @@ public class LootInfo {
         info.maxItems = 7;
         info.setupAllFields();
 
-        if (WorldUtils.isMapWorldClass(player.level())) {
+        if (WorldUtils.isMapWorldClass(player.level(), pos)) {
             info.lootMods.add(new LootModifier(LootModifierEnum.MAP_CHEST, 10));
         } else {
             info.lootMods.add(new LootModifier(LootModifierEnum.CHEST, 5));
@@ -175,17 +177,12 @@ public class LootInfo {
 
     private void setWorld() {
         if (world != null) {
-            if (WorldUtils.isMapWorldClass(world)) {
 
-                Optional<MapData> data = Load.worldData(world).map.getMap(this.pos);
-
-                if (data.get() != null) {
-                    this.isMapWorld = true;
-                    this.map = data.get();
-                    this.league = LeagueStructure.getMechanicFromPosition((ServerLevel) world, pos);
-                }
-
-            }
+            WorldUtils.ifMapData(world, pos).ifPresent(x -> {
+                this.isMapWorld = true;
+                this.map = x;
+                this.league = League.getFromPosition((ServerLevel) world, pos);
+            });
         }
     }
 
@@ -202,9 +199,11 @@ public class LootInfo {
 
         this.gatheredLootMultis = true;
 
-        if (league != null && league == LeagueMechanics.MAP_REWARD) {
+        if (league != null && league == DungeonLeagues.INSTANCE.REWARD_ROOM.get()) {
             try {
-                lootMods.add(new LootModifier(LootModifierEnum.MAP_COMPLETITION_RARITY_REWARD, ExileDB.GearRarities().get(map.completion_rarity).map_reward.loot_multi));
+                DungeonMain.ifMapData(this.world, this.pos).ifPresent(x -> {
+                    lootMods.add(new LootModifier(LootModifierEnum.MAP_COMPLETITION_RARITY_REWARD, x.getFinishRarity().mns_loot_multi));
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -264,6 +263,15 @@ public class LootInfo {
 
         if (gen.chanceIsModified()) {
             chance *= multiplicativeMod;
+        }
+
+        var data = LibMapCap.getData(world, pos);
+        if (data != null) {
+            var type = MnsRelicStats.INSTANCE.LOOT_TYPE.get(new LootTypeKey(gen.lootType()));
+            if (type != null) {
+                float multi = 1F + data.relicStats.get(type) / 100F;
+                chance *= multi;
+            }
         }
 
         amount = LootUtils.WhileRoll(chance);

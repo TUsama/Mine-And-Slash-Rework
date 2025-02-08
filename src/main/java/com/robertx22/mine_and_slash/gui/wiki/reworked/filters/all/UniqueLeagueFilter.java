@@ -1,15 +1,15 @@
 package com.robertx22.mine_and_slash.gui.wiki.reworked.filters.all;
 
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanic;
+import com.robertx22.library_of_exile.database.league.League;
 import com.robertx22.mine_and_slash.database.data.unique_items.UniqueGear;
 import com.robertx22.mine_and_slash.gui.wiki.BestiaryEntry;
 import com.robertx22.mine_and_slash.gui.wiki.reworked.filters.GroupFilterEntry;
 import net.minecraft.network.chat.MutableComponent;
 
 public class UniqueLeagueFilter extends GroupFilterEntry {
-    LeagueMechanic league;
+    League league;
 
-    public UniqueLeagueFilter(LeagueMechanic league) {
+    public UniqueLeagueFilter(League league) {
         this.league = league;
     }
 
@@ -20,6 +20,6 @@ public class UniqueLeagueFilter extends GroupFilterEntry {
 
     @Override
     public MutableComponent getName() {
-        return league.locName();
+        return league.getPrettifiedName();
     }
 }

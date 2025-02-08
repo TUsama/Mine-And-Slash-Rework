@@ -108,7 +108,7 @@ public class Professions {
 
                 // todo locked crates
 
-                .dropTiered(ProfessionMatItems.TIERED_MAIN_MATS.get(FISHING), 3)
+                .dropTiered(ProfessionMatItems.TIERED_MAIN_MATS.get(FISHING), 2)
                 //    .sometimesDrop(ProfessionMatItems.POWERED_RARE_MATS.get(Professions.FISHING), 15)
 
                 .build();

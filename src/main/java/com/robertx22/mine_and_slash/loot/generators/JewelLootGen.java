@@ -16,7 +16,7 @@ public class JewelLootGen extends BaseLootGen<MapBlueprint> {
     @Override
     public float baseDropChance() {
         float chance = (float) ServerContainer.get().JEWEL_DROPRATE.get().floatValue();
-
+        
         return chance;
 
     }

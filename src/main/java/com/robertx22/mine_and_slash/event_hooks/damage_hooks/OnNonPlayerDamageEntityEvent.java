@@ -1,13 +1,13 @@
 package com.robertx22.mine_and_slash.event_hooks.damage_hooks;
 
+import com.robertx22.library_of_exile.events.base.EventConsumer;
+import com.robertx22.library_of_exile.events.base.ExileEvents;
 import com.robertx22.mine_and_slash.event_hooks.damage_hooks.util.AttackInformation;
 import com.robertx22.mine_and_slash.event_hooks.damage_hooks.util.DmgSourceUtils;
 import com.robertx22.mine_and_slash.mixin_ducks.DamageSourceDuck;
 import com.robertx22.mine_and_slash.uncommon.UnstuckMobs;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
-import com.robertx22.library_of_exile.events.base.EventConsumer;
-import com.robertx22.library_of_exile.events.base.ExileEvents;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -25,8 +25,11 @@ public class OnNonPlayerDamageEntityEvent extends EventConsumer<ExileEvents.OnDa
         if (event.source.is(DamageTypes.FELL_OUT_OF_WORLD)) {
             return;
         }
+        if (event.source.getEntity() instanceof LivingEntity == false) {
+            return;
+        }
         if (event.mob instanceof Player == false) {
-            if (WorldUtils.isMapWorldClass(event.mob.level())) {
+            if (WorldUtils.isMapWorldClass(event.mob.level(), event.mob.blockPosition())) {
                 if (event.source.is(DamageTypes.IN_WALL)) {
                     UnstuckMobs.unstuckFromWalls(event.mob);
                     return;
@@ -36,15 +39,7 @@ public class OnNonPlayerDamageEntityEvent extends EventConsumer<ExileEvents.OnDa
         if (DmgSourceUtils.isMyDmgSource(event.source)) {
             return;
         }
-        if (LivingHurtUtils.isEnviromentalDmg(event.source)) {
-            if (event.mob instanceof Player == false) {
-                if (WorldUtils.isMapWorldClass(event.mob.level())) {
-                    event.damage = 0;
-                    event.canceled = true;
-                }
-            }
-            return;
-        }
+
         if (!(event.source.getEntity() instanceof Player)) {
             if (event.source.getEntity() instanceof LivingEntity en && Load.Unit(en).isSummon()) {
                 LivingEntity caster = Load.Unit(en).getSummonClass().getOwner();

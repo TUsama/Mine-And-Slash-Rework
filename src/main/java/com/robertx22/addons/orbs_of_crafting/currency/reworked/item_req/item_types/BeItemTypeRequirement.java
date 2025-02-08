@@ -11,8 +11,8 @@ public abstract class BeItemTypeRequirement extends ItemRequirement {
 
     public transient String locname;
 
-    public BeItemTypeRequirement(String serializer, String id, String locname) {
-        super(serializer, id);
+    public BeItemTypeRequirement(String id, String locname) {
+        super(id, id);
         this.locname = locname;
     }
 

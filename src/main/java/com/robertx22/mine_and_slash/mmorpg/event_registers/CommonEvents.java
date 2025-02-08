@@ -13,7 +13,6 @@ import com.robertx22.mine_and_slash.event_hooks.my_events.OnLootChestEvent;
 import com.robertx22.mine_and_slash.event_hooks.my_events.OnMobDeathDrops;
 import com.robertx22.mine_and_slash.event_hooks.my_events.OnPlayerDeath;
 import com.robertx22.mine_and_slash.event_hooks.ontick.OnServerTick;
-import com.robertx22.mine_and_slash.event_hooks.ontick.OnTickDungeonWorld;
 import com.robertx22.mine_and_slash.event_hooks.player.OnLogin;
 import com.robertx22.mine_and_slash.event_hooks.player.StopCastingIfInteract;
 import com.robertx22.mine_and_slash.mixin_methods.OnItemInteract;
@@ -26,8 +25,6 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.DamageEvent;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.OnDeathEvent;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.OnMobKilledByDamageEvent;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -46,7 +43,6 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.*;
 
 public class CommonEvents {
@@ -58,9 +54,7 @@ public class CommonEvents {
             x.put(SlashEntities.SKELETON.get(), Skeleton.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.3).build());
             x.put(SlashEntities.SPIDER.get(), Spider.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.5).build());
             x.put(SlashEntities.ZOMBIE.get(), Zombie.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.4).build());
-            x.put(SlashEntities.THORNY_MINION.get(), Zombie.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.2).build());
-            x.put(SlashEntities.EXPLODE_MINION.get(), Zombie.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.3).build());
-
+           
             x.put(SlashEntities.FIRE_GOLEM.get(), Zombie.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.45).build());
             x.put(SlashEntities.COLD_GOLEM.get(), Zombie.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.45).build());
             x.put(SlashEntities.LIGHTNING_GOLEM.get(), Zombie.createAttributes().add(Attributes.MOVEMENT_SPEED, 0.45).build());
@@ -200,15 +194,7 @@ public class CommonEvents {
             }
         });
 
-        ForgeEvents.registerForgeEvent(TickEvent.LevelTickEvent.class, event ->
 
-        {
-            if (event.phase == TickEvent.Phase.END && event.level instanceof ServerLevel) {
-                OnTickDungeonWorld.onEndTick((ServerLevel) event.level);
-            }
-        });
-
-        
         ForgeEvents.registerForgeEvent(AttackEntityEvent.class, event ->
 
         {
@@ -239,12 +225,8 @@ public class CommonEvents {
             OnEntityTick.onTick(event.getEntity());
         });
 
-        ExileEvents.ON_CHEST_LOOTED.register(new
-
-                OnLootChestEvent());
-        ExileEvents.MOB_DEATH.register(new
-
-                OnMobDeathDrops());
+        ExileEvents.ON_CHEST_LOOTED.register(new OnLootChestEvent());
+        ExileEvents.MOB_DEATH.register(new OnMobDeathDrops());
 
         NewDamageMain.init();
 
@@ -255,24 +237,6 @@ public class CommonEvents {
 
         ExileEvents.PLAYER_DEATH.register(new OnPlayerDeath());
 
-
-        ForgeEvents.registerForgeEvent(LivingHurtEvent.class, event ->
-
-        {
-            try {
-                if (event.getEntity() instanceof Player == false) {
-                    if (LivingHurtUtils.isEnviromentalDmg(event.getSource())) {
-                        if (WorldUtils.isMapWorldClass(event.getEntity().level())) {
-                            event.setAmount(0);
-                            event.setCanceled(true);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        });
 
         ForgeEvents.registerForgeEvent(LivingDamageEvent.class, event ->
 

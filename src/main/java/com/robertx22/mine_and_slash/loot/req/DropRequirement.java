@@ -1,7 +1,7 @@
 package com.robertx22.mine_and_slash.loot.req;
 
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanic;
-import com.robertx22.mine_and_slash.database.registry.ExileDB;
+import com.robertx22.library_of_exile.database.init.LibDatabase;
+import com.robertx22.library_of_exile.database.league.League;
 
 public class DropRequirement {
 
@@ -12,7 +12,7 @@ public class DropRequirement {
 
     }
 
-    public boolean canDropInLeague(LeagueMechanic m, int lvl) {
+    public boolean canDropInLeague(League m, int lvl) {
         if (lvl < req_lvl) {
             return false;
         }
@@ -23,7 +23,7 @@ public class DropRequirement {
         }
     }
 
-    public boolean isFromLeague(LeagueMechanic m) {
+    public boolean isFromLeague(League m) {
         return m.GUID().equals(league);
     }
 
@@ -31,13 +31,9 @@ public class DropRequirement {
         return !this.league.isEmpty();
     }
 
-    public LeagueMechanic getLeague() {
-        if (!league.isEmpty()) {
-            return ExileDB.LeagueMechanics().get(league);
-        }
-        return null;
+    public League getLeague() {
+        return LibDatabase.Leagues().getOptional(league).orElse(null);
     }
-
 
     public static class Builder {
         DropRequirement r;

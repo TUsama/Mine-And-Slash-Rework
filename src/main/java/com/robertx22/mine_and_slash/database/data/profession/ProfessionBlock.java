@@ -5,12 +5,11 @@ import com.robertx22.mine_and_slash.mmorpg.registers.common.SlashBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.*;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -21,8 +20,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfessionBlock extends BaseEntityBlock implements WorldlyContainerHolder {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -58,18 +62,31 @@ public class ProfessionBlock extends BaseEntityBlock implements WorldlyContainer
     }
 
     @Override
-    public void onRemove(BlockState pState, Level level, BlockPos p, BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockentity = level.getBlockEntity(p);
-            if (blockentity instanceof ProfessionBlockEntity be) {
-                if (level instanceof ServerLevel) {
-                    Containers.dropContents(level, p, be.inventory);
-                    ItemEntity en = new ItemEntity(level, p.getX(), p.getY(), p.getZ(), asItem().getDefaultInstance());
-                    level.addFreshEntity(en);
-                }
-                level.updateNeighbourForOutputSignal(p, this);
+    public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pParams) {
+
+        List<ItemStack> all = new ArrayList<>();
+
+        BlockEntity blockentity = pParams.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+
+        if (blockentity instanceof ProfessionBlockEntity be) {
+            all.add(asItem().getDefaultInstance());
+
+            for (ItemStack s : be.inventory.getAllStacks(ProfessionBlockEntity.INPUTS)) {
+                all.add(s);
+            }
+            for (ItemStack s : be.inventory.getAllStacks(ProfessionBlockEntity.OUTPUTS)) {
+                all.add(s);
             }
         }
+
+        return all;
+    }
+
+
+    // we can't use this for dropping the inventory because cancelling blockplacing event then dupes items with this..
+    @Override
+    public void onRemove(BlockState pState, Level level, BlockPos p, BlockState pNewState, boolean pIsMoving) {
+
         super.onRemove(pState, level, p, pNewState, pIsMoving);
     }
 

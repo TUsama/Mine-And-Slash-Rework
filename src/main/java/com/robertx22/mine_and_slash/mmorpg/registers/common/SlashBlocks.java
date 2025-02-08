@@ -1,13 +1,8 @@
 package com.robertx22.mine_and_slash.mmorpg.registers.common;
 
 import com.robertx22.library_of_exile.deferred.RegObj;
-import com.robertx22.mine_and_slash.content.ubers.UberBossAltarBlock;
-import com.robertx22.mine_and_slash.database.data.league.LeagueMechanics;
 import com.robertx22.mine_and_slash.database.data.profession.ProfessionBlock;
 import com.robertx22.mine_and_slash.database.data.profession.all.Professions;
-import com.robertx22.mine_and_slash.maps.MapBlock;
-import com.robertx22.mine_and_slash.mechanics.base.LeagueControlBlock;
-import com.robertx22.mine_and_slash.mechanics.base.LeagueTeleportBlock;
 import com.robertx22.mine_and_slash.mmorpg.registers.deferred_wrapper.Def;
 import com.robertx22.mine_and_slash.prophecy.ProphecyAltarBlock;
 import com.robertx22.mine_and_slash.vanilla_mc.blocks.BlackHoleBlock;
@@ -28,13 +23,8 @@ public class SlashBlocks {
     public static RegObj<TotemBlock> FROST_FLOWER = Def.block("frost_flower", () -> new TotemBlock());
     public static RegObj<TotemBlock> TRAP = Def.block("trap", () -> new TotemBlock());
     public static RegObj<TotemBlock> GLYPH = Def.block("glyph", () -> new TotemBlock());
-    public static RegObj<MapBlock> MAP = Def.block("teleporter", () -> new MapBlock());
-    public static RegObj<LeagueControlBlock> LEAGUE_CONTROL = Def.block("league", () -> new LeagueControlBlock());
-    public static RegObj<LeagueTeleportBlock> HARVEST_TELEPORT = Def.block("harvest_teleport", () -> new LeagueTeleportBlock(LeagueMechanics.HARVEST_ID));
-    public static RegObj<LeagueTeleportBlock> UBER_TELEPORT = Def.block("uber_teleport", () -> new LeagueTeleportBlock(LeagueMechanics.UBER.GUID()));
-    public static RegObj<LeagueTeleportBlock> REWARD_TELEPORT = Def.block("reward_teleport", () -> new LeagueTeleportBlock(LeagueMechanics.MAP_REWARD.GUID()));
+    //    public static RegObj<LeagueTeleportBlock> HARVEST_TELEPORT = Def.block("harvest_teleport", () -> new LeagueTeleportBlock(LeagueMechanics.HARVEST_ID));
     public static RegObj<ProphecyAltarBlock> PROPHECY_ALTAR = Def.block("prophecy_altar", () -> new ProphecyAltarBlock());
-    public static RegObj<UberBossAltarBlock> UBER_BOSS_ALTAR = Def.block("uber_boss_altar", () -> new UberBossAltarBlock());
 
 
     public static HashMap<String, RegObj<ProfessionBlock>> STATIONS = new HashMap<>();

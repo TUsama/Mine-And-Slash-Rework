@@ -2,6 +2,7 @@ package com.robertx22.mine_and_slash.mmorpg.init;
 
 import com.mojang.datafixers.util.Either;
 import com.robertx22.addons.orbs_of_crafting.currency.reworked.OrbAddonClientInit;
+import com.robertx22.dungeon_realm.main.DungeonMain;
 import com.robertx22.mine_and_slash.a_libraries.dmg_number_particle.DamageParticle;
 import com.robertx22.mine_and_slash.a_libraries.dmg_number_particle.DamageParticleRenderer;
 import com.robertx22.mine_and_slash.a_libraries.player_animations.PlayerAnimations;
@@ -18,7 +19,6 @@ import com.robertx22.mine_and_slash.saveclasses.gearitem.gear_parts.SocketData;
 import com.robertx22.mine_and_slash.saveclasses.item_classes.GearItemData;
 import com.robertx22.mine_and_slash.uncommon.datasaving.StackSaving;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.ClientOnly;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -41,7 +41,7 @@ public class ClientInit {
     public static void onInitializeClient(final FMLClientSetupEvent event) {
 
         OrbAddonClientInit.init();
-        
+
         OverlayPresets.init();
 
         PlayerAnimations.initClient();
@@ -53,7 +53,7 @@ public class ClientInit {
         ForgeEvents.registerForgeEvent(PlaySoundEvent.class, x -> {
             var p = ClientOnly.getPlayer();
             if (p != null && p.tickCount < (20 * 5)) {
-                if (WorldUtils.isMapWorldClass(Minecraft.getInstance().level)) {
+                if (p.level().dimension().location().equals(DungeonMain.DIMENSION_KEY)) {
                     //Minecraft.getInstance().player.sendSystemMessage(Component.literal("Sounds blocked: " + sounds + " - " + x.getName()));
                     sounds.getAndIncrement();
                     x.setSound(null); // forge wtf.. not cancellable but set nullable?

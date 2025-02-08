@@ -37,7 +37,6 @@ public class OnScreenMessageUtils {
 
     public static void actionBar(ServerPlayer p, MutableComponent title) {
         p.connection.send(new ClientboundSetActionBarTextPacket(title));
-
     }
 
     /*
