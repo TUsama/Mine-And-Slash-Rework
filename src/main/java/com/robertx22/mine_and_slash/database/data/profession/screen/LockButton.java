@@ -1,6 +1,7 @@
 package com.robertx22.mine_and_slash.database.data.profession.screen;
 
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
+import com.robertx22.mine_and_slash.uncommon.localization.Gui;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.LockTogglePacket;
 import com.robertx22.library_of_exile.main.Packets;
 import net.minecraft.ChatFormatting;
@@ -44,9 +45,9 @@ public class LockButton extends ImageButton {
 
     public void setModTooltip() {
         if (s.getSyncedData().recipe_locked)
-            this.setTooltip(Tooltip.create(Component.literal("Unlock Recipe").withStyle(ChatFormatting.DARK_AQUA)));
+            this.setTooltip(Tooltip.create(Gui.STATION_UNLOCK_RECIPE.locName().withStyle(ChatFormatting.DARK_AQUA)));
         else
-            this.setTooltip(Tooltip.create(Component.literal("Lock Recipe").withStyle(ChatFormatting.DARK_AQUA)));
+            this.setTooltip(Tooltip.create(Gui.STATION_LOCK_RECIPE.locName().withStyle(ChatFormatting.DARK_AQUA)));
     }
 
 }

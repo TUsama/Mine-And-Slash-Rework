@@ -2,6 +2,7 @@ package com.robertx22.mine_and_slash.maps;
 
 import com.robertx22.mine_and_slash.config.forge.ServerContainer;
 import com.robertx22.mine_and_slash.mmorpg.ForgeEvents;
+import com.robertx22.mine_and_slash.uncommon.localization.Chats;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -34,8 +35,7 @@ public class MapEvents {
         ForgeEvents.registerForgeEvent(PlayerInteractEvent.RightClickItem.class, x -> {
             if (WorldUtils.isMapWorldClass(x.getEntity().level())) {
                 if (ServerContainer.get().isItemBanned(x.getItemStack().getItem())) {
-                    x.getEntity().sendSystemMessage(Component.literal("This item is banned in Adventure Maps: ")
-                            .append(x.getItemStack().getDisplayName()).withStyle(ChatFormatting.BOLD));
+                    x.getEntity().sendSystemMessage(Chats.BANNED_IN_MAP.locName(x.getItemStack().getDisplayName()).withStyle(ChatFormatting.BOLD));
                     x.setCanceled(true);
                 }
             }

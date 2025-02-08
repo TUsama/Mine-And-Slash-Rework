@@ -1,6 +1,7 @@
 package com.robertx22.mine_and_slash.gui.wiki.reworked.filters;
 
 import com.robertx22.mine_and_slash.gui.wiki.reworked.NewWikiScreen;
+import com.robertx22.mine_and_slash.uncommon.localization.Words;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -31,7 +32,7 @@ public class FilterGroupButton extends AbstractButton {
         var cur = screen.getFilter(filter);
 
         if (cur == GroupFilterEntry.NONE) {
-            return Component.literal("Pick ").append(filter.word.locName());
+            return Words.PICK_CURSE.locName(filter.word.locName());
         } else {
             return screen.getFilter(filter).getName();
         }

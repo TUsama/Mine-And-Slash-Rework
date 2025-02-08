@@ -7,6 +7,20 @@ import java.util.Locale;
 
 // to use a "%" here, do %% or '%'
 public enum Words implements IAutoLocName {
+    TOTAL_COMBINE_DAMAGE("Total Combined Damage: %1$s\n"),
+    BONUS_DAMAGE_TYPE("\n- Bonus Damage Types:\n"),
+    FINAL_DAMAGE("Final Damage: %1$s\n"),
+    MULTIPLIERS("Multipliers: \n"),
+    DAMAGE_INFO("Damage Info: \n"),
+    BASE_DAMAGE("Base Damage: %1$s\n"),
+    ELEMENTAL_DAMAGE("\n%1$s: \n"),
+    AILMENT_DAMAGE("Ailment: "),
+    DAMAGE_TYPE_AILMENT("Damage Over Time\n\n"),
+    DAMAGE_TYPE_BASIC_ATTACK("Basic Attack\n\n"),
+    DAMAGE_TYPE_SPELL("Spell: %1$s"),
+    UNKNOWN_DAMAGE("[Error, dmg isn't a basic attack, spell or ailment]"),
+    BASIC_ATTACK("Basic Attack"),
+    PICK_CURSE("Pick Curse"),
     ANY_ITEM("Any Matching Item"),
 
     TELEPORT_TO_BOSS("Enter Boss Arena!"),

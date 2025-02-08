@@ -171,7 +171,7 @@ public class DamageEvent extends EffectEvent {
 
         try {
             if (this.data.isBasicAttack()) {
-                return Component.literal("Attack");
+                return Words.BASIC_ATTACK.locName();
             }
             if (this.data.isSpellEffect()) {
                 return getSpell().locName();
@@ -187,7 +187,7 @@ public class DamageEvent extends EffectEvent {
             e.printStackTrace();
         }
 
-        return Component.literal("[Error, dmg isn't a basic attack, spell or ailment]");
+        return Words.UNKNOWN_DAMAGE.locName();
     }
 
     public AttackType getAttackType() {
@@ -462,26 +462,26 @@ public class DamageEvent extends EffectEvent {
         MutableComponent msg = Component.empty();
 
         if (this.isSpell()) {
-            msg.append(Component.literal("Spell: ").append(getSpell().locName()).append("\n").withStyle(ChatFormatting.AQUA));
+            msg.append(Words.DAMAGE_TYPE_SPELL.locName(getSpell().locName().plainCopy()).append("\n").withStyle(ChatFormatting.AQUA));
         }
         if (this.data.isBasicAttack()) {
-            msg.append(Component.literal("Basic Attack\n").withStyle(ChatFormatting.RED));
+            msg.append(Words.DAMAGE_TYPE_BASIC_ATTACK.locName().withStyle(ChatFormatting.RED));
         }
         if (this.data.getAttackType() == AttackType.dot) {
-            msg.append(Component.literal("Damage Over Time\n").withStyle(ChatFormatting.RED));
+            msg.append(Words.DAMAGE_TYPE_AILMENT.locName().withStyle(ChatFormatting.RED));
         }
 
         if (!this.data.getString(EventData.AILMENT).isEmpty()) {
             String ailment = this.data.getString(EventData.AILMENT);
             var ai = ExileDB.Ailments().get(ailment);
-            msg.append(Component.literal("Ailment: ").append(ai.locName()).append("\n").withStyle(ai.element.format));
+            msg.append(Words.AILMENT_DAMAGE.locName().append(ai.locName()).append("\n").withStyle(ai.element.format));
         }
 
-        msg.append(Component.literal("\n" + getElement().getIconNameDmg() + ":\n").withStyle(getElement().format));
+        msg.append(Words.ELEMENTAL_DAMAGE.locName(getElement().getIconNameDmg()).withStyle(getElement().format));
 
-        msg.append(Component.literal("Base Damage: " + (int) this.data.getOriginalNumber(EventData.NUMBER).number + "\n").withStyle(ChatFormatting.BLUE));
+        msg.append(Words.BASE_DAMAGE.locName((int) this.data.getOriginalNumber(EventData.NUMBER).number).withStyle(ChatFormatting.BLUE));
 
-        msg.append(Component.literal("Damage Info: \n").withStyle(ChatFormatting.RED));
+        msg.append(Words.DAMAGE_INFO.locName().withStyle(ChatFormatting.RED));
 
         for (StatLayerData layerData : this.getSortedLayers()) {
             if (layerData.numberID.equals(EventData.NUMBER)) {
@@ -490,7 +490,7 @@ public class DamageEvent extends EffectEvent {
         }
 
         if (!getMoreMultis().isEmpty()) {
-            msg.append(Component.literal("Multipliers: \n").withStyle(ChatFormatting.LIGHT_PURPLE));
+            msg.append(Words.MULTIPLIERS.locName().withStyle(ChatFormatting.LIGHT_PURPLE));
 
             for (MoreMultiData multi : this.getMoreMultis()) {
                 if (multi.numberid.equals(EventData.NUMBER)) {
@@ -499,7 +499,7 @@ public class DamageEvent extends EffectEvent {
             }
         }
 
-        msg.append(Component.literal("Final Damage: " + (int) info.dmgmap.getOrDefault(getElement(), 0F).intValue() + "\n").withStyle(ChatFormatting.GOLD));
+        msg.append(Words.FINAL_DAMAGE.locName(info.dmgmap.getOrDefault(getElement(), 0F).intValue()).withStyle(ChatFormatting.GOLD));
 
 
         if (doBonusDmg) {
@@ -508,7 +508,7 @@ public class DamageEvent extends EffectEvent {
                 for (Entry<Elements, Float> en : info.dmgmap.entrySet()) {
                     if (en.getKey() != getElement()) {
 
-                        msg.append(Component.literal("\n- Bonus Damage Types:\n").withStyle(ChatFormatting.YELLOW));
+                        msg.append(Words.BONUS_DAMAGE_TYPE.locName().withStyle(ChatFormatting.YELLOW));
 
                         var dmg = info.eventMap.get(en.getKey());
                         msg.append(dmg.getInfoHoverMessage(info, false));
@@ -520,7 +520,7 @@ public class DamageEvent extends EffectEvent {
 
         if (doBonusDmg) {
             msg.append(Component.literal("\n"));
-            msg.append(Component.literal("Total Combined Damage: " + (int) info.totalDmg + "\n").withStyle(ChatFormatting.GOLD));
+            msg.append(Words.TOTAL_COMBINE_DAMAGE.locName((int) info.totalDmg).withStyle(ChatFormatting.GOLD));
         }
 
         return msg;
