@@ -462,7 +462,7 @@ public class DamageEvent extends EffectEvent {
         MutableComponent msg = Component.empty();
 
         if (this.isSpell()) {
-            msg.append(Words.DAMAGE_TYPE_SPELL.locName(getSpell().locName().plainCopy()).append("\n").withStyle(ChatFormatting.AQUA));
+            msg.append(Words.DAMAGE_TYPE_SPELL.locName(getSpell().locName().plainCopy()).withStyle(ChatFormatting.AQUA));
         }
         if (this.data.isBasicAttack()) {
             msg.append(Words.DAMAGE_TYPE_BASIC_ATTACK.locName().withStyle(ChatFormatting.RED));
