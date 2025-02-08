@@ -6,6 +6,7 @@ import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import com.robertx22.mine_and_slash.prophecy.AcceptProphecyAffixPacket;
 import com.robertx22.mine_and_slash.saveclasses.ExactStatData;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
+import com.robertx22.mine_and_slash.uncommon.localization.Words;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -51,6 +52,6 @@ public class ProphecyCurseCard implements ICard {
 
     @Override
     public MutableComponent getName() {
-        return Component.literal("Pick Curse");
+        return Words.PICK_CURSE.locName();
     }
 }

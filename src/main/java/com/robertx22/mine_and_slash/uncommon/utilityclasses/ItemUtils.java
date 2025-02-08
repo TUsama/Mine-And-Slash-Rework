@@ -4,6 +4,7 @@ import com.robertx22.mine_and_slash.config.forge.ServerContainer;
 import com.robertx22.mine_and_slash.database.data.rarities.GearRarity;
 import com.robertx22.mine_and_slash.saveclasses.item_classes.GearItemData;
 import com.robertx22.mine_and_slash.uncommon.datasaving.StackSaving;
+import com.robertx22.mine_and_slash.uncommon.localization.Chats;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -37,22 +38,17 @@ public class ItemUtils {
                 GearRarity rar = (GearRarity) gear.getRarity();
 
                 if (rar.announce_in_chat) {
-
-                    MutableComponent name = Component.literal("").append(player.getName())
+                    MutableComponent message = Chats.FOUND_ITEM.locName(player.getName().plainCopy().withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.LIGHT_PURPLE), rar.locName()
+                                    .withStyle(rar.textFormatting())
+                                    .withStyle(ChatFormatting.BOLD))
                             .withStyle(ChatFormatting.BOLD)
                             .withStyle(ChatFormatting.LIGHT_PURPLE);
 
-                    Component txt = name
-                            .append(" found a ")
-                            .append(rar.locName()
-                                    .withStyle(rar.textFormatting())
-                                    .withStyle(ChatFormatting.BOLD))
-                            .append(" item!");
 
                     player.getServer()
                             .getPlayerList()
                             .getPlayers()
-                            .forEach(x -> x.displayClientMessage(txt, false));
+                            .forEach(x -> x.displayClientMessage(message, false));
 
                 }
 

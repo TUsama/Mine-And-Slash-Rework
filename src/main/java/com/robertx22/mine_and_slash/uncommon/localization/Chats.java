@@ -6,6 +6,9 @@ import com.robertx22.mine_and_slash.uncommon.interfaces.IAutoLocName;
 import java.util.Locale;
 
 public enum Chats implements IAutoLocName {
+    BANNED_IN_MAP("This item is banned in Adventure Maps: %1$s"),
+    GAIN_FAVOR_ON_LOOT("+ %1$s Favor (%2$s)"),
+    FOUND_ITEM("%1$s found a %2$s item!"),
     BOSS_ARENA_UNLOCKED("Boss Arena: Open"),
     ALREADY_IN_ARENA("You are already inside the Boss Arena"),
     BOSS_KILLED("Boss already Killed"),

@@ -7,6 +7,13 @@ import net.minecraft.ChatFormatting;
 import java.util.Locale;
 
 public enum Gui implements IAutoLocName {
+    STATION_LOCK_RECIPE("Lock Recipe"),
+    STATION_UNLOCK_RECIPE("Unlock Recipe"),
+    STATION_START_CRAFTING("Start Crafting"),
+    STATION_STOP_CRAFTING("Stop Crafting"),
+    NONE_FILTER("none"),
+    CHOOSE_FILTER("Choose A Filter"),
+    PICK_FILTER("Pick %1$s"),
     EXP_GAIN_PERCENT("+%1$s %2$s Exp (%3$s%%)"),
     PROF_EXP_GAIN_CHAT("+%1$s %2$s Exp"),
     RESTED_COMBAT_EXP("Rested Combat Exp: "),

@@ -1,6 +1,7 @@
 package com.robertx22.mine_and_slash.gui.wiki.reworked.filters;
 
 import com.robertx22.mine_and_slash.gui.wiki.reworked.NewWikiScreen;
+import com.robertx22.mine_and_slash.uncommon.localization.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -14,7 +15,7 @@ public class FilterSelectScreen extends Screen {
     public FilterGroupButton button;
 
     public FilterSelectScreen(FilterGroupButton filterGroupButton, NewWikiScreen screen, GroupFilterType type) {
-        super(Component.literal("Choose A Filter"));
+        super(Gui.CHOOSE_FILTER.locName());
         this.type = type;
         this.last = screen;
         this.button = filterGroupButton;

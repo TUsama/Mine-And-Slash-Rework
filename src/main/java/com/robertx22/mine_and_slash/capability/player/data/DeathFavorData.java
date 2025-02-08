@@ -54,7 +54,7 @@ public class DeathFavorData {
         float favorGain = ServerContainer.get().FAVOR_CHEST_GAIN.get().floatValue();
 
         set(p, favor + favorGain);
-        OnScreenMessageUtils.actionBar((ServerPlayer) p, Component.literal("+" + favorGain + " ").append(Component.literal("Favor (" + favor + ")")).withStyle(ChatFormatting.GREEN));
+        OnScreenMessageUtils.actionBar((ServerPlayer) p, Chats.GAIN_FAVOR_ON_LOOT.locName(favorGain, favor).withStyle(ChatFormatting.GREEN));
         //  Load.player(p).prophecy.favor += ServerContainer.get().FAVOR_CHEST_GAIN.get();
     }
 

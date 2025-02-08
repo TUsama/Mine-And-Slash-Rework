@@ -8,6 +8,7 @@ import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.localization.Chats;
+import com.robertx22.mine_and_slash.uncommon.localization.Gui;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.CraftPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -68,9 +69,9 @@ public class CraftButton extends ImageButton {
             list.add(Chats.PROF_RECIPE_LEVEL_NOT_ENOUGH.locName(prof.locName(), lvl, owner).withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
         } else {
             if (pbe.getSyncedData().craftingState == Crafting_State.ACTIVE || pbe.getSyncedData().craftingState == Crafting_State.IDLE)
-                list.add(Component.literal("Stop Crafting").withStyle(ChatFormatting.DARK_AQUA));
+                list.add(Gui.STATION_STOP_CRAFTING.locName().withStyle(ChatFormatting.DARK_AQUA));
             else
-                list.add(Component.literal("Start Crafting").withStyle(ChatFormatting.DARK_AQUA));
+                list.add(Gui.STATION_START_CRAFTING.locName().withStyle(ChatFormatting.DARK_AQUA));
         }
 
 
