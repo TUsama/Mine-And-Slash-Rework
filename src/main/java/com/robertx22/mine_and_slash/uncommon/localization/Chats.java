@@ -156,7 +156,8 @@ public enum Chats implements IAutoLocName {
     NEW_DAY("A new day has arrived! Profession drop rates have been boosted for the following items:"),
 
     ERROR_TYPE_AND_REASON("%1$s %2$s"),
-    TOO_LOW_LEVEL("You need to be level %1$s to do this"),
+    TOO_LOW_LEVEL_TODO("You need to be level %1$s to do this"), // todo switch to this eventually
+    TOO_LOW_LEVEL("You need to be higher level to do this"),
 
     EAT_FOOD_ERROR("[Food Eat Fail]: "),
     EQUIP_AURA_ERROR("[Augment Equip Fail]: "),

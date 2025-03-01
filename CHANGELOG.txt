@@ -1,32 +1,5 @@
 Changelog of recent updates: https://github.com/RobertSkalko/Mine-And-Slash-Rework/blob/1.20-Forge/changelogs/v.6.2.txt
 
-v.6.2.0
+v.6.2.1
 
-- orbs of crafting was moved to library of exile mod so it's not needed anymore
-- the harvest now a separate required dependency (I tried to make it an optional dependency but was a bit too difficult, I might try to jarjar it again later)
-- adventure maps are now a separate required dependency called: dungeon realm
-- old dimension will stay as an empty dimension so future saves aren't borked by its removal
-- return to old map item system meaning: maps drop again, no more upgrading, but i made map boss always drop 1 map
-- uber maps changed slightly, now maps can become uber maps with an orb item, crafted with 4 uber frags, but the map must be mythic for the orb to be used
-- map mobs now drop vanilla loot again, this was removed due to item clutter, but will clash with the dungeon mod features now possibly
-- builder note: map boss arenas now need the 'map_teleporter' block
-- builder note2: harvest maps now use harvest_spawner blocks placed around the map instead of the league processor;32 something block
-- the map dimension no longer puts you in adventure mode, now uses events to make sure you can't place/break etc, report any bugs please!
-- new feature, command blocks should no longer show in maps
-- other dimension mod addons for dungeon realm now connect the maps, um. That means if you enter a harvest/obelisk etc through a map, it counts as your map too
-- changed dungeon datapack json, now require all types of rooms and no more fallback rooms
-- changed rarity json, map finish rarity is now a separate datapack under library mod
-- removed spawned mobs, now use mob lists from library mod
-- datapack checker now works for any of library's datapacks, not just mns
-- ailment procs now show damage chat messages when applied
-- buffed gathering profession dropchances at early levels by reducing the effect of exp to loot multiplier by half
-Now all gathers count as if they have an extra 50 experience. So if say you're mining a block that gives 10 exp, you'd before have 0.1x loot multi,
-now you'd have 0.6x loot multi. For a block that gives 200 exp, loot multi was 2x before, now it's 2.5x
-- as maps are now drops again, added a currency that allows you to upgrade map rarity
-- removed map lives system, possibly temporary
-
-New Feature: Relics!
-- the map device can now be equipped with relics
-- relics boost your maps with stats like mob pack size, chance to contain additional harvest etc
-- relics currently drop once per map boss and 3 per uber boss
-Enjoy customizing your maps and playing content you like or want to focus on!
+- fixed prophecy gui

@@ -51,11 +51,12 @@ public class OnServerTick {
 
                 WorldUtils.ifMapData(sw, player.blockPosition()).ifPresent(map -> {
 
-
-                    if (map != null && map.map != null) {
-                        if (!map.map.getStatReq().meetsReq(map.map.lvl, unitdata)) {
-                            //float minusres = map.map.getStatReq().getLackingResistNumber(map.map.lvl, unitdata);
-                            player.hurt(player.damageSources().generic(), player.getMaxHealth() * 0.1F);
+                    if (player.tickCount % 20 == 0) {
+                        if (map != null && map.map != null) {
+                            if (!map.map.getStatReq().meetsReq(map.map.lvl, unitdata)) {
+                                //float minusres = map.map.getStatReq().getLackingResistNumber(map.map.lvl, unitdata);
+                                player.hurt(player.damageSources().generic(), player.getMaxHealth() * 0.1F);
+                            }
                         }
                     }
 

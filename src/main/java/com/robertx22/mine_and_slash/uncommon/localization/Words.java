@@ -7,6 +7,8 @@ import java.util.Locale;
 
 // to use a "%" here, do %% or '%'
 public enum Words implements IAutoLocName {
+    DEATH_PENALTY_AVOIDED("Dying usually incurs a loss, but players below level %1$s are temporarily safeguarded."),
+
     TOTAL_COMBINE_DAMAGE("Total Combined Damage: %1$s\n"),
     AILMENT_DAMAGE_NOTE("Note: Ailment damage is calculated and shown when it's applied, instead of when the damage actually hurts the enemy.\n"),
     BONUS_DAMAGE_TYPE("\n- Bonus Damage Types:\n"),

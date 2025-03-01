@@ -1,5 +1,6 @@
 package com.robertx22.mine_and_slash.gui.screens.character_screen;
 
+import com.robertx22.dungeon_realm.main.DungeonMain;
 import com.robertx22.library_of_exile.main.Packets;
 import com.robertx22.library_of_exile.utils.RenderUtils;
 import com.robertx22.library_of_exile.utils.TextUTIL;
@@ -53,7 +54,6 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.Elements;
 import com.robertx22.mine_and_slash.uncommon.localization.Gui;
 import com.robertx22.mine_and_slash.uncommon.localization.Words;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.AllocateStatPacket;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.proxies.OpenGuiWrapper;
 import net.minecraft.ChatFormatting;
@@ -256,7 +256,7 @@ public class MainHubScreen extends BaseScreen implements INamedScreen {
         }
         rightButtons.add(new OpenJewelsScreen());
 
-        if (WorldUtils.isMapWorldClass(this.mc.level, mc.player.blockPosition())) {
+        if (mc.level.dimension().location().equals(DungeonMain.DIMENSION_KEY)) {
             if (Load.player(mc.player).prophecy.affixOffers.isEmpty()) {
                 rightButtons.add(new ProphecyScreen());
             } else {

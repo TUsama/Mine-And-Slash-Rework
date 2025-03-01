@@ -18,7 +18,6 @@ import com.robertx22.mine_and_slash.event_hooks.my_events.CachedPlayerStats;
 import com.robertx22.mine_and_slash.gui.screens.stat_gui.StatCalcInfoData;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import com.robertx22.mine_and_slash.prophecy.PlayerProphecies;
-import com.robertx22.mine_and_slash.saveclasses.DeathStatsData;
 import com.robertx22.mine_and_slash.saveclasses.perks.TalentsData;
 import com.robertx22.mine_and_slash.saveclasses.spells.SpellCastingData;
 import com.robertx22.mine_and_slash.saveclasses.spells.SpellSchoolsData;
@@ -110,7 +109,6 @@ public class PlayerData implements ICap {
     public TeamData team = new TeamData();
     public TalentsData talents = new TalentsData();
     public StatPointsData statPoints = new StatPointsData();
-    public DeathStatsData deathStats = new DeathStatsData();
     public SpellSchoolsData ascClass = new SpellSchoolsData();
     public PlayerProphecies prophecy = new PlayerProphecies();
     public SpellCastingData spellCastingData = new SpellCastingData();
@@ -133,7 +131,7 @@ public class PlayerData implements ICap {
 
     public int bonusTalents = 0;
 
-  
+
     public int omensFilled = 0;
 
     public PlayerData(Player player) {
@@ -157,7 +155,6 @@ public class PlayerData implements ICap {
         LoadSave.Save(talents, nbt, TALENTS_DATA);
         LoadSave.Save(prophecy, nbt, PROPHECY);
         LoadSave.Save(statPoints, nbt, STAT_POINTS);
-        LoadSave.Save(deathStats, nbt, DEATH_STATS);
         LoadSave.Save(ascClass, nbt, ASC);
         LoadSave.Save(spellCastingData, nbt, CAST);
         LoadSave.Save(config, nbt, CONFIG);
@@ -187,7 +184,6 @@ public class PlayerData implements ICap {
         this.prophecy = loadOrBlank(PlayerProphecies.class, new PlayerProphecies(), nbt, PROPHECY, new PlayerProphecies());
         this.talents = loadOrBlank(TalentsData.class, new TalentsData(), nbt, TALENTS_DATA, new TalentsData());
         this.statPoints = loadOrBlank(StatPointsData.class, new StatPointsData(), nbt, STAT_POINTS, new StatPointsData());
-        this.deathStats = loadOrBlank(DeathStatsData.class, new DeathStatsData(), nbt, DEATH_STATS, new DeathStatsData());
         this.ascClass = loadOrBlank(SpellSchoolsData.class, new SpellSchoolsData(), nbt, ASC, new SpellSchoolsData());
         this.spellCastingData = loadOrBlank(SpellCastingData.class, new SpellCastingData(), nbt, CAST, new SpellCastingData());
         this.config = loadOrBlank(PlayerConfigData.class, new PlayerConfigData(), nbt, CONFIG, new PlayerConfigData());

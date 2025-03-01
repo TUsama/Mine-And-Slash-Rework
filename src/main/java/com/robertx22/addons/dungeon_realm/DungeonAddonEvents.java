@@ -51,7 +51,7 @@ public class DungeonAddonEvents {
 
                         WorldData.get(event.p.level()).map.setData(event.p, mapdata, event.mapInfo.structure, event.startChunkPos.getMiddleBlockPosition(5));
 
-                        Load.Unit(event.p).getCooldowns().setOnCooldown("start_map", 20 * 60 * 2);
+                        Load.Unit(event.p).getCooldowns().setOnCooldown("start_map", ServerContainer.get().MAP_START_COOLDOWN_SECONDS.get() * 20);
                     }
                 }
             }

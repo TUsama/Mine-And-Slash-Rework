@@ -2,13 +2,11 @@ package com.robertx22.mine_and_slash.database.data.stats.types.resources;
 
 import com.robertx22.mine_and_slash.database.data.stats.Stat;
 import com.robertx22.mine_and_slash.database.data.stats.StatScaling;
-import com.robertx22.mine_and_slash.saveclasses.DeathStatsData;
 import com.robertx22.mine_and_slash.saveclasses.unit.ResourceType;
 import com.robertx22.mine_and_slash.saveclasses.unit.StatData;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.DamageEvent;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.Elements;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 
 public class DamageAbsorbedByMana extends Stat {
     public static String GUID = "mana_shield";
@@ -73,11 +71,6 @@ public class DamageAbsorbedByMana extends Stat {
             float dmgReduced = Mth.clamp(dmg * data.getValue() / 100F, 0, currentMana - (maxMana * 0.5F));
 
             if (dmgReduced > 0) {
-
-                if (effect.target instanceof Player) {
-                    DeathStatsData.record((Player) effect.target, effect.getElement(), dmgReduced);
-                }
-
                 effect.targetData.getResources()
                         .spend(effect.target, ResourceType.mana, dmgReduced);
 

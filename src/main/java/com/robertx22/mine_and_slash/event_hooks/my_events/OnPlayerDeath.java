@@ -6,6 +6,7 @@ import com.robertx22.mine_and_slash.capability.player.PlayerData;
 import com.robertx22.mine_and_slash.capability.player.data.PlayerBuffData;
 import com.robertx22.mine_and_slash.config.forge.ServerContainer;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
+import com.robertx22.mine_and_slash.uncommon.localization.Words;
 import net.minecraft.world.entity.player.Player;
 
 public class OnPlayerDeath extends EventConsumer<ExileEvents.OnPlayerDeath> {
@@ -27,18 +28,18 @@ public class OnPlayerDeath extends EventConsumer<ExileEvents.OnPlayerDeath> {
 
                 PlayerData data = Load.player(player);
 
-
                 if (Load.Unit(player).getLevel() > ServerContainer.get().DEATH_PENALTY_START_LEVEL.get()) {
                     Load.Unit(player).onDeathDoPenalty();
                     data.rested_xp.onDeath();
                     data.favor.onDeath(player);
+                } else {
+                    player.sendSystemMessage(Words.DEATH_PENALTY_AVOIDED.locName(ServerContainer.get().DEATH_PENALTY_START_LEVEL.get()));
                 }
 
-                data.deathStats.died = true;
                 data.buff = new PlayerBuffData(); // we delete all the buff foods and potions on death, if in the future i want some buffs to persist across death, change this
                 data.playerDataSync.setDirty();
 
-    
+
             }
 
         } catch (Exception e) {

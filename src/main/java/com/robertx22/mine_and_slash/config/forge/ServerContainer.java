@@ -82,6 +82,8 @@ public class ServerContainer {
         FAVOR_DEATH_LOSS = b.defineInRange("favor_death_loss", 50D, 0, 10000);
         MAX_POSSIBLE_FAVOR = b.defineInRange("MAX_POSSIBLE_FAVOR", 10000000, 0, 10000000);
         FAVOR_CHEST_GAIN = b.defineInRange("favor_chest_gain", 1D, 0, 10000);
+        MAP_START_COOLDOWN_SECONDS = b.defineInRange("MAP_START_COOLDOWN_SECONDS", 60 * 2, 0, 10000000);
+
 
         GEAR_DROPRATE = b.defineInRange("gear_drop_rate", 7D, 0, 1000);
         SOUl_DROPRATE = b.defineInRange("soul_drop_rate", 0.3D, 0, 1000);
@@ -264,6 +266,7 @@ public class ServerContainer {
     public ForgeConfigSpec.DoubleValue BLOCK_COST;
 
     public ForgeConfigSpec.IntValue MAX_POSSIBLE_FAVOR;
+    public ForgeConfigSpec.IntValue MAP_START_COOLDOWN_SECONDS;
 
 
     public ForgeConfigSpec.IntValue MAP_GEN_TERRAIN_RADIUS;

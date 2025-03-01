@@ -1,16 +1,14 @@
 package com.robertx22.mine_and_slash.database.data.stats.types.resources.magic_shield;
 
+import com.robertx22.library_of_exile.utils.SoundUtils;
 import com.robertx22.mine_and_slash.database.data.stats.Stat;
 import com.robertx22.mine_and_slash.database.data.stats.StatScaling;
-import com.robertx22.mine_and_slash.saveclasses.DeathStatsData;
 import com.robertx22.mine_and_slash.saveclasses.unit.ResourceType;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.DamageEvent;
 import com.robertx22.mine_and_slash.uncommon.enumclasses.Elements;
-import com.robertx22.library_of_exile.utils.SoundUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 
 public class MagicShield extends Stat {
     public static String GUID = "magic_shield";
@@ -72,10 +70,7 @@ public class MagicShield extends Stat {
                 SoundUtils.playSound(effect.target, SoundEvents.GENERIC_HURT, 0.5F, 1);
                 SoundUtils.playSound(effect.target, SoundEvents.GUARDIAN_HURT, 1, 1);
 
-                if (effect.target instanceof Player) {
-                    DeathStatsData.record((Player) effect.target, effect.getElement(), dmgReduced);
-                }
-
+               
                 effect.targetData.getResources().spend(effect.target, ResourceType.magic_shield, dmgReduced);
 
 
