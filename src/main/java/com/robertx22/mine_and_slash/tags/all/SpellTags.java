@@ -38,6 +38,8 @@ public class SpellTags {
     public static SpellTag SHATTER = SpellTag.of("shatter");
     public static SpellTag MISSILE = SpellTag.of("missile");
     public static SpellTag CAST_TO_CD = SpellTag.of("cast_speed_to_cooldown");
+    public static SpellTag UNAFFECTED_BY_BLOCKING = SpellTag.of("unaffected_by_blocking");
+    public static SpellTag UNAFFECTED_BY_SWINGING = SpellTag.of("unaffected_by_swinging");
 
     public static void init() {
 

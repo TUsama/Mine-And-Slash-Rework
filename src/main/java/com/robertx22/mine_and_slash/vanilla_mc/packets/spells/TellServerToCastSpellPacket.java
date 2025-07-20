@@ -6,6 +6,7 @@ import com.robertx22.mine_and_slash.capability.player.data.PlayerConfigData;
 import com.robertx22.mine_and_slash.database.data.spells.components.Spell;
 import com.robertx22.mine_and_slash.database.data.spells.spell_classes.bases.SpellCastContext;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
+import com.robertx22.mine_and_slash.tags.all.SpellTags;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.localization.Chats;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.RepairUtils;
@@ -44,10 +45,8 @@ public class TellServerToCastSpellPacket extends MyPacket<TellServerToCastSpellP
     public static boolean tryCastSpell(Player player, Spell spell) {
 
         var data = Load.player(player);
-
-        if (player.isBlocking() || player.swinging) {
-            return false;
-        }
+        if (player.isBlocking() && !spell.config.tags.contains(SpellTags.UNAFFECTED_BY_BLOCKING)) return false;
+        if (player.swinging && !spell.config.tags.contains(SpellTags.UNAFFECTED_BY_SWINGING)) return false;
 
         if (spell != null) {
 
